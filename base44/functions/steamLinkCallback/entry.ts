@@ -18,7 +18,25 @@ export default async function(req) {
 
     if (!nonce || !claimedId) return back('error', 'missing');
 
-    // 1. Verify the response with Steam, server-side. Never trust the browser.
+    // 1. Defense-in-depth: openid.return_to must target this app's callback
+    //    (exact origin, no attacker-controlled destination) and must carry
+    //    exactly the nonce this request was started with.
+    try {
+      const returnTo = url.searchParams.get('openid.return_to');
+      const returnUrl = returnTo ? new URL(returnTo) : null;
+      if (
+        !returnUrl ||
+        returnUrl.origin !== origin ||
+        returnUrl.pathname !== '/functions/steamLinkCallback' ||
+        returnUrl.searchParams.get('nonce') !== nonce
+      ) {
+        return back('error', 'bad_return_to');
+      }
+    } catch {
+      return back('error', 'bad_return_to');
+    }
+
+    // 2. Verify the response with Steam, server-side. Never trust the browser.
     const check = new URLSearchParams(url.searchParams);
     check.set('openid.mode', 'check_authentication');
     const steamRes = await fetch('https://steamcommunity.com/openid/login', {
@@ -30,14 +48,14 @@ export default async function(req) {
     const steamBody = await steamRes.text();
     if (!steamBody.includes('is_valid:true')) return back('error', 'invalid_signature');
 
-    // 2. Extract and validate the Steam ID from the verified claimed ID
+    // 3. Extract and validate the Steam ID from the verified claimed ID
     const match = claimedId.match(/^https:\/\/steamcommunity\.com\/openid\/id\/(\d{17})$/);
     if (!match) return back('error', 'bad_id');
     const steamId = match[1];
 
     const service = base44.asServiceRole;
 
-    // 3. Consume the nonce exactly once, within its lifetime
+    // 4. Consume the nonce exactly once, within its lifetime
     const requests = await service.entities.SteamLinkRequest.filter({ nonce });
     const linkRequest = requests.find(
       (r) => r.nonce === nonce && r.used === false && r.expires_at > new Date().toISOString()
@@ -45,7 +63,7 @@ export default async function(req) {
     if (!linkRequest) return back('error', 'expired');
     await service.entities.SteamLinkRequest.update(linkRequest.id, { used: true });
 
-    // 4. One Steam ID maps to at most one Base44 user
+    // 5. One Steam ID maps to at most one Base44 user
     const links = await service.entities.SteamLink.filter({ steam_id: steamId });
     if (links.length > 0) {
       const existing = links[0];
