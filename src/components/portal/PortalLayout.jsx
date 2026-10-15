@@ -7,7 +7,7 @@ import {
 import { Image } from "@/components/ui/image";
 import DinoBackground from "@/components/DinoBackground";
 
-const LOGO = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/30f2f6cc9_logo.png";
+const LOGO = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/d4ae5dc23_TheHaven_CrystalDinosaurCrest.png";
 
 const LINKS = [
   { label: "Home", to: "/", icon: Home },
@@ -35,7 +35,7 @@ function Navbar() {
       <div className="flex items-center h-14">
         {/* Brand */}
         <Link to="/" className="flex items-center gap-2 px-4 md:px-6 shrink-0">
-          <Image src={LOGO} alt="The Haven" className="w-7 h-7" fittingType="fit" />
+          <Image src={LOGO} alt="The Haven" className="w-9 h-9" fittingType="fit" />
           <span className="font-heading text-sm tracking-[0.15em] text-foreground hidden sm:block">
             THE HAVEN
           </span>
@@ -96,7 +96,7 @@ function Footer() {
       <div className="max-w-[1500px] mx-auto px-6 md:px-10 py-12 grid md:grid-cols-3 gap-10">
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <Image src={LOGO} alt="The Haven" className="w-8 h-8" fittingType="fit" />
+            <Image src={LOGO} alt="The Haven" className="w-10 h-10" fittingType="fit" />
             <span className="font-heading text-lg tracking-[0.12em] text-foreground">THE HAVEN</span>
           </div>
           <p className="font-mono text-[11px] text-muted-foreground leading-relaxed max-w-xs">
