@@ -75,15 +75,15 @@ export default function HealthOverview() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>
             <span className="font-mono text-[10px] tracking-[0.3em] text-primary mb-3 block">
-              04 — VITALITY PULSE
+              04 — VITALITY RUNES
             </span>
             <h2 className="font-heading text-3xl md:text-5xl tracking-[0.08em] text-foreground">
               HEALTH OVERVIEW
             </h2>
           </div>
           <p className="font-mono text-xs text-muted-foreground max-w-md tracking-wide leading-relaxed">
-            Live biometric telemetry. Growth trajectory toward prime, vital
-            gauges, and 10-minute trend analysis.
+            Live biometric telemetry. Growth channel toward prime, vital
+            runes, and 10-minute trend analysis.
           </p>
         </div>
 
@@ -119,8 +119,8 @@ export default function HealthOverview() {
                 <AreaChart data={GROWTH_DATA} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                   <defs>
                     <linearGradient id="growthGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#22c55e" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+                      <stop offset="0%" stopColor="#67e8f9" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="#67e8f9" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="t" tick={{ fill: "#6b7280", fontSize: 9, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
@@ -134,7 +134,7 @@ export default function HealthOverview() {
                     }}
                     labelStyle={{ color: "#22c55e" }}
                   />
-                  <Area type="monotone" dataKey="value" stroke="#22c55e" strokeWidth={2} fill="url(#growthGrad)" />
+                  <Area type="monotone" dataKey="value" stroke="#67e8f9" strokeWidth={2} fill="url(#growthGrad)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -199,12 +199,12 @@ export default function HealthOverview() {
                 <AreaChart data={TREND_DATA} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                   <defs>
                     <linearGradient id="healthGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#22c55e" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+                      <stop offset="0%" stopColor="#67e8f9" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#67e8f9" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="staminaGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#f59e0b" stopOpacity={0} />
+                      <stop offset="0%" stopColor="#a78bfa" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#a78bfa" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="t" tick={{ fill: "#6b7280", fontSize: 9, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
@@ -217,8 +217,8 @@ export default function HealthOverview() {
                       fontSize: "10px",
                     }}
                   />
-                  <Area type="monotone" dataKey="health" stroke="#22c55e" strokeWidth={2} fill="url(#healthGrad)" name="Health" />
-                  <Area type="monotone" dataKey="stamina" stroke="#f59e0b" strokeWidth={2} fill="url(#staminaGrad)" name="Stamina" />
+                  <Area type="monotone" dataKey="health" stroke="#67e8f9" strokeWidth={2} fill="url(#healthGrad)" name="Health" />
+                  <Area type="monotone" dataKey="stamina" stroke="#a78bfa" strokeWidth={2} fill="url(#staminaGrad)" name="Stamina" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>

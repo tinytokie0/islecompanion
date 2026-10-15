@@ -1,4 +1,5 @@
 import React from "react";
+import FloatingIslands from "@/components/FloatingIslands";
 
 const VIDEO_URL = "https://media.base44.com/videos/public/user_699e79e1191555fa18956285/b1dafa1ed_lv__20261015084341.mp4";
 
@@ -23,6 +24,9 @@ export default function Hero() {
       {/* Grid overlay */}
       <div className="absolute inset-0 grid-bg opacity-30" />
 
+      {/* Floating islands */}
+      <FloatingIslands />
+
       {/* Scan line */}
       <div className="absolute left-0 right-0 h-32 scanline animate-scan pointer-events-none" />
 
@@ -31,7 +35,7 @@ export default function Hero() {
         <div className="inline-flex items-center gap-2 mb-8 glass-panel-light px-4 py-2 rounded-full animate-flicker">
           <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
           <span className="font-mono text-[10px] tracking-[0.3em] text-muted-foreground">
-            SERVER STATUS — ONLINE
+            REALM STATUS — ONLINE
           </span>
         </div>
 
@@ -42,8 +46,8 @@ export default function Hero() {
         </h1>
 
         <p className="font-mono text-sm md:text-base text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed tracking-wide">
-          A live biological bridge between you and the apex predator.
-          Track vitals, map territory, engineer your skin, and monitor
+          A living bridge between you and the realm. Track vitals,
+          chart the floating isles, forge your skin, and channel
           growth to prime — all in real time.
         </p>
 
@@ -70,7 +74,7 @@ export default function Hero() {
             { label: "PLAYERS ONLINE", value: "847" },
             { label: "SERVER PING", value: "24ms" },
             { label: "DAY CYCLE", value: "14:32" },
-            { label: "BIOME", value: "SWAMP" },
+            { label: "REALM", value: "SKYSHARD" },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col">
               <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground mb-1">

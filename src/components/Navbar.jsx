@@ -29,11 +29,17 @@ export default function Navbar() {
     >
       <div className="max-w-[1600px] mx-auto px-6 md:px-10 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-2 border-primary relative rotate-45">
-            <div className="absolute inset-1 bg-primary/40 animate-breathe" />
-          </div>
-          <span className="font-heading text-sm md:text-base tracking-[0.3em] text-foreground">
-            THE ISLE
+          <svg className="w-8 h-8" viewBox="0 0 40 40">
+            <defs>
+              <linearGradient id="navCrys" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#e0f2fe" />
+                <stop offset="100%" stopColor="#67e8f9" />
+              </linearGradient>
+            </defs>
+            <polygon points="20,3 33,14 27,37 13,37 7,14" fill="url(#navCrys)" className="animate-crystal" />
+          </svg>
+          <span className="font-heading text-sm md:text-base tracking-[0.25em] text-foreground">
+            THE HAVEN
           </span>
         </div>
 

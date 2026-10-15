@@ -5,7 +5,7 @@ const SPECIMENS = [
     name: "Tyrannosaurus",
     code: "T-REX-001",
     growth: 92,
-    biome: "RIDGE",
+    biome: "VOID RIDGE",
     prime: "94",
     stats: { speed: 68, damage: 98, stamina: 72, health: 95 },
     accent: "#dc2626",
@@ -14,7 +14,7 @@ const SPECIMENS = [
     name: "Carnotaurus",
     code: "CARNO-014",
     growth: 78,
-    biome: "PLAINS",
+    biome: "CRYSTAL BASIN",
     prime: "88",
     stats: { speed: 85, damage: 80, stamina: 78, health: 70 },
     accent: "#f59e0b",
@@ -23,7 +23,7 @@ const SPECIMENS = [
     name: "Dakotaraptor",
     code: "RAPT-007",
     growth: 100,
-    biome: "SWAMP",
+    biome: "SKYSHARD ISLES",
     prime: "91",
     stats: { speed: 95, damage: 60, stamina: 90, health: 55 },
     accent: "#22c55e",
@@ -32,7 +32,7 @@ const SPECIMENS = [
     name: "Stegosaurus",
     code: "STEG-003",
     growth: 85,
-    biome: "PLAINS",
+    biome: "CRYSTAL BASIN",
     prime: "87",
     stats: { speed: 40, damage: 75, stamina: 65, health: 90 },
     accent: "#84cc16",
@@ -41,7 +41,7 @@ const SPECIMENS = [
     name: "Acrocanthosaurus",
     code: "ACRO-009",
     growth: 64,
-    biome: "RIDGE",
+    biome: "VOID RIDGE",
     prime: "82",
     stats: { speed: 72, damage: 90, stamina: 70, health: 85 },
     accent: "#ef4444",
@@ -67,15 +67,15 @@ export default function Garage() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>
             <span className="font-mono text-[10px] tracking-[0.3em] text-primary mb-3 block">
-              02 — STASIS CHAMBER
+              02 — FLOATING VAULTS
             </span>
             <h2 className="font-heading text-3xl md:text-5xl tracking-[0.08em] text-foreground">
               THE GARAGE
             </h2>
           </div>
           <p className="font-mono text-xs text-muted-foreground max-w-md tracking-wide leading-relaxed">
-            Your specimen collection. Each creature carries its prime stats
-            and growth telemetry. Select to inspect.
+            Your specimen collection, kept in the floating vaults. Each
+            creature carries its prime stats and growth telemetry. Select to inspect.
           </p>
         </div>
 

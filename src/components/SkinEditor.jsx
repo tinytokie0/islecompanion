@@ -7,6 +7,7 @@ const PATTERNS = [
   { id: "albino", name: "Albino", desc: "Absence of pigment" },
   { id: "leucistic", name: "Leucistic", desc: "Partial pigment loss" },
   { id: "erythristic", name: "Erythristic", desc: "Reddish hue" },
+  { id: "crystal", name: "Crystalline", desc: "Prismatic shards" },
 ];
 
 const SWATCHES = [
@@ -23,6 +24,7 @@ export default function SkinEditor() {
     if (pattern === "melanistic") return "#1a1a1a";
     if (pattern === "leucistic") return "#c8c0b0";
     if (pattern === "erythristic") return "#a04030";
+    if (pattern === "crystal") return "#67e8f9";
     return color;
   };
 
@@ -30,6 +32,7 @@ export default function SkinEditor() {
     if (pattern === "albino") return "#ff5555";
     if (pattern === "melanistic") return "#444444";
     if (pattern === "leucistic") return "#888888";
+    if (pattern === "crystal") return "#e0f2fe";
     return color;
   };
 
@@ -40,7 +43,7 @@ export default function SkinEditor() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>
             <span className="font-mono text-[10px] tracking-[0.3em] text-primary mb-3 block">
-              03 — GENETIC ATELIER
+              03 — CRYSTAL ATELIER
             </span>
             <h2 className="font-heading text-3xl md:text-5xl tracking-[0.08em] text-foreground">
               SKIN EDITOR
@@ -88,6 +91,15 @@ export default function SkinEditor() {
                 fill={getAccentColor()}
                 opacity="0.3"
               />
+              {/* Crystal shards */}
+              {pattern === "crystal" && (
+                <g>
+                  <polygon points="100,55 108,72 92,72" fill="#e0f2fe" className="animate-crystal" />
+                  <polygon points="68,95 76,112 60,112" fill="#67e8f9" className="animate-crystal" style={{ animationDelay: "1s" }} />
+                  <polygon points="132,100 140,117 124,117" fill="#c4b5fd" className="animate-crystal" style={{ animationDelay: "2s" }} />
+                  <polygon points="40,110 47,126 33,126" fill="#a5f3fc" className="animate-crystal" style={{ animationDelay: "0.5s" }} />
+                </g>
+              )}
             </svg>
 
             {/* Scan line */}

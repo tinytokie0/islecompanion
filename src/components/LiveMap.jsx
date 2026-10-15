@@ -12,9 +12,9 @@ const BLIPS = [
 ];
 
 const ZONES = [
-  { name: "SWAMP", x: 20, y: 65 },
-  { name: "PLAINS", x: 55, y: 30 },
-  { name: "RIDGE", x: 80, y: 55 },
+  { name: "SKYSHARD ISLES", x: 20, y: 65 },
+  { name: "CRYSTAL BASIN", x: 55, y: 30 },
+  { name: "VOID RIDGE", x: 80, y: 55 },
 ];
 
 export default function LiveMap() {
@@ -28,14 +28,14 @@ export default function LiveMap() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>
             <span className="font-mono text-[10px] tracking-[0.3em] text-primary mb-3 block">
-              01 — CARTOGRAPHY
+              01 — REALM CARTOGRAPHY
             </span>
             <h2 className="font-heading text-3xl md:text-5xl tracking-[0.08em] text-foreground">
               LIVING MAP
             </h2>
           </div>
           <p className="font-mono text-xs text-muted-foreground max-w-md tracking-wide leading-relaxed">
-            Real-time spatial telemetry. Neural blips pulse with creature
+            Real-time spatial telemetry. Crystal blips pulse with creature
             activity. Hover any contact for elevation and threat data.
           </p>
         </div>
@@ -55,26 +55,37 @@ export default function LiveMap() {
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 56" preserveAspectRatio="none">
             <defs>
               <radialGradient id="terrain1" cx="50%" cy="50%">
-                <stop offset="0%" stopColor="#22c55e" stopOpacity="0.08" />
-                <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
+                <stop offset="0%" stopColor="#67e8f9" stopOpacity="0.1" />
+                <stop offset="100%" stopColor="#67e8f9" stopOpacity="0" />
               </radialGradient>
             </defs>
             {/* Water bodies */}
-            <path d="M 5 40 Q 15 35 25 42 Q 35 48 20 52 Q 8 50 5 40 Z" fill="#1e3a5f" opacity="0.3" />
-            <path d="M 70 15 Q 80 12 85 20 Q 88 28 75 25 Q 68 20 70 15 Z" fill="#1e3a5f" opacity="0.3" />
+            <path d="M 5 40 Q 15 35 25 42 Q 35 48 20 52 Q 8 50 5 40 Z" fill="#2e1065" opacity="0.5" />
+            <path d="M 70 15 Q 80 12 85 20 Q 88 28 75 25 Q 68 20 70 15 Z" fill="#2e1065" opacity="0.5" />
             {/* Contour curves */}
             {[...Array(6)].map((_, i) => (
               <path
                 key={i}
                 d={`M ${10 + i * 3} ${15 + i * 2} Q ${30 + i * 4} ${10 + i * 3} ${50 + i * 3} ${20 + i * 2} T ${90 - i * 2} ${30 + i * 2}`}
                 fill="none"
-                stroke="#22c55e"
+                stroke="#67e8f9"
                 strokeWidth="0.15"
                 opacity={0.15 - i * 0.015}
               />
             ))}
             {/* Roads / paths */}
-            <path d="M 10 50 Q 30 40 50 45 T 90 35" fill="none" stroke="#f59e0b" strokeWidth="0.2" strokeDasharray="1 1" opacity="0.4" />
+            <path d="M 10 50 Q 30 40 50 45 T 90 35" fill="none" stroke="#a78bfa" strokeWidth="0.2" strokeDasharray="1 1" opacity="0.4" />
+            {/* Floating isles */}
+            {[
+              { cx: 22, cy: 30 },
+              { cx: 48, cy: 62 },
+              { cx: 82, cy: 48 },
+            ].map((p, i) => (
+              <g key={i} className="animate-breathe">
+                <path d={`M ${p.cx} ${p.cy - 3} L ${p.cx - 6} ${p.cy} L ${p.cx - 3} ${p.cy + 6} L ${p.cx + 4} ${p.cy + 5} L ${p.cx + 6} ${p.cy} Z`} fill="#3b2d63" opacity="0.8" />
+                <polygon points={`${p.cx},${p.cy - 7} ${p.cx + 2},${p.cy - 3} ${p.cx - 2},${p.cy - 3}`} fill="#67e8f9" opacity="0.9" />
+              </g>
+            ))}
           </svg>
 
           {/* Zone labels */}

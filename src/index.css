@@ -4,29 +4,29 @@
 
 @layer base {
   :root {
-    --background: 150 20% 5%;
-    --foreground: 130 15% 88%;
-    --card: 150 18% 8%;
-    --card-foreground: 130 15% 88%;
-    --popover: 150 18% 8%;
-    --popover-foreground: 130 15% 88%;
-    --primary: 142 71% 45%;
-    --primary-foreground: 150 20% 5%;
-    --secondary: 150 15% 14%;
-    --secondary-foreground: 130 15% 88%;
-    --muted: 150 12% 16%;
-    --muted-foreground: 130 10% 55%;
-    --accent: 38 92% 50%;
-    --accent-foreground: 150 20% 5%;
+    --background: 248 40% 5%;
+    --foreground: 255 30% 92%;
+    --card: 248 35% 8%;
+    --card-foreground: 255 30% 92%;
+    --popover: 248 35% 8%;
+    --popover-foreground: 255 30% 92%;
+    --primary: 262 83% 70%;
+    --primary-foreground: 248 40% 5%;
+    --secondary: 250 25% 14%;
+    --secondary-foreground: 255 30% 92%;
+    --muted: 250 20% 16%;
+    --muted-foreground: 255 12% 58%;
+    --accent: 190 85% 65%;
+    --accent-foreground: 248 40% 5%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 150 15% 18%;
-    --input: 150 15% 18%;
-    --ring: 142 71% 45%;
+    --border: 255 25% 20%;
+    --input: 255 25% 20%;
+    --ring: 262 83% 70%;
     --radius: 0.25rem;
-    --font-heading: 'Michroma', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Cinzel', ui-serif, Georgia, serif;
     --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Michroma', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Cinzel', ui-serif, Georgia, serif;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   }
 }
@@ -38,7 +38,7 @@
 
   body {
     @apply bg-background text-foreground font-body;
-    background-color: #0A0F0D;
+    background-color: #0B0A1A;
   }
 }
 
@@ -48,25 +48,25 @@
   .font-mono { font-family: var(--font-mono); }
 
   .text-glow {
-    text-shadow: 0 0 20px rgba(34, 197, 94, 0.5), 0 0 40px rgba(34, 197, 94, 0.2);
+    text-shadow: 0 0 20px rgba(167, 139, 250, 0.5), 0 0 40px rgba(103, 232, 249, 0.25);
   }
 
   .glass-panel {
-    background: rgba(10, 15, 13, 0.65);
+    background: rgba(12, 10, 26, 0.65);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(167, 139, 250, 0.18);
   }
 
   .glass-panel-light {
-    background: rgba(15, 22, 18, 0.45);
+    background: rgba(20, 15, 40, 0.45);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(167, 139, 250, 0.08);
   }
 
   .scanline {
-    background: linear-gradient(180deg, transparent 0%, rgba(34,197,94,0.08) 50%, transparent 100%);
+    background: linear-gradient(180deg, transparent 0%, rgba(103, 232, 249, 0.08) 50%, transparent 100%);
   }
 
   .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -74,8 +74,8 @@
 
   .grid-bg {
     background-image:
-      linear-gradient(rgba(34, 197, 94, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(34, 197, 94, 0.04) 1px, transparent 1px);
+      linear-gradient(rgba(167, 139, 250, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(167, 139, 250, 0.05) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 }
@@ -110,3 +110,15 @@
   50% { transform: translateY(-8px); }
 }
 .animate-drift { animation: drift 5s ease-in-out infinite; }
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-18px); }
+}
+.animate-float-slow { animation: float-slow 9s ease-in-out infinite; }
+
+@keyframes crystal-shimmer {
+  0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 6px rgba(103, 232, 249, 0.4)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 14px rgba(103, 232, 249, 0.8)); }
+}
+.animate-crystal { animation: crystal-shimmer 3s ease-in-out infinite; }

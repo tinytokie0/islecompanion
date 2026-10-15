@@ -7,15 +7,15 @@ export default function Footer() {
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 border-2 border-primary rotate-45 relative">
-                <div className="absolute inset-1 bg-primary/40 animate-breathe" />
-              </div>
-              <span className="font-heading text-sm tracking-[0.3em] text-foreground">
-                THE ISLE
+              <svg className="w-8 h-8" viewBox="0 0 40 40">
+                <polygon points="20,3 33,14 27,37 13,37 7,14" fill="#67e8f9" className="animate-crystal" />
+              </svg>
+              <span className="font-heading text-sm tracking-[0.25em] text-foreground">
+                THE HAVEN
               </span>
             </div>
             <p className="font-mono text-[10px] text-muted-foreground tracking-wide leading-relaxed max-w-xs">
-              The Haven. A biological bridge between player and predator.
+              The Haven. A living bridge between you and the realm.
               Unofficial companion interface.
             </p>
           </div>
