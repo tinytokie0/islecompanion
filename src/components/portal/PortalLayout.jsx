@@ -5,6 +5,7 @@ import {
   LifeBuoy, FileText, Package, PackageOpen, Bone, Sprout, ArrowLeftRight, LogIn,
 } from "lucide-react";
 import { Image } from "@/components/ui/image";
+import DinoBackground from "@/components/DinoBackground";
 
 const LOGO = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/30f2f6cc9_logo.png";
 
@@ -91,7 +92,7 @@ function Footer() {
     },
   ];
   return (
-    <footer className="border-t border-border mt-8">
+    <footer className="border-t border-border mt-8 relative z-10">
       <div className="max-w-[1500px] mx-auto px-6 md:px-10 py-12 grid md:grid-cols-3 gap-10">
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -133,8 +134,9 @@ function Footer() {
 export default function PortalLayout() {
   return (
     <div className="min-h-screen bg-background grid-bg">
+      <DinoBackground />
       <Navbar />
-      <main className="pt-14">
+      <main className="pt-14 relative z-10">
         <Outlet />
       </main>
       <Footer />

@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import { useAuth } from "@/lib/AuthContext";
-import DinoBackground from "@/components/DinoBackground";
 import HeroDino from "@/components/HeroDino";
 
 const HERO_BG =
@@ -36,7 +35,6 @@ export default function Home() {
 
   return (
     <div className="relative z-10 px-6 md:px-10 py-10 md:py-14 max-w-[1500px] mx-auto">
-      <DinoBackground />
       {/* Hero card */}
       <div className="relative rounded-lg overflow-hidden glass-panel mb-6">
         <div className="absolute inset-0">
