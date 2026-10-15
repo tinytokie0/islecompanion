@@ -1,13 +1,44 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
-// Add page imports here
+import ProtectedRoute from '@/components/ProtectedRoute';
+// Auth pages
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
+import ForgotPassword from '@/pages/ForgotPassword';
+import ResetPassword from '@/pages/ResetPassword';
+// Portal layout + home
+import PortalLayout from '@/components/portal/PortalLayout';
 import Home from '@/pages/Home';
+// Existing feature components used as pages
+import Garage from '@/components/Garage';
+import LiveMap from '@/components/LiveMap';
+import SkinEditor from '@/components/SkinEditor';
+import HealthOverview from '@/components/HealthOverview';
+// Portal pages
+import YourDino from '@/pages/portal/YourDino';
+import Trading from '@/pages/portal/Trading';
+import DinoShop from '@/pages/portal/DinoShop';
+import SkinShop from '@/pages/portal/SkinShop';
+import Battlepass from '@/pages/portal/Battlepass';
+import Quests from '@/pages/portal/Quests';
+import Casino from '@/pages/portal/Casino';
+import Teleports from '@/pages/portal/Teleports';
+import Referral from '@/pages/portal/Referral';
+import Bounties from '@/pages/portal/Bounties';
+import Killfeed from '@/pages/portal/Killfeed';
+import Leaderboard from '@/pages/portal/Leaderboard';
+import Giveaways from '@/pages/portal/Giveaways';
+import Tickets from '@/pages/portal/Tickets';
+import Apply from '@/pages/portal/Apply';
+import DinoPacks from '@/pages/portal/DinoPacks';
+import RewardPacks from '@/pages/portal/RewardPacks';
+import CarcassDrop from '@/pages/portal/CarcassDrop';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -35,9 +66,44 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      {/* Add your page Route elements here */}
-      <Route path="/" element={<Home />} />
-      <Route path="*" element={<PageNotFound />} />
+      {/* Auth pages */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+
+      <Route element={<PortalLayout />}>
+        {/* Public pages */}
+        <Route path="/" element={<Home />} />
+        <Route path="/map" element={<LiveMap />} />
+        <Route path="/killfeed" element={<Killfeed />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/giveaways" element={<Giveaways />} />
+        <Route path="/tickets" element={<Tickets />} />
+        <Route path="/apply" element={<Apply />} />
+        <Route path="/growth" element={<HealthOverview />} />
+
+        {/* Member pages */}
+        <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+          <Route path="/me" element={<YourDino />} />
+          <Route path="/garage" element={<Garage />} />
+          <Route path="/skin" element={<SkinEditor />} />
+          <Route path="/trading" element={<Trading />} />
+          <Route path="/shop" element={<DinoShop />} />
+          <Route path="/skinshop" element={<SkinShop />} />
+          <Route path="/battlepass" element={<Battlepass />} />
+          <Route path="/quests" element={<Quests />} />
+          <Route path="/casino" element={<Casino />} />
+          <Route path="/teleport" element={<Teleports />} />
+          <Route path="/referral" element={<Referral />} />
+          <Route path="/bounties" element={<Bounties />} />
+          <Route path="/packs" element={<DinoPacks />} />
+          <Route path="/claim" element={<RewardPacks />} />
+          <Route path="/carcass" element={<CarcassDrop />} />
+        </Route>
+
+        <Route path="*" element={<PageNotFound />} />
+      </Route>
     </Routes>
   );
 };
