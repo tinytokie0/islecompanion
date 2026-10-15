@@ -1,20 +1,26 @@
 import React, { useState } from "react";
+import { Image } from "@/components/ui/image";
+
+const MAP_IMAGE_URL =
+  "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/ff34e4e59_generated_image.png";
 
 const BLIPS = [
-  { id: 1, x: 22, y: 30, type: "Carnotaurus", level: "Sub-Adult", threat: "high", color: "#ef4444" },
-  { id: 2, x: 45, y: 55, type: "Tyrannosaurus", level: "Adult", threat: "critical", color: "#dc2626" },
-  { id: 3, x: 68, y: 25, type: "Dakotaraptor", level: "Juvenile", threat: "medium", color: "#f59e0b" },
-  { id: 4, x: 35, y: 70, type: "Stegosaurus", level: "Adult", threat: "low", color: "#22c55e" },
-  { id: 5, x: 78, y: 60, type: "Acrocanthosaurus", level: "Sub-Adult", threat: "high", color: "#ef4444" },
-  { id: 6, x: 15, y: 50, type: "Pteranodon", level: "Adult", threat: "low", color: "#22c55e" },
-  { id: 7, x: 55, y: 40, type: "Deinosuchus", level: "Adult", threat: "critical", color: "#dc2626" },
-  { id: 8, x: 88, y: 38, type: "Dakotaraptor", level: "Sub-Adult", threat: "medium", color: "#f59e0b" },
+  { id: 1, x: 38, y: 22, type: "Carnotaurus", level: "Sub-Adult", threat: "high", color: "#ef4444" },
+  { id: 2, x: 55, y: 40, type: "Tyrannosaurus", level: "Adult", threat: "critical", color: "#dc2626" },
+  { id: 3, x: 68, y: 58, type: "Dakotaraptor", level: "Juvenile", threat: "medium", color: "#f59e0b" },
+  { id: 4, x: 28, y: 72, type: "Stegosaurus", level: "Adult", threat: "low", color: "#22c55e" },
+  { id: 5, x: 48, y: 60, type: "Acrocanthosaurus", level: "Sub-Adult", threat: "high", color: "#ef4444" },
+  { id: 6, x: 20, y: 45, type: "Pteranodon", level: "Adult", threat: "low", color: "#22c55e" },
+  { id: 7, x: 42, y: 82, type: "Deinosuchus", level: "Adult", threat: "critical", color: "#dc2626" },
+  { id: 8, x: 75, y: 30, type: "Dakotaraptor", level: "Sub-Adult", threat: "medium", color: "#f59e0b" },
 ];
 
 const ZONES = [
-  { name: "SKYSHARD ISLES", x: 20, y: 65 },
-  { name: "CRYSTAL BASIN", x: 55, y: 30 },
-  { name: "VOID RIDGE", x: 80, y: 55 },
+  { name: "NORTH BEACH", x: 52, y: 8 },
+  { name: "MOUNTAIN RIDGE", x: 55, y: 30 },
+  { name: "GREAT LAKE", x: 74, y: 50 },
+  { name: "SWAMP", x: 35, y: 82 },
+  { name: "RIVER DELTA", x: 82, y: 74 },
 ];
 
 export default function LiveMap() {
@@ -35,8 +41,8 @@ export default function LiveMap() {
             </h2>
           </div>
           <p className="font-mono text-xs text-muted-foreground max-w-md tracking-wide leading-relaxed">
-            Real-time spatial telemetry. Crystal blips pulse with creature
-            activity. Hover any contact for elevation and threat data.
+            Real-time spatial telemetry over the island. Crystal blips pulse
+            with creature activity. Hover any contact for elevation and threat data.
           </p>
         </div>
 
@@ -48,21 +54,23 @@ export default function LiveMap() {
             setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
           }}
         >
-          {/* Topographic grid */}
-          <div className="absolute inset-0 grid-bg" />
+          {/* Island satellite base */}
+          <Image
+            src={MAP_IMAGE_URL}
+            alt="The Isle island map"
+            className="absolute inset-0 w-full h-full"
+            fittingType="fill"
+          />
 
-          {/* Contour lines SVG */}
+          {/* Tactical tint overlays */}
+          <div className="absolute inset-0 bg-background/30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/40" />
+
+          {/* Tactical grid */}
+          <div className="absolute inset-0 grid-bg opacity-60" />
+
+          {/* Contour overlay */}
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 56" preserveAspectRatio="none">
-            <defs>
-              <radialGradient id="terrain1" cx="50%" cy="50%">
-                <stop offset="0%" stopColor="#67e8f9" stopOpacity="0.1" />
-                <stop offset="100%" stopColor="#67e8f9" stopOpacity="0" />
-              </radialGradient>
-            </defs>
-            {/* Water bodies */}
-            <path d="M 5 40 Q 15 35 25 42 Q 35 48 20 52 Q 8 50 5 40 Z" fill="#2e1065" opacity="0.5" />
-            <path d="M 70 15 Q 80 12 85 20 Q 88 28 75 25 Q 68 20 70 15 Z" fill="#2e1065" opacity="0.5" />
-            {/* Contour curves */}
             {[...Array(6)].map((_, i) => (
               <path
                 key={i}
@@ -70,29 +78,18 @@ export default function LiveMap() {
                 fill="none"
                 stroke="#67e8f9"
                 strokeWidth="0.15"
-                opacity={0.15 - i * 0.015}
+                opacity={0.12 - i * 0.012}
               />
             ))}
-            {/* Roads / paths */}
+            {/* Patrol route */}
             <path d="M 10 50 Q 30 40 50 45 T 90 35" fill="none" stroke="#a78bfa" strokeWidth="0.2" strokeDasharray="1 1" opacity="0.4" />
-            {/* Floating isles */}
-            {[
-              { cx: 22, cy: 30 },
-              { cx: 48, cy: 62 },
-              { cx: 82, cy: 48 },
-            ].map((p, i) => (
-              <g key={i} className="animate-breathe">
-                <path d={`M ${p.cx} ${p.cy - 3} L ${p.cx - 6} ${p.cy} L ${p.cx - 3} ${p.cy + 6} L ${p.cx + 4} ${p.cy + 5} L ${p.cx + 6} ${p.cy} Z`} fill="#3b2d63" opacity="0.8" />
-                <polygon points={`${p.cx},${p.cy - 7} ${p.cx + 2},${p.cy - 3} ${p.cx - 2},${p.cy - 3}`} fill="#67e8f9" opacity="0.9" />
-              </g>
-            ))}
           </svg>
 
           {/* Zone labels */}
           {ZONES.map((zone) => (
             <div
               key={zone.name}
-              className="absolute font-mono text-[10px] tracking-[0.25em] text-muted-foreground/60 pointer-events-none"
+              className="absolute font-mono text-[10px] tracking-[0.25em] text-foreground/80 pointer-events-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
               style={{ left: `${zone.x}%`, top: `${zone.y}%`, transform: "translate(-50%, -50%)" }}
             >
               {zone.name}
