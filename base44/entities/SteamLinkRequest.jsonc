@@ -1,0 +1,51 @@
+{
+  "name": "SteamLinkRequest",
+  "type": "object",
+  "properties": {
+    "nonce": {
+      "type": "string",
+      "description": "Single-use random code binding this request to one user"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Base44 user id that started this linking request"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this request expires"
+    },
+    "used": {
+      "type": "boolean",
+      "default": false,
+      "description": "Set once consumed by a verified callback"
+    }
+  },
+  "required": [
+    "nonce",
+    "user_id",
+    "expires_at"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

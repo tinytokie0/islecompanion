@@ -1,0 +1,48 @@
+{
+  "name": "SteamLink",
+  "type": "object",
+  "properties": {
+    "steam_id": {
+      "type": "string",
+      "description": "Verified 64-bit Steam ID (unique per account)"
+    },
+    "steam_persona": {
+      "type": "string",
+      "description": "Steam persona name at link time"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Base44 user id this Steam account is linked to"
+    },
+    "linked_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the link was created"
+    }
+  },
+  "required": [
+    "steam_id",
+    "user_id",
+    "linked_date"
+  ],
+  "rls": {
+    "read": {
+      "data.user_id": "{{user.id}}"
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
