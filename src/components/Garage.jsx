@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import SpecimenCard from "@/components/garage/SpecimenCard";
+import TradeBoard from "@/components/garage/TradeBoard";
+import { stageFor } from "@/lib/growthStages";
 
 const SPECIMENS = [
   {
@@ -48,9 +51,39 @@ const SPECIMENS = [
   },
 ];
 
+const INITIAL_OFFERS = [
+  { id: 1, from: "REDCLAW-77", wants: "CARNO-014", name: "Utahraptor", code: "UTAH-021", growth: 55 },
+  { id: 2, from: "NIGHTFALL", wants: "STEG-003", name: "Diabloceratops", code: "DIAB-008", growth: 40 },
+];
+
+const SILHOUETTE =
+  "M 30 120 Q 40 100 60 95 L 80 85 Q 100 75 120 80 L 140 70 Q 160 65 170 75 L 165 90 Q 155 95 145 100 L 135 110 Q 130 125 120 130 L 110 135 Q 95 140 80 138 L 65 145 Q 45 150 35 140 Z";
+
 export default function Garage() {
   const [selected, setSelected] = useState(0);
+  const [deployedCode, setDeployedCode] = useState("RAPT-007");
+  const [listedCodes, setListedCodes] = useState(["STEG-003"]);
+  const [offers, setOffers] = useState(INITIAL_OFFERS);
+
   const active = SPECIMENS[selected];
+  const { current, next } = stageFor(active.growth);
+  const isDeployed = deployedCode === active.code;
+  const isListed = listedCodes.includes(active.code);
+  const listedSpecs = SPECIMENS.filter((s) => listedCodes.includes(s.code));
+
+  const deploy = () => setDeployedCode(active.code);
+  const recall = () => setDeployedCode(null);
+  const toggleListed = () =>
+    setListedCodes((prev) =>
+      isListed ? prev.filter((c) => c !== active.code) : [...prev, active.code]
+    );
+  const acceptOffer = (id) => {
+    const offer = offers.find((o) => o.id === id);
+    setListedCodes((prev) => prev.filter((c) => c !== offer.wants));
+    setOffers((prev) => prev.filter((o) => o.id !== id));
+  };
+  const declineOffer = (id) => setOffers((prev) => prev.filter((o) => o.id !== id));
+  const withdraw = (code) => setListedCodes((prev) => prev.filter((c) => c !== code));
 
   return (
     <section id="garage" className="relative py-24 md:py-32 px-6 md:px-10 overflow-hidden">
@@ -74,8 +107,8 @@ export default function Garage() {
             </h2>
           </div>
           <p className="font-mono text-xs text-muted-foreground max-w-md tracking-wide leading-relaxed">
-            Your specimen collection, kept in the floating vaults. Each
-            creature carries its prime stats and growth telemetry. Select to inspect.
+            Your parked specimens, kept in the floating vaults. Deploy one to
+            the realm, track growth per creature, and trade in the board below.
           </p>
         </div>
 
@@ -91,7 +124,7 @@ export default function Garage() {
             {/* Silhouette */}
             <svg viewBox="0 0 200 200" className="relative w-3/4 h-3/4">
               <path
-                d="M 30 120 Q 40 100 60 95 L 80 85 Q 100 75 120 80 L 140 70 Q 160 65 170 75 L 165 90 Q 155 95 145 100 L 135 110 Q 130 125 120 130 L 110 135 Q 95 140 80 138 L 65 145 Q 45 150 35 140 Z"
+                d={SILHOUETTE}
                 fill={active.accent}
                 opacity="0.9"
                 className="animate-breathe"
@@ -110,6 +143,16 @@ export default function Garage() {
             <div className="absolute top-4 left-4 font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
               {active.code}
             </div>
+            {/* Status badge */}
+            <div
+              className={`absolute top-4 right-4 font-mono text-[9px] tracking-[0.2em] px-2 py-1 border ${
+                isDeployed
+                  ? "text-primary border-primary/50 bg-primary/10"
+                  : "text-muted-foreground border-border"
+              }`}
+            >
+              {isDeployed ? "● DEPLOYED" : "PARKED"}
+            </div>
           </div>
 
           {/* Specimen data */}
@@ -120,15 +163,18 @@ export default function Garage() {
             <h3 className="font-heading text-3xl md:text-4xl tracking-[0.05em] text-foreground mb-1">
               {active.name.toUpperCase()}
             </h3>
-            <div className="font-mono text-xs text-primary tracking-wide mb-8">
+            <div className="font-mono text-xs text-primary tracking-wide mb-6">
               BIOME: {active.biome} — PRIME: {active.prime}%
             </div>
 
-            {/* Growth bar */}
+            {/* Growth bar with stage */}
             <div className="mb-6">
               <div className="flex justify-between mb-2">
                 <span className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground">GROWTH</span>
-                <span className="font-mono text-[10px] text-primary">{active.growth}%</span>
+                <span className="font-mono text-[10px] text-primary">
+                  {active.growth}% — {current.name}
+                  {next ? ` → ${next.name} AT ${next.at}%` : ""}
+                </span>
               </div>
               <div className="h-1.5 bg-secondary overflow-hidden">
                 <div
@@ -158,46 +204,59 @@ export default function Garage() {
               ))}
             </div>
 
-            <button className="mt-8 font-mono text-[10px] tracking-[0.25em] border border-primary/40 text-primary px-6 py-3 hover:bg-primary/10 transition-colors w-full md:w-auto">
-              DEPLOY SPECIMEN →
-            </button>
+            {/* Actions: deploy/recall + trade */}
+            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+              {isDeployed ? (
+                <button
+                  onClick={recall}
+                  className="font-mono text-[10px] tracking-[0.25em] border border-primary/40 text-primary px-6 py-3 hover:bg-primary/10 transition-colors flex-1"
+                >
+                  ← RECALL TO VAULT
+                </button>
+              ) : (
+                <button
+                  onClick={deploy}
+                  className="font-mono text-[10px] tracking-[0.25em] border border-primary/40 text-primary px-6 py-3 hover:bg-primary/10 transition-colors flex-1"
+                >
+                  DEPLOY SPECIMEN →
+                </button>
+              )}
+              <button
+                onClick={toggleListed}
+                className={`font-mono text-[10px] tracking-[0.25em] border px-6 py-3 transition-colors flex-1 ${
+                  isListed
+                    ? "border-accent/60 text-accent hover:bg-accent/10"
+                    : "border-border text-muted-foreground hover:text-accent hover:border-accent/40"
+                }`}
+              >
+                {isListed ? "WITHDRAW FROM TRADE" : "LIST FOR TRADE"}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Horizontal specimen gallery */}
-        <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+        {/* Specimen gallery */}
+        <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2 mb-8">
           {SPECIMENS.map((spec, i) => (
-            <button
+            <SpecimenCard
               key={spec.code}
-              onClick={() => setSelected(i)}
-              className={`flex-shrink-0 w-44 md:w-52 glass-panel-light p-4 text-left transition-all duration-300 hover:scale-105 ${
-                selected === i ? "border-primary/60 ring-1 ring-primary/30" : ""
-              }`}
-            >
-              <div
-                className="w-full aspect-video mb-3 flex items-center justify-center relative overflow-hidden"
-                style={{ backgroundColor: `${spec.accent}11` }}
-              >
-                <svg viewBox="0 0 200 200" className="w-3/4 h-3/4">
-                  <path
-                    d="M 30 120 Q 40 100 60 95 L 80 85 Q 100 75 120 80 L 140 70 Q 160 65 170 75 L 165 90 Q 155 95 145 100 L 135 110 Q 130 125 120 130 L 110 135 Q 95 140 80 138 L 65 145 Q 45 150 35 140 Z"
-                    fill={spec.accent}
-                    opacity="0.8"
-                  />
-                </svg>
-                <div className="absolute bottom-1 right-1 font-mono text-[8px] text-muted-foreground">
-                  {spec.prime}%
-                </div>
-              </div>
-              <div className="font-mono text-xs text-foreground tracking-wide mb-1 truncate">
-                {spec.name}
-              </div>
-              <div className="font-mono text-[9px] text-muted-foreground tracking-wide">
-                {spec.code} — {spec.biome}
-              </div>
-            </button>
+              spec={spec}
+              selected={selected === i}
+              onSelect={() => setSelected(i)}
+              deployed={deployedCode === spec.code}
+              listed={listedCodes.includes(spec.code)}
+            />
           ))}
         </div>
+
+        {/* Trade board */}
+        <TradeBoard
+          offers={offers}
+          listedSpecs={listedSpecs}
+          onAccept={acceptOffer}
+          onDecline={declineOffer}
+          onWithdraw={withdraw}
+        />
       </div>
     </section>
   );
