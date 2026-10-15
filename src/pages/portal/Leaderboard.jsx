@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Trophy, Crown, Medal, Award } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
-import { BOARDS } from "@/lib/portalData";
+import { BOARDS, NESTING_GUIDE } from "@/lib/portalData";
+import { Egg, MapPin } from "lucide-react";
 
 const TABS = [
   { id: "growth", label: "GROWTH" },
   { id: "kills", label: "KILLS" },
   { id: "shards", label: "SHARDS" },
+  { id: "nesting", label: "NESTING" },
 ];
 
 const RANK_ICONS = [Crown, Medal, Award];
@@ -55,7 +57,13 @@ export default function Leaderboard() {
               </div>
               <div className="font-mono text-lg" style={{ color: RANK_COLORS[i] }}>
                 {row.value}
+                {board === "nesting" && " NESTS"}
               </div>
+              {board === "nesting" && row.nest && (
+                <div className="font-mono text-[9px] text-muted-foreground tracking-[0.1em] mt-2 leading-relaxed">
+                  {row.nest.toUpperCase()}
+                </div>
+              )}
             </div>
           );
         })}
@@ -72,15 +80,51 @@ export default function Leaderboard() {
               #{i + 1}
             </span>
             <span className="font-mono text-xs text-foreground flex-1">{row.name}</span>
+            {board === "nesting" && row.nest && (
+              <span className="font-mono text-[10px] text-muted-foreground tracking-[0.1em] flex-1 hidden lg:block">
+                {row.nest.toUpperCase()}
+              </span>
+            )}
             <span className="font-mono text-[10px] text-muted-foreground tracking-[0.15em] hidden sm:block">
               {row.dino.toUpperCase()}
             </span>
             <span className={`font-mono text-xs w-24 text-right ${i < 3 ? "" : "text-muted-foreground"}`} style={i < 3 ? { color: RANK_COLORS[i] } : {}}>
               {row.value}
+              {board === "nesting" && " NESTS"}
             </span>
           </div>
         ))}
       </div>
+
+      {/* Creature-type nesting guide */}
+      {board === "nesting" && (
+        <div className="mt-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Egg size={14} className="text-accent" />
+            <span className="font-mono text-[10px] tracking-[0.25em] text-accent">
+              NESTING BY CREATURE TYPE
+            </span>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {NESTING_GUIDE.map((g) => (
+              <div key={g.species} className="glass-panel rounded-lg p-5">
+                <div className="font-heading text-base tracking-[0.05em] text-foreground mb-3">
+                  {g.species}
+                </div>
+                <div className="flex flex-col gap-1.5 font-mono text-[10px] text-muted-foreground leading-relaxed">
+                  <span><span className="text-accent">CLUTCH:</span> {g.clutch}</span>
+                  <span><span className="text-accent">NEST:</span> {g.nest}</span>
+                  <span className="flex items-center gap-1.5">
+                    <MapPin size={10} className="text-accent shrink-0" />
+                    {g.grounds}
+                  </span>
+                  <span><span className="text-accent">CARE:</span> {g.care}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </PageShell>
   );
 }

@@ -64,6 +64,16 @@ export const BOARDS = {
     { name: "MOSSBACK", dino: "Stegosaurus", value: 30 },
     { name: "PALEHIDE", dino: "Diabloceratops", value: 18 },
   ],
+  nesting: [
+    { name: "APEX-01", dino: "Deinosuchus", value: "12", nest: "Mire Delta — 24-egg mound, unattended" },
+    { name: "NIGHTFALL", dino: "Dakotaraptor", value: "8", nest: "Skyshard Isles — 7 eggs, brooding" },
+    { name: "REDCLAW-77", dino: "Tyrannosaurus", value: "9", nest: "Void Ridge — 5 eggs, guarding" },
+    { name: "MOSSBACK", dino: "Stegosaurus", value: "6", nest: "Crystal Basin — 8-egg ditch nest" },
+    { name: "GRAVEHOWL", dino: "Tyrannosaurus", value: "7", nest: "Void Ridge — 4 eggs, guarding" },
+    { name: "EMBERWING", dino: "Acrocanthosaurus", value: "5", nest: "Void Ridge — 3-egg mound" },
+    { name: "VOLT", dino: "Carnotaurus", value: "4", nest: "Crystal Basin — 2 eggs, colonial" },
+    { name: "PALEHIDE", dino: "Diabloceratops", value: "3", nest: "Crystal Basin — 3 eggs, herd nest" },
+  ],
   shards: [
     { name: "REDCLAW-77", dino: "Trader", value: "48,200" },
     { name: "NIGHTFALL", dino: "Trader", value: "36,900" },
@@ -75,6 +85,19 @@ export const BOARDS = {
     { name: "MOSSBACK", dino: "Trader", value: "7,250" },
   ],
 };
+
+export const NESTING_GUIDE = [
+  { species: "Tyrannosaurus", clutch: "4–6 eggs", nest: "Scraped ground nest", grounds: "Void Ridge", care: "High — guards until sub-adult" },
+  { species: "Deinosuchus", clutch: "20–30 eggs", nest: "Buried sand mound", grounds: "Mire Delta", care: "None — eggs left to warm" },
+  { species: "Carnotaurus", clutch: "1–2 eggs", nest: "Colonial ground nest", grounds: "Crystal Basin", care: "Moderate — rots nearby" },
+  { species: "Dakotaraptor", clutch: "6–8 eggs", nest: "Brooded mound nest", grounds: "Skyshard Isles", care: "High — constant brooding" },
+  { species: "Stegosaurus", clutch: "6–10 eggs", nest: "Ditch nest", grounds: "Crystal Basin", care: "Low — checks daily" },
+  { species: "Acrocanthosaurus", clutch: "3–5 eggs", nest: "Vegetation mound", grounds: "Void Ridge", care: "High — defends the mound" },
+  { species: "Diabloceratops", clutch: "2–4 eggs", nest: "Crater colonial nest", grounds: "Crystal Basin", care: "Herd — defended as a group" },
+  { species: "Utahraptor", clutch: "5–7 eggs", nest: "Burrow nest", grounds: "Void Ridge", care: "Pack — shared guarding" },
+  { species: "Pteranodon", clutch: "1–3 eggs", nest: "Cliff ledge scrape", grounds: "Skyshard Isles", care: "Moderate — rotated shifts" },
+  { species: "Hypsilophodon", clutch: "8–12 eggs", nest: "Burrow nest", grounds: "South Plains", care: "Low — abandons at hatching" },
+];
 
 export const INITIAL_BOUNTIES = [
   { id: 1, target: "GRAVELORD", amount: 3000, placer: "REDCLAW-77" },
