@@ -103,10 +103,10 @@ export default function SkinEditor() {
               {/* Crystal shards */}
               {pattern === "crystal" && (
                 <g>
-                  <polygon points="100,55 108,72 92,72" fill="#e0f2fe" className="animate-crystal" />
-                  <polygon points="68,95 76,112 60,112" fill="#67e8f9" className="animate-crystal" style={{ animationDelay: "1s" }} />
+                  <polygon points="100,55 108,72 92,72" fill="#e6b84c" className="animate-crystal" />
+                  <polygon points="68,95 76,112 60,112" fill="#c98a5e" className="animate-crystal" style={{ animationDelay: "1s" }} />
                   <polygon points="132,100 140,117 124,117" fill="#c4b5fd" className="animate-crystal" style={{ animationDelay: "2s" }} />
-                  <polygon points="40,110 47,126 33,126" fill="#a5f3fc" className="animate-crystal" style={{ animationDelay: "0.5s" }} />
+                  <polygon points="40,110 47,126 33,126" fill="#f0d49a" className="animate-crystal" style={{ animationDelay: "0.5s" }} />
                 </g>
               )}
             </svg>

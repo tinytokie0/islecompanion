@@ -78,7 +78,7 @@ const STAGES = [
 ];
 
 const TREND_SERIES = [
-  { key: "health", label: "HEALTH", color: "#67e8f9", gradId: "healthGrad" },
+  { key: "health", label: "HEALTH", color: "#e6b84c", gradId: "healthGrad" },
   { key: "stamina", label: "STAMINA", color: "#a78bfa", gradId: "staminaGrad" },
   { key: "hunger", label: "HUNGER", color: "#ef4444", gradId: "hungerGrad" },
 ];
@@ -217,8 +217,8 @@ export default function HealthOverview() {
                 <AreaChart data={range.data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                   <defs>
                     <linearGradient id="growthGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#67e8f9" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="#67e8f9" stopOpacity={0} />
+                      <stop offset="0%" stopColor="#e6b84c" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="#e6b84c" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid stroke="rgba(167,139,250,0.08)" vertical={false} />
@@ -236,11 +236,11 @@ export default function HealthOverview() {
                   />
                   <ReferenceLine
                     y={100}
-                    stroke="#67e8f9"
+                    stroke="#e6b84c"
                     strokeDasharray="3 3"
-                    label={{ value: "PRIME", fill: "#67e8f9", fontSize: 8, fontFamily: "JetBrains Mono", position: "insideTopRight" }}
+                    label={{ value: "PRIME", fill: "#e6b84c", fontSize: 8, fontFamily: "JetBrains Mono", position: "insideTopRight" }}
                   />
-                  <Area type="monotone" dataKey="value" stroke="#67e8f9" strokeWidth={2} fill="url(#growthGrad)" />
+                  <Area type="monotone" dataKey="value" stroke="#e6b84c" strokeWidth={2} fill="url(#growthGrad)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -283,7 +283,7 @@ export default function HealthOverview() {
                       className="h-full transition-all duration-700"
                       style={{
                         width: GROWTH >= end ? "100%" : GROWTH > s.at ? `${((GROWTH - s.at) / (end - s.at)) * 100}%` : "0%",
-                        backgroundColor: reached ? "#67e8f9" : "#a78bfa",
+                        backgroundColor: reached ? "#e6b84c" : "#a78bfa",
                       }}
                     />
                   </div>

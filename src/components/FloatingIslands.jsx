@@ -16,8 +16,8 @@ function Island({ w }) {
           <stop offset="100%" stopColor="#171233" stopOpacity="0.7" />
         </linearGradient>
         <linearGradient id="crysGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#e0f2fe" />
-          <stop offset="100%" stopColor="#67e8f9" />
+          <stop offset="0%" stopColor="#f7e0a8" />
+          <stop offset="100%" stopColor="#e6b84c" />
         </linearGradient>
       </defs>
       {/* Stalactite base */}
@@ -30,7 +30,7 @@ function Island({ w }) {
       <polygon points="68,12 74,24 62,24" fill="url(#crysGrad)" className="animate-crystal" style={{ animationDelay: "1s" }} />
       <polygon points="34,14 40,25 28,25" fill="url(#crysGrad)" className="animate-crystal" style={{ animationDelay: "2s" }} />
       {/* Glow base */}
-      <ellipse cx="50" cy="60" rx="18" ry="30" fill="#67e8f9" opacity="0.06" />
+      <ellipse cx="50" cy="60" rx="18" ry="30" fill="#c98a5e" opacity="0.06" />
     </svg>
   );
 }

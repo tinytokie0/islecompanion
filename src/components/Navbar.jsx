@@ -32,8 +32,8 @@ export default function Navbar() {
           <svg className="w-8 h-8" viewBox="0 0 40 40">
             <defs>
               <linearGradient id="navCrys" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#e0f2fe" />
-                <stop offset="100%" stopColor="#67e8f9" />
+                <stop offset="0%" stopColor="#f7e0a8" />
+                <stop offset="100%" stopColor="#e6b84c" />
               </linearGradient>
             </defs>
             <polygon points="20,3 33,14 27,37 13,37 7,14" fill="url(#navCrys)" className="animate-crystal" />

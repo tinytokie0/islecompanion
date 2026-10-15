@@ -4,24 +4,24 @@
 
 @layer base {
   :root {
-    --background: 248 40% 5%;
-    --foreground: 255 30% 92%;
-    --card: 248 35% 8%;
-    --card-foreground: 255 30% 92%;
-    --popover: 248 35% 8%;
-    --popover-foreground: 255 30% 92%;
+    --background: 224 45% 6%;
+    --foreground: 40 30% 92%;
+    --card: 224 40% 9%;
+    --card-foreground: 40 30% 92%;
+    --popover: 224 40% 9%;
+    --popover-foreground: 40 30% 92%;
     --primary: 262 83% 70%;
-    --primary-foreground: 248 40% 5%;
-    --secondary: 250 25% 14%;
-    --secondary-foreground: 255 30% 92%;
-    --muted: 250 20% 16%;
-    --muted-foreground: 255 12% 58%;
-    --accent: 190 85% 65%;
-    --accent-foreground: 248 40% 5%;
+    --primary-foreground: 224 45% 6%;
+    --secondary: 224 30% 13%;
+    --secondary-foreground: 40 30% 92%;
+    --muted: 224 25% 16%;
+    --muted-foreground: 228 12% 58%;
+    --accent: 43 80% 62%;
+    --accent-foreground: 224 45% 6%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 255 25% 20%;
-    --input: 255 25% 20%;
+    --border: 222 28% 22%;
+    --input: 222 28% 22%;
     --ring: 262 83% 70%;
     --radius: 0.25rem;
     --font-heading: 'Cinzel', ui-serif, Georgia, serif;
@@ -38,7 +38,7 @@
 
   body {
     @apply bg-background text-foreground font-body;
-    background-color: #0B0A1A;
+    background-color: #060B1E;
   }
 }
 
@@ -48,7 +48,7 @@
   .font-mono { font-family: var(--font-mono); }
 
   .text-glow {
-    text-shadow: 0 0 20px rgba(167, 139, 250, 0.5), 0 0 40px rgba(103, 232, 249, 0.25);
+    text-shadow: 0 0 20px rgba(167, 139, 250, 0.5), 0 0 40px rgba(230, 184, 76, 0.25);
   }
 
   .glass-panel {
@@ -66,7 +66,7 @@
   }
 
   .scanline {
-    background: linear-gradient(180deg, transparent 0%, rgba(103, 232, 249, 0.08) 50%, transparent 100%);
+    background: linear-gradient(180deg, transparent 0%, rgba(201, 138, 94, 0.08) 50%, transparent 100%);
   }
 
   .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -118,7 +118,7 @@
 .animate-float-slow { animation: float-slow 9s ease-in-out infinite; }
 
 @keyframes crystal-shimmer {
-  0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 6px rgba(103, 232, 249, 0.4)); }
-  50% { opacity: 1; filter: drop-shadow(0 0 14px rgba(103, 232, 249, 0.8)); }
+  0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 6px rgba(230, 184, 76, 0.4)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 14px rgba(230, 184, 76, 0.8)); }
 }
 .animate-crystal { animation: crystal-shimmer 3s ease-in-out infinite; }

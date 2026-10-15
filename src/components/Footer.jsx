@@ -8,7 +8,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <svg className="w-8 h-8" viewBox="0 0 40 40">
-                <polygon points="20,3 33,14 27,37 13,37 7,14" fill="#67e8f9" className="animate-crystal" />
+                <polygon points="20,3 33,14 27,37 13,37 7,14" fill="#e6b84c" className="animate-crystal" />
               </svg>
               <span className="font-heading text-sm tracking-[0.25em] text-foreground">
                 THE HAVEN
