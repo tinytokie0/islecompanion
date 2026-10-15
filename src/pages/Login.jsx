@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
+import SteamIcon from "@/components/SteamIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
 
 export default function Login() {
@@ -36,6 +37,26 @@ export default function Login() {
     base44.auth.loginWithProvider("google", returnTo);
   };
 
+  // Steam uses OpenID account linking (via steamLinkStart), which requires an
+  // active session — it is not a standalone sign-in method on this platform.
+  const handleSteam = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const authed = await base44.auth.isAuthenticated();
+      if (!authed) {
+        setError("Sign in with email or Google first, then link Steam from your profile.");
+        return;
+      }
+      const res = await base44.functions.invoke("steamLinkStart", {});
+      window.location.href = res.data.redirect_url;
+    } catch (err) {
+      setError(err.message || "Could not start Steam sign-in");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthLayout
       icon={LogIn}
@@ -53,14 +74,29 @@ export default function Login() {
         </>
       }
     >
-      <Button
-        variant="outline"
-        className="w-full h-12 text-sm font-medium mb-6"
-        onClick={handleGoogle}
-      >
-        <GoogleIcon className="w-5 h-5 mr-2" />
-        Continue with Google
-      </Button>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+        <Button
+          variant="outline"
+          className="w-full h-12 text-sm font-medium"
+          onClick={handleGoogle}
+        >
+          <GoogleIcon className="w-5 h-5 mr-2" />
+          Continue with Google
+        </Button>
+        <Button
+          variant="outline"
+          className="w-full h-12 text-sm font-medium"
+          onClick={handleSteam}
+          disabled={loading}
+        >
+          {loading ? (
+            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+          ) : (
+            <SteamIcon className="w-5 h-5 mr-2" />
+          )}
+          Sign in with Steam
+        </Button>
+      </div>
 
       <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">
