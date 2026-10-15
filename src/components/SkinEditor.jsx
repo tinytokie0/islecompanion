@@ -18,22 +18,31 @@ const SWATCHES = [
 export default function SkinEditor() {
   const [pattern, setPattern] = useState("default");
   const [color, setColor] = useState(SWATCHES[0]);
+  const [hexText, setHexText] = useState(SWATCHES[0]);
 
-  const getRenderColor = () => {
-    if (pattern === "albino") return "#e8e0d0";
-    if (pattern === "melanistic") return "#1a1a1a";
-    if (pattern === "leucistic") return "#c8c0b0";
-    if (pattern === "erythristic") return "#a04030";
-    if (pattern === "crystal") return "#67e8f9";
-    return color;
+  // Accepts any 6-digit hex (with or without #)
+  const applyHex = (value) => {
+    setHexText(value);
+    const v = value.trim().replace("#", "");
+    if (/^[0-9a-fA-F]{6}$/.test(v)) setColor("#" + v.toLowerCase());
   };
 
+  // The picked color always drives the render — patterns shape markings, not pigment
+  const getRenderColor = () => color;
+
+  // Derive a contrast stripe accent from the chosen base color
   const getAccentColor = () => {
-    if (pattern === "albino") return "#ff5555";
-    if (pattern === "melanistic") return "#444444";
-    if (pattern === "leucistic") return "#888888";
-    if (pattern === "crystal") return "#e0f2fe";
-    return color;
+    const num = parseInt(color.replace("#", ""), 16);
+    const r = (num >> 16) & 255, g = (num >> 8) & 255, b = num & 255;
+    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+    const amt = lum > 128 ? -60 : 60;
+    const clamp = (v) => Math.max(0, Math.min(255, v + amt));
+    return (
+      "#" +
+      [clamp(r), clamp(g), clamp(b)]
+        .map((v) => v.toString(16).padStart(2, "0"))
+        .join("")
+    );
   };
 
   return (
@@ -157,7 +166,7 @@ export default function SkinEditor() {
                 {SWATCHES.map((sw) => (
                   <button
                     key={sw}
-                    onClick={() => setColor(sw)}
+                    onClick={() => { setColor(sw); setHexText(sw); }}
                     className={`aspect-square border-2 transition-all duration-200 hover:scale-110 ${
                       color === sw ? "border-primary scale-110" : "border-transparent"
                     }`}
@@ -169,14 +178,20 @@ export default function SkinEditor() {
                 <input
                   type="color"
                   value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="w-12 h-12 bg-transparent border border-border cursor-pointer"
+                  onChange={(e) => { setColor(e.target.value); setHexText(e.target.value); }}
+                  className="w-14 h-14 bg-transparent border border-border cursor-pointer p-1"
                 />
                 <div className="flex-1">
                   <div className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground mb-1">
-                    CUSTOM HUE
+                    ANY HEX CODE
                   </div>
-                  <div className="font-mono text-xs text-foreground">{color.toUpperCase()}</div>
+                  <input
+                    type="text"
+                    value={hexText}
+                    onChange={(e) => applyHex(e.target.value)}
+                    placeholder="#6b4423"
+                    className="w-full bg-secondary border border-border font-mono text-xs text-foreground px-3 py-2 outline-none focus:border-primary/60"
+                  />
                 </div>
               </div>
             </div>
