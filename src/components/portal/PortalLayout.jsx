@@ -57,6 +57,15 @@ function Navbar() {
             </Link>
           ))}
         </nav>
+        {/* Steam */}
+        <a
+          href="https://store.steampowered.com/app/376210/The_Isle/"
+          target="_blank"
+          rel="noreferrer"
+          className="shrink-0 flex items-center gap-1.5 font-mono text-[10px] tracking-[0.1em] px-3 py-2 rounded-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          STEAM
+        </a>
         {/* Sign in */}
         <Link
           to="/login"
