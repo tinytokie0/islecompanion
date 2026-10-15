@@ -6,9 +6,14 @@ import {
 } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import { useAuth } from "@/lib/AuthContext";
+import DinoBackground from "@/components/DinoBackground";
+import HeroDino from "@/components/HeroDino";
 
 const HERO_BG =
-  "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/dfc271e85_generated_image.png";
+  "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/046e1d3f5_79baba85-cefc-4a35-8c70-bc181598d114.png";
+
+const RAPTOR_STRIP =
+  "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/834bf9921_generated_image.png";
 
 const FEATURES = [
   { icon: Sparkles, title: "Your dino", desc: "See your current dinosaur with skin, stats and prime status.", to: "/me" },
@@ -30,12 +35,13 @@ export default function Home() {
   const [bannerOpen, setBannerOpen] = useState(true);
 
   return (
-    <div className="px-6 md:px-10 py-10 md:py-14 max-w-[1500px] mx-auto">
+    <div className="relative z-10 px-6 md:px-10 py-10 md:py-14 max-w-[1500px] mx-auto">
+      <DinoBackground />
       {/* Hero card */}
       <div className="relative rounded-lg overflow-hidden glass-panel mb-6">
         <div className="absolute inset-0">
-          <Image src={HERO_BG} alt="" className="w-full h-full" fittingType="fill" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background/30" />
+          <Image src={HERO_BG} alt="" className="w-full h-full animate-ken-burns" fittingType="fill" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-background/10" />
         </div>
         <div className="relative p-8 md:p-14 max-w-2xl">
           <span className="font-mono text-[11px] tracking-[0.3em] text-accent mb-4 block">
@@ -55,6 +61,22 @@ export default function Home() {
             <LogIn size={14} />
             {isAuthenticated ? "OPEN GARAGE" : "SIGN IN"}
           </Link>
+        </div>
+        {/* Bobbing T-rex illustration */}
+        <HeroDino />
+      </div>
+
+      {/* Raptor pack illustration strip */}
+      <div className="relative rounded-lg overflow-hidden glass-panel mb-6 h-40 md:h-56">
+        <Image
+          src={RAPTOR_STRIP}
+          alt="A pack of realistic velociraptors in the misty jungle"
+          className="absolute inset-0 w-full h-full"
+          fittingType="fill"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+        <div className="absolute bottom-4 left-6 font-mono text-[10px] tracking-[0.3em] text-accent">
+          THE VALLEY PACK ROAMS
         </div>
       </div>
 

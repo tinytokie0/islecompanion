@@ -122,3 +122,39 @@
   50% { opacity: 1; filter: drop-shadow(0 0 14px rgba(230, 184, 76, 0.8)); }
 }
 .animate-crystal { animation: crystal-shimmer 3s ease-in-out infinite; }
+
+@keyframes fly-across {
+  0% { transform: translateX(-18vw) translateY(0); }
+  50% { transform: translateX(46vw) translateY(-28px); }
+  100% { transform: translateX(112vw) translateY(0); }
+}
+.animate-fly-1 { animation: fly-across 42s linear infinite; }
+.animate-fly-2 { animation: fly-across 55s linear infinite; animation-delay: -18s; }
+.animate-fly-3 { animation: fly-across 68s linear infinite; animation-delay: -36s; }
+
+@keyframes wing-flap {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.5); }
+}
+.animate-flap { animation: wing-flap 1.6s ease-in-out infinite; transform-origin: center; }
+
+@keyframes firefly-float {
+  0%, 100% { transform: translate(0, 0); opacity: 0.1; }
+  30% { opacity: 0.9; }
+  50% { transform: translate(16px, -22px); opacity: 0.35; }
+  75% { opacity: 0.8; }
+}
+.animate-firefly { animation: firefly-float 7s ease-in-out infinite; }
+.animate-firefly-slow { animation: firefly-float 11s ease-in-out infinite; animation-delay: -4s; }
+
+@keyframes ken-burns {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
+.animate-ken-burns { animation: ken-burns 24s ease-in-out infinite; }
+
+@keyframes dino-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(-1.2deg); }
+}
+.animate-dino-bob { animation: dino-bob 5s ease-in-out infinite; }
