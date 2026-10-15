@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -39,6 +39,13 @@ import Apply from '@/pages/portal/Apply';
 import DinoPacks from '@/pages/portal/DinoPacks';
 import RewardPacks from '@/pages/portal/RewardPacks';
 import CarcassDrop from '@/pages/portal/CarcassDrop';
+
+// Sends signed-out visitors to the sign-in page, remembering where they
+// were headed so they land back on it (e.g. the garage) after logging in.
+const LoginRedirect = () => {
+  const { pathname } = useLocation();
+  return <Navigate to={`/login?returnTo=${encodeURIComponent(pathname)}`} replace />;
+};
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -84,7 +91,7 @@ const AuthenticatedApp = () => {
         <Route path="/growth" element={<HealthOverview />} />
 
         {/* Member pages */}
-        <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+        <Route element={<ProtectedRoute unauthenticatedElement={<LoginRedirect />} />}>
           <Route path="/me" element={<YourDino />} />
           <Route path="/garage" element={<Garage />} />
           <Route path="/skin" element={<SkinEditor />} />
