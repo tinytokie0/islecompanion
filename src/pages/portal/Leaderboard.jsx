@@ -1,130 +1,139 @@
 import React, { useState } from "react";
-import { Trophy, Crown, Medal, Award } from "lucide-react";
+import { Swords, Percent, Skull, Egg } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
-import { BOARDS, NESTING_GUIDE } from "@/lib/portalData";
-import { Egg, MapPin } from "lucide-react";
+import PodiumCard from "@/components/leaderboard/PodiumCard";
+import LeaderRow from "@/components/leaderboard/LeaderRow";
+import { ISLE_PLAYERS, ISLE_TOTALS } from "@/lib/leaderboardData";
 
-const TABS = [
-  { id: "growth", label: "GROWTH" },
-  { id: "kills", label: "KILLS" },
-  { id: "shards", label: "SHARDS" },
-  { id: "nesting", label: "NESTING" },
+const BOARDS = [
+  {
+    id: "kills",
+    label: "Kills",
+    icon: Swords,
+    unit: "KILLS",
+    desc: "Most confirmed kills on the server.",
+    value: (p) => p.kills,
+    fmt: (v) => `${v}`,
+    chips: (p) => [[`${p.deaths}`, "D"], [p.kd.toFixed(2), "K/D"], [`${p.nests}`, "N"]],
+    total: (t) => [`${t.kills}`, "kills counted"],
+  },
+  {
+    id: "kd",
+    label: "K/D",
+    icon: Percent,
+    unit: "K/D",
+    desc: "Best kill to death ratio on the server.",
+    value: (p) => p.kd,
+    fmt: (v) => v.toFixed(2),
+    chips: (p) => [[`${p.kills}`, "K"], [`${p.deaths}`, "D"], [`${p.nests}`, "N"]],
+    total: (t) => [t.kd.toFixed(2), "server K/D"],
+  },
+  {
+    id: "deaths",
+    label: "Most Deaths",
+    icon: Skull,
+    unit: "DEATHS",
+    desc: "Players who have fallen the most on the server.",
+    value: (p) => p.deaths,
+    fmt: (v) => `${v}`,
+    chips: (p) => [[`${p.kills}`, "K"], [p.kd.toFixed(2), "K/D"], [`${p.nests}`, "N"]],
+    total: (t) => [`${t.deaths}`, "deaths counted"],
+  },
+  {
+    id: "nesting",
+    label: "Nesting",
+    icon: Egg,
+    unit: "NESTS",
+    desc: "Most nests hatched on the server.",
+    value: (p) => p.nests,
+    fmt: (v) => `${v}`,
+    chips: (p) => [[`${p.kills}`, "K"], [`${p.deaths}`, "D"], [p.kd.toFixed(2), "K/D"]],
+    total: (t) => [`${t.nests}`, "nests hatched"],
+  },
 ];
 
-const RANK_ICONS = [Crown, Medal, Award];
-const RANK_COLORS = ["#e6b84c", "#c98a5e", "#a78bfa"];
-
 export default function Leaderboard() {
-  const [board, setBoard] = useState("growth");
-  const rows = BOARDS[board];
+  const [boardId, setBoardId] = useState("kills");
+  const board = BOARDS.find((b) => b.id === boardId);
+  const BoardIcon = board.icon;
+
+  const rows = [...ISLE_PLAYERS].sort((a, b) => board.value(b) - board.value(a));
+  const max = rows.length ? board.value(rows[0]) : 1;
+  const [total, totalLabel] = board.total(ISLE_TOTALS);
 
   return (
     <PageShell
       kicker="HALL OF FANGS"
       title="LEADERBOARD"
-      sub="The fiercest, fastest and wealthiest players on the island this season."
+      sub="Kills, K/D, deaths and nesting across the server."
     >
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setBoard(t.id)}
-            className={`font-mono text-[10px] tracking-[0.2em] px-5 py-2 rounded-sm border transition-colors ${
-              board === t.id
-                ? "bg-primary text-primary-foreground border-primary"
-                : "text-muted-foreground border-border hover:text-foreground"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Podium */}
-      <div className="grid sm:grid-cols-3 gap-4 mb-6">
-        {rows.slice(0, 3).map((row, i) => {
-          const Icon = RANK_ICONS[i];
+      {/* Board tabs */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {BOARDS.map((b) => {
+          const Icon = b.icon;
           return (
-            <div
-              key={row.name}
-              className={`glass-panel rounded-lg p-6 text-center ${i === 0 ? "sm:order-2 border-accent/40" : i === 1 ? "sm:order-1" : "sm:order-3"}`}
+            <button
+              key={b.id}
+              onClick={() => setBoardId(b.id)}
+              className={`flex items-center gap-2 font-mono text-[10px] tracking-[0.15em] px-4 py-2 rounded-sm border transition-colors ${
+                b.id === boardId
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "text-muted-foreground border-border hover:text-foreground"
+              }`}
             >
-              <Icon size={22} style={{ color: RANK_COLORS[i] }} className="mx-auto mb-3" />
-              <div className="font-heading text-xl tracking-[0.08em] text-foreground">{row.name}</div>
-              <div className="font-mono text-[10px] text-muted-foreground tracking-[0.15em] mb-2">
-                {row.dino.toUpperCase()}
-              </div>
-              <div className="font-mono text-lg" style={{ color: RANK_COLORS[i] }}>
-                {row.value}
-                {board === "nesting" && " NESTS"}
-              </div>
-              {board === "nesting" && row.nest && (
-                <div className="font-mono text-[9px] text-muted-foreground tracking-[0.1em] mt-2 leading-relaxed">
-                  {row.nest.toUpperCase()}
-                </div>
-              )}
-            </div>
+              <Icon size={13} />
+              {b.label.toUpperCase()}
+            </button>
           );
         })}
       </div>
 
-      {/* Full table */}
-      <div className="glass-panel rounded-lg divide-y divide-border/60">
-        {rows.map((row, i) => (
-          <div key={row.name} className="px-5 py-3.5 flex items-center gap-4">
-            <span
-              className={`font-mono text-xs w-8 ${i < 3 ? "" : "text-muted-foreground"}`}
-              style={i < 3 ? { color: RANK_COLORS[i] } : {}}
-            >
-              #{i + 1}
-            </span>
-            <span className="font-mono text-xs text-foreground flex-1">{row.name}</span>
-            {board === "nesting" && row.nest && (
-              <span className="font-mono text-[10px] text-muted-foreground tracking-[0.1em] flex-1 hidden lg:block">
-                {row.nest.toUpperCase()}
-              </span>
-            )}
-            <span className="font-mono text-[10px] text-muted-foreground tracking-[0.15em] hidden sm:block">
-              {row.dino.toUpperCase()}
-            </span>
-            <span className={`font-mono text-xs w-24 text-right ${i < 3 ? "" : "text-muted-foreground"}`} style={i < 3 ? { color: RANK_COLORS[i] } : {}}>
-              {row.value}
-              {board === "nesting" && " NESTS"}
-            </span>
+      {/* Summary banner */}
+      <div className="glass-panel rounded-lg p-6 flex items-center gap-4 mb-6">
+        <span className="w-11 h-11 rounded-md border border-primary/40 bg-primary/10 flex items-center justify-center text-primary shrink-0">
+          <BoardIcon size={20} />
+        </span>
+        <div>
+          <div className="font-heading text-lg tracking-[0.08em] text-foreground">
+            {board.label}
           </div>
+          <div className="font-mono text-[11px] text-muted-foreground">{board.desc}</div>
+        </div>
+        <div className="ml-auto text-right">
+          <span className="font-heading text-4xl text-accent text-glow">{total}</span>
+          <span className="font-mono text-[10px] text-muted-foreground ml-2">{totalLabel}</span>
+        </div>
+      </div>
+
+      {/* Podium */}
+      <div className="grid sm:grid-cols-3 gap-4 mb-6">
+        {rows.slice(0, 3).map((p, i) => (
+          <PodiumCard
+            key={p.name}
+            player={p}
+            rank={i + 1}
+            value={board.fmt(board.value(p))}
+            unit={board.unit}
+            max={max}
+            chips={board.chips(p)}
+          />
         ))}
       </div>
 
-      {/* Creature-type nesting guide */}
-      {board === "nesting" && (
-        <div className="mt-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Egg size={14} className="text-accent" />
-            <span className="font-mono text-[10px] tracking-[0.25em] text-accent">
-              NESTING BY CREATURE TYPE
-            </span>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {NESTING_GUIDE.map((g) => (
-              <div key={g.species} className="glass-panel rounded-lg p-5">
-                <div className="font-heading text-base tracking-[0.05em] text-foreground mb-3">
-                  {g.species}
-                </div>
-                <div className="flex flex-col gap-1.5 font-mono text-[10px] text-muted-foreground leading-relaxed">
-                  <span><span className="text-accent">CLUTCH:</span> {g.clutch}</span>
-                  <span><span className="text-accent">NEST:</span> {g.nest}</span>
-                  <span className="flex items-center gap-1.5">
-                    <MapPin size={10} className="text-accent shrink-0" />
-                    {g.grounds}
-                  </span>
-                  <span><span className="text-accent">CARE:</span> {g.care}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Full table */}
+      <div className="glass-panel rounded-lg divide-y divide-border/60">
+        {rows.slice(3).map((p, i) => (
+          <LeaderRow
+            key={p.name}
+            player={p}
+            rank={i + 4}
+            value={board.fmt(board.value(p))}
+            unit={board.unit}
+            progress={Math.max(4, (board.value(p) / max) * 100)}
+            chips={board.chips(p)}
+          />
+        ))}
+      </div>
     </PageShell>
   );
 }
