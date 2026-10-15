@@ -15,8 +15,8 @@ export default function Footer() {
               </span>
             </div>
             <p className="font-mono text-[10px] text-muted-foreground tracking-wide leading-relaxed max-w-xs">
-              Apex telemetry suite. A biological bridge between player and
-              predator. Unofficial companion interface.
+              The Haven. A biological bridge between player and predator.
+              Unofficial companion interface.
             </p>
           </div>
 
@@ -53,7 +53,7 @@ export default function Footer() {
 
         <div className="pt-6 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">
-            © 2026 APEX TELEMETRY — UNOFFICIAL FAN PROJECT
+            © 2026 THE HAVEN — UNOFFICIAL FAN PROJECT
           </div>
           <div className="flex gap-6">
             <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground hover:text-primary cursor-pointer transition-colors">

@@ -36,9 +36,9 @@ export default function Hero() {
         </div>
 
         <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl tracking-[0.1em] text-foreground leading-none mb-6 animate-flicker">
-          APEX
+          THE
           <br />
-          <span className="text-primary text-glow">TELEMETRY</span>
+          <span className="text-primary text-glow">HAVEN</span>
         </h1>
 
         <p className="font-mono text-sm md:text-base text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed tracking-wide">
