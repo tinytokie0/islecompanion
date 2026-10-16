@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import DinoBackground from "@/components/DinoBackground";
+import SideDinos from "@/components/SideDinos";
 
 const LOGO = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/d4ae5dc23_TheHaven_CrystalDinosaurCrest.png";
 
@@ -128,6 +129,7 @@ export default function PortalLayout() {
   return (
     <div className="min-h-screen bg-background grid-bg">
       <DinoBackground />
+      <SideDinos />
       <Navbar />
       <main className="pt-14 relative z-10">
         <Outlet />
