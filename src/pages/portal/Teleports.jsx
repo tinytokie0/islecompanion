@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Zap } from "lucide-react";
-import PageShell from "@/components/portal/PageShell";
+import TeleportHero from "@/components/teleports/TeleportHero";
 import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 import WaygateCard from "@/components/teleports/WaygateCard";
 import WaygateHistory from "@/components/teleports/WaygateHistory";
@@ -40,52 +40,60 @@ export default function Teleports() {
   };
 
   return (
-    <PageShell
-      icon={Zap}
-      title="Waygate network"
-      sub="Teleport your dino to destinations configured by the admins. Using a gate costs Haven Tokens and every gate shares one 10-minute cooldown; staff deliver your teleport in-game."
-      right={<CoinBadge balance={wallet?.balance} />}
-    >
-      {isAdmin && <WaygateAdmin onChanged={onUsed} />}
+    <div>
+      <TeleportHero
+        sub="Pick a destination, teleport instantly, and staff deliver you in-game. Every gate shares one 10-minute cooldown."
+        right={
+          <div className="flex items-center justify-center">
+            <CoinBadge balance={wallet?.balance} />
+          </div>
+        }
+      />
 
-      {gates === null ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="rounded-xl border border-border bg-card p-6 animate-pulse h-56" />
-          ))}
+      <section className="px-4 md:px-8 py-8 md:py-10">
+        <div className="max-w-[1500px] mx-auto">
+          {isAdmin && <WaygateAdmin onChanged={onUsed} />}
+
+          {gates === null ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="rounded-xl border border-border bg-card p-6 animate-pulse h-56" />
+              ))}
+            </div>
+          ) : gates.length === 0 ? (
+            <div className="glass-panel rounded-lg p-10 text-center mb-8">
+              <Zap size={22} className="mx-auto mb-3 text-muted-foreground" />
+              <div className="font-heading text-xl text-foreground mb-2">No waygates configured yet</div>
+              <p className="font-mono text-xs text-muted-foreground leading-relaxed">
+                {isAdmin
+                  ? "Use the configure panel above to add your first waygate."
+                  : "Waygates appear here as soon as admins set them up."}
+              </p>
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+              {gates.map((gate) => (
+                <WaygateCard
+                  key={gate.id}
+                  gate={gate}
+                  selected={selected?.id === gate.id}
+                  onSelect={setSelected}
+                />
+              ))}
+            </div>
+          )}
+
+          {selected && (
+            <TeleportBar key={selected.id} gate={selected} onUsed={onUsed} />
+          )}
+
+          <WaygateHistory requests={requests || []} />
+
+          <div className="mt-8">
+            <LiveIslandStrip />
+          </div>
         </div>
-      ) : gates.length === 0 ? (
-        <div className="glass-panel rounded-lg p-10 text-center mb-8">
-          <Zap size={22} className="mx-auto mb-3 text-muted-foreground" />
-          <div className="font-heading text-xl text-foreground mb-2">No waygates configured yet</div>
-          <p className="font-mono text-xs text-muted-foreground leading-relaxed">
-            {isAdmin
-              ? "Use the configure panel above to add your first waygate."
-              : "Waygates appear here as soon as admins set them up."}
-          </p>
-        </div>
-      ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-          {gates.map((gate) => (
-            <WaygateCard
-              key={gate.id}
-              gate={gate}
-              selected={selected?.id === gate.id}
-              onSelect={setSelected}
-            />
-          ))}
-        </div>
-      )}
-
-      {selected && (
-        <TeleportBar key={selected.id} gate={selected} onUsed={onUsed} />
-      )}
-
-      <WaygateHistory requests={requests || []} />
-
-      <div className="mt-8">
-        <LiveIslandStrip />
-      </div>
-    </PageShell>
+      </section>
+    </div>
   );
 }
