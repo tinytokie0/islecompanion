@@ -10,6 +10,7 @@ import { Image } from "@/components/ui/image";
 import { useAuth } from "@/lib/AuthContext";
 import DiscordIcon from "@/components/DiscordIcon";
 import SteamLinkCard from "@/components/SteamLinkCard";
+import useArkaniStatus from "@/hooks/useArkaniStatus";
 
 const LOGO = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/d4ae5dc23_TheHaven_CrystalDinosaurCrest.png";
 
@@ -72,9 +73,11 @@ const JOIN_STEPS = [
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
+  const arkani = useArkaniStatus();
   const [players, setPlayers] = useState(null);
 
   useEffect(() => {
+    if (arkani.authed) return; // live Arkanis status wins when available
     const load = async () => {
       try {
         const since = new Date(Date.now() - 10 * 60 * 1000).toISOString();
@@ -86,7 +89,12 @@ export default function Home() {
     load();
     const timer = setInterval(load, 60000);
     return () => clearInterval(timer);
-  }, []);
+  }, [arkani.authed]);
+
+  const useArkani = arkani.authed && arkani.data?.configured;
+  const serverOnline = useArkani ? arkani.data.online === true : null;
+  const shownPlayers = useArkani && arkani.data.players != null ? arkani.data.players : players;
+  const serverName = useArkani && arkani.data.server?.name ? arkani.data.server.name : "The Haven";
 
   return (
     <div className="px-4 md:px-8 py-6 md:py-8 max-w-[1500px] mx-auto">
@@ -130,18 +138,18 @@ export default function Home() {
 
         <div className="rounded-xl border border-border bg-card p-7 md:p-9">
           <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.2em] text-muted-foreground mb-4">
-            <span className="flex items-center gap-2 text-emerald-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span className={`flex items-center gap-2 ${serverOnline === false ? "text-red-400" : "text-emerald-400"}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${serverOnline === false ? "bg-red-400" : "bg-emerald-400"}`} />
               SERVER
             </span>
-            <span>The Haven</span>
+            <span>{serverName}</span>
           </div>
-          <div className="font-heading text-3xl font-bold text-emerald-400 mb-6">
-            {players === null ? "—" : players > 0 ? "Online" : "Idle"}
+          <div className={`font-heading text-3xl font-bold mb-6 ${serverOnline === false ? "text-red-400" : "text-emerald-400"}`}>
+            {useArkani && arkani.loading ? "…" : serverOnline === false ? "Offline" : "Online"}
           </div>
           <dl className="grid grid-cols-[auto_1fr] gap-x-8 gap-y-3 text-sm">
             <dt className="text-muted-foreground">Players</dt>
-            <dd className="text-foreground font-medium">{players === null ? "—" : players} on the island</dd>
+            <dd className="text-foreground font-medium">{shownPlayers === null || shownPlayers === undefined ? "—" : shownPlayers} on the island</dd>
             <dt className="text-muted-foreground">Map</dt>
             <dd className="text-foreground font-medium">Gateway</dd>
             <dt className="text-muted-foreground">Checked</dt>
