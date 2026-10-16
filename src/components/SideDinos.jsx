@@ -8,17 +8,19 @@ const DINOS = [
   "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/b4308e1c5_generated_image.png", // allosaurus
 ];
 
-// Fade every edge of the photo so the rectangle melts into the dark page
+// Screen blend drops the dark photo backdrop into the dark page, and a soft
+// mask feathers the remaining edges so the dino melts out of the darkness
 const EDGE_FADE = {
-  maskImage: "radial-gradient(ellipse 62% 58% at 42% 50%, black 35%, transparent 72%)",
-  WebkitMaskImage: "radial-gradient(ellipse 62% 58% at 42% 50%, black 35%, transparent 72%)",
+  mixBlendMode: "screen",
+  maskImage: "radial-gradient(ellipse 68% 64% at 42% 50%, black 45%, transparent 85%)",
+  WebkitMaskImage: "radial-gradient(ellipse 68% 64% at 42% 50%, black 45%, transparent 85%)",
 };
 
 const SLOTS = [
-  { side: "left", top: "26%", size: "w-48 md:w-72", anim: "side-dino-peek-1", tilt: "-rotate-3" },
-  { side: "left", top: "58%", size: "w-40 md:w-60", anim: "side-dino-lunge-l", tilt: "rotate-2" },
-  { side: "right", top: "18%", size: "w-44 md:w-64", anim: "side-dino-peek-r", tilt: "rotate-3" },
-  { side: "right", top: "54%", size: "w-48 md:w-72", anim: "side-dino-peek-r2", tilt: "-rotate-2" },
+  { side: "left", top: "24%", size: "w-52 md:w-80", anim: "side-dino-creep-1", tilt: "-rotate-3" },
+  { side: "left", top: "60%", size: "w-44 md:w-64", anim: "side-dino-creep-2", tilt: "rotate-2" },
+  { side: "right", top: "18%", size: "w-48 md:w-72", anim: "side-dino-creep-3", tilt: "rotate-3" },
+  { side: "right", top: "56%", size: "w-52 md:w-80", anim: "side-dino-creep-4", tilt: "-rotate-2" },
 ];
 
 // Longest lurker cycle, so image swaps happen while the dino is off-screen
