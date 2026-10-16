@@ -159,50 +159,52 @@
 }
 .animate-dino-bob { animation: dino-bob 5s ease-in-out infinite; }
 
-/* Choreographed edge dinosaurs — one full 90s cycle:
-   spino crosses right-to-left (0-27%), rex crosses left-to-right (31-58%),
-   then eight raptors peek from behind the cards and run off (60-89%) */
+/* Choreographed edge dinosaurs — one full 45s cycle:
+   spino crosses right-to-left (0-24%), rex crosses left-to-right (26-50%),
+   then eight raptors peek from behind the cards and sprint off (54-84%) */
 @keyframes walk-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-4px) rotate(0.4deg); }
+  50% { transform: translateY(-7px) rotate(0deg); }
+  75% { transform: translateY(-4px) rotate(-0.4deg); }
 }
-.walk-bob { animation: walk-bob 0.9s ease-in-out infinite; }
-.walk-bob-slow { animation: walk-bob 1.4s ease-in-out infinite; }
+.walk-bob { animation: walk-bob 0.55s ease-in-out infinite; }
+.walk-bob-slow { animation: walk-bob 0.9s ease-in-out infinite; }
 
 @keyframes spino-cross {
-  0% { transform: translateX(0); }
-  27% { transform: translateX(-118vw); }
+  0% { transform: translateX(0); animation-timing-function: ease-in-out; }
+  24% { transform: translateX(-118vw); }
   100% { transform: translateX(-118vw); }
 }
 @keyframes rex-cross {
-  0%, 31% { transform: translateX(0); }
-  58% { transform: translateX(118vw); }
+  0%, 26% { transform: translateX(0); animation-timing-function: ease-in-out; }
+  50% { transform: translateX(118vw); }
   100% { transform: translateX(118vw); }
 }
-.side-spino { animation: spino-cross 90s linear infinite; }
-.side-rex { animation: rex-cross 90s linear infinite; }
+.side-spino { animation: spino-cross 45s linear infinite; }
+.side-rex { animation: rex-cross 45s linear infinite; }
 
 @keyframes raptor-peek-run-r {
-  0%, 60% { transform: translate(0, 95%); }
-  63% { transform: translate(0, 6%); }
-  72% { transform: translate(0, 10%); }
-  74% { transform: translate(3vw, 12%); }
-  88% { transform: translate(115vw, 12%); }
-  89%, 100% { transform: translate(115vw, 95%); }
+  0%, 54% { transform: translate(0, 95%); }
+  57% { transform: translate(0, 4%); animation-timing-function: ease-in; }
+  66% { transform: translate(0, 8%); }
+  68% { transform: translate(2vw, 10%); animation-timing-function: ease-in; }
+  80% { transform: translate(115vw, 10%); }
+  81%, 100% { transform: translate(115vw, 95%); }
 }
 @keyframes raptor-peek-run-l {
-  0%, 60% { transform: translate(0, 95%); }
-  63% { transform: translate(0, 6%); }
-  72% { transform: translate(0, 10%); }
-  74% { transform: translate(-3vw, 12%); }
-  88% { transform: translate(-115vw, 12%); }
-  89%, 100% { transform: translate(-115vw, 95%); }
+  0%, 54% { transform: translate(0, 95%); }
+  57% { transform: translate(0, 4%); animation-timing-function: ease-in; }
+  66% { transform: translate(0, 8%); }
+  68% { transform: translate(-2vw, 10%); animation-timing-function: ease-in; }
+  80% { transform: translate(-115vw, 10%); }
+  81%, 100% { transform: translate(-115vw, 95%); }
 }
-.side-raptor-1 { animation: raptor-peek-run-r 90s linear infinite; animation-delay: -62s; }
-.side-raptor-2 { animation: raptor-peek-run-l 90s linear infinite; animation-delay: -64s; }
-.side-raptor-3 { animation: raptor-peek-run-r 90s linear infinite; animation-delay: -66s; }
-.side-raptor-4 { animation: raptor-peek-run-l 90s linear infinite; animation-delay: -68s; }
-.side-raptor-5 { animation: raptor-peek-run-r 90s linear infinite; animation-delay: -70s; }
-.side-raptor-6 { animation: raptor-peek-run-l 90s linear infinite; animation-delay: -72s; }
-.side-raptor-7 { animation: raptor-peek-run-r 90s linear infinite; animation-delay: -74s; }
-.side-raptor-8 { animation: raptor-peek-run-l 90s linear infinite; animation-delay: -76s; }
+.side-raptor-1 { animation: raptor-peek-run-r 45s linear infinite; animation-delay: -54.5s; }
+.side-raptor-2 { animation: raptor-peek-run-l 45s linear infinite; animation-delay: -56.7s; }
+.side-raptor-3 { animation: raptor-peek-run-r 45s linear infinite; animation-delay: -58.9s; }
+.side-raptor-4 { animation: raptor-peek-run-l 45s linear infinite; animation-delay: -61.1s; }
+.side-raptor-5 { animation: raptor-peek-run-r 45s linear infinite; animation-delay: -63.3s; }
+.side-raptor-6 { animation: raptor-peek-run-l 45s linear infinite; animation-delay: -65.5s; }
+.side-raptor-7 { animation: raptor-peek-run-r 45s linear infinite; animation-delay: -67.7s; }
+.side-raptor-8 { animation: raptor-peek-run-l 45s linear infinite; animation-delay: -69.9s; }
