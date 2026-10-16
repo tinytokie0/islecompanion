@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import {
   Home, Gift, UserPlus, MapPin, Map as MapIcon, Skull, Trophy, Target,
-  LifeBuoy, FileText, Package, PackageOpen, Bone, Sprout, ArrowLeftRight, LogIn,
+  LifeBuoy, FileText, Package, PackageOpen, Bone, Sprout, ArrowLeftRight,
 } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import DinoBackground from "@/components/DinoBackground";
@@ -66,14 +66,7 @@ function Navbar() {
         >
           STEAM
         </a>
-        {/* Sign in */}
-        <Link
-          to="/login"
-          className="shrink-0 flex items-center gap-2 mx-4 font-mono text-[10px] tracking-[0.15em] bg-primary text-primary-foreground px-4 py-2 rounded-sm hover:opacity-90 transition-opacity"
-        >
-          <LogIn size={13} />
-          SIGN IN
-        </Link>
+
       </div>
     </header>
   );
