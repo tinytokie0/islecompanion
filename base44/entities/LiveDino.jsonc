@@ -1,0 +1,68 @@
+{
+  "name": "LiveDino",
+  "type": "object",
+  "description": "Latest live state of a player dinosaur, upserted per Steam ID by the server data feed.",
+  "properties": {
+    "steam_id": {
+      "type": "string",
+      "description": "64-bit Steam ID of the player (unique per dino record, upsert key)"
+    },
+    "player_name": {
+      "type": "string",
+      "description": "In-game player name at last update"
+    },
+    "species": {
+      "type": "string",
+      "description": "Dinosaur species currently played"
+    },
+    "sex": {
+      "type": "string",
+      "description": "Sex of the dinosaur (e.g. male/female)"
+    },
+    "growth": {
+      "type": "number",
+      "description": "Growth percentage 0-100"
+    },
+    "health": {
+      "type": "number",
+      "description": "Current health"
+    },
+    "stamina": {
+      "type": "number",
+      "description": "Current stamina"
+    },
+    "hunger": {
+      "type": "number",
+      "description": "Current hunger"
+    },
+    "thirst": {
+      "type": "number",
+      "description": "Current thirst"
+    },
+    "pos_x": {
+      "type": "number",
+      "description": "World X coordinate"
+    },
+    "pos_y": {
+      "type": "number",
+      "description": "World Y coordinate"
+    },
+    "pos_z": {
+      "type": "number",
+      "description": "World Z coordinate"
+    },
+    "server_name": {
+      "type": "string",
+      "description": "Name of the server this dino is connected to"
+    },
+    "last_seen": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this snapshot was last posted"
+    }
+  },
+  "required": [
+    "steam_id",
+    "last_seen"
+  ]
+}
