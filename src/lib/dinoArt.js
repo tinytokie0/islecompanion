@@ -1,15 +1,15 @@
 // Realistic 3D dino key art per species, shown in the dino display cards.
 const ART = {
-  tyrannosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/f174a4913_generated_image.png",
-  carnotaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/c96f29461_generated_image.png",
-  dakotaraptor: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/5d6a407e9_generated_image.png",
-  stegosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/5fa797263_generated_image.png",
-  acrocanthosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/65a5ed948_generated_image.png",
-  diabloceratops: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/f383979e5_generated_image.png",
-  utahraptor: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/96e1ec3a2_generated_image.png",
-  pteranodon: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/75743c42f_generated_image.png",
-  deinosuchus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/18a903088_generated_image.png",
-  hypsilophodon: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/a5bf73f71_generated_image.png",
+  tyrannosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/054e123a3_generated_image.png",
+  carnotaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/21a00079a_generated_image.png",
+  dakotaraptor: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/7b398e566_generated_image.png",
+  stegosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/3f05f8aaf_generated_image.png",
+  acrocanthosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/684c3786b_generated_image.png",
+  diabloceratops: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/2b3264fd6_generated_image.png",
+  utahraptor: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/6523f237f_generated_image.png",
+  pteranodon: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/fdf02e7c3_generated_image.png",
+  deinosuchus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/fa027704c_generated_image.png",
+  hypsilophodon: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/82e3e5f66_generated_image.png",
 };
 
 const FALLBACK = ART.tyrannosaurus;

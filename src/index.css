@@ -234,13 +234,33 @@
 .side-raptor-7 { animation: raptor-peek-run-r 45s linear infinite; animation-delay: -67.7s; }
 .side-raptor-8 { animation: raptor-peek-run-l 45s linear infinite; animation-delay: -69.9s; }
 
-/* Dino display art: on hover the dino lunges forward with a quick scale-up
-   and a hot-pink glow */
+/* Dino living-portrait art: the frame drifts slowly even at rest; on hover
+   the dino lunges forward with a pink glow and a light sweep crosses it */
+@keyframes dino-live {
+  0%, 100% { transform: scale(1.03) translate(0, 0); }
+  50% { transform: scale(1.07) translate(-1.5%, -2%); }
+}
+.dino-live { animation: dino-live 10s ease-in-out infinite; }
+
 .dino-react {
-  transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.45), filter 0.35s ease;
+  transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.5), filter 0.4s ease;
   will-change: transform;
 }
 .dino-group:hover .dino-react {
-  transform: scale(1.15) translateY(-5px);
-  filter: drop-shadow(0 0 22px rgba(255, 46, 123, 0.55));
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 26px rgba(255, 46, 123, 0.65)) brightness(1.08) saturate(1.15);
+}
+
+.dino-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 46, 123, 0.22) 50%, transparent 62%);
+  transform: translateX(-110%);
+}
+.dino-group:hover .dino-sheen {
+  animation: dino-sheen-sweep 0.9s ease forwards;
+}
+@keyframes dino-sheen-sweep {
+  to { transform: translateX(110%); }
 }
