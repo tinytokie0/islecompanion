@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
-const EMPTY = { name: "", description: "", category: "cosmetic", price: "", one_time: false };
+const EMPTY = { name: "", description: "", category: "cosmetic", image_url: "", price: "", one_time: false };
 
 // Shop item manager: create, reprice, toggle and delete rewards. All writes
 // are admin-only via row-level security.
@@ -31,6 +31,7 @@ export default function AdminShopItems() {
       await base44.entities.ShopItem.create({
         name: form.name.trim(),
         description: form.description.trim(),
+        image_url: form.image_url.trim() || undefined,
         category: form.category,
         price: Math.max(1, Math.floor(Number(form.price) || 0)),
         one_time: form.one_time,
@@ -84,7 +85,7 @@ export default function AdminShopItems() {
       </div>
 
       {/* Create */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-6 gap-3 mb-4">
         <input
           placeholder="Name"
           value={form.name}
@@ -96,6 +97,12 @@ export default function AdminShopItems() {
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
           className="bg-secondary border border-border rounded-sm px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary/60 lg:col-span-2"
+        />
+        <input
+          placeholder="Image URL (https)"
+          value={form.image_url}
+          onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+          className="bg-secondary border border-border rounded-sm px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary/60"
         />
         <select
           value={form.category}
@@ -125,6 +132,9 @@ export default function AdminShopItems() {
           </button>
         </div>
       </div>
+      <p className="font-mono text-[9px] text-muted-foreground mb-3">
+        REWARDS ARE WEBSITE-ONLY: TITLES, BADGES AND PROFILE COSMETICS. DESCRIBE THEM ACCURATELY — THEY NEVER CHANGE A PLAYER'S DINOSAUR IN-GAME.
+      </p>
       <label className="flex items-center gap-2 font-mono text-[10px] tracking-[0.15em] text-muted-foreground mb-5 cursor-pointer w-fit">
         <input
           type="checkbox"

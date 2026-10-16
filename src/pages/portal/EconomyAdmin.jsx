@@ -73,7 +73,7 @@ export default function EconomyAdmin() {
           <AdminWallets />
           <AdminShopItems />
           <div className="mb-2">
-            <TransactionTable refreshKey={config?.updated_date || 0} limit={30} />
+            <TransactionTable refreshKey={config?.updated_date || 0} limit={30} canRefund />
           </div>
         </>
       )}

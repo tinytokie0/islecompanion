@@ -1,7 +1,7 @@
 {
   "name": "ShopItem",
   "type": "object",
-  "description": "Admin-configured reward purchasable with Haven Tokens (HT): website cosmetics, titles, badges and other administrator-approved rewards.",
+  "description": "Admin-configured reward purchasable with Haven Tokens (HT): website cosmetics, titles, badges and other administrator-approved rewards. Website-only: rewards never change the player's dinosaur in-game.",
   "properties": {
     "name": {
       "type": "string",
@@ -20,6 +20,10 @@
         "reward"
       ],
       "description": "Reward category"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Optional https image shown on the reward card"
     },
     "price": {
       "type": "number",

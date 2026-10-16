@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Coins, Loader2, CheckCircle2, XCircle, Sparkles } from "lucide-react";
+import { Coins, Loader2, CheckCircle2, XCircle, Sparkles, History } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import PageShell from "@/components/portal/PageShell";
 import CoinBadge from "@/components/wallet/CoinBadge";
+import { Image } from "@/components/ui/image";
 
 const CATEGORY_LABELS = { cosmetic: "COSMETIC", title: "TITLE", badge: "BADGE", reward: "REWARD" };
 
@@ -12,9 +13,21 @@ export default function TokenShop() {
   const [balance, setBalance] = useState(null);
   const [shopClosed, setShopClosed] = useState(false);
   const [items, setItems] = useState(null);
-  const [ownedIds, setOwnedIds] = useState(new Set());
+  const [purchases, setPurchases] = useState(null);
   const [busyId, setBusyId] = useState(null);
   const [status, setStatus] = useState(null); // { ok, text }
+
+  const loadPurchases = async () => {
+    try {
+      const page = await base44.entities.Purchase.filter(
+        { user_id: user.id },
+        { sort: "-created_date", limit: 100 }
+      );
+      setPurchases(page.items);
+    } catch {
+      setPurchases([]);
+    }
+  };
 
   useEffect(() => {
     let alive = true;
@@ -35,29 +48,20 @@ export default function TokenShop() {
         if (alive) setItems([]);
       }
     };
-    if (user) load();
+    if (user) {
+      load();
+      loadPurchases();
+    }
     return () => {
       alive = false;
     };
   }, [user]);
 
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        const page = await base44.entities.CoinTransaction.filter(
-          { user_id: user.id, type: "purchase" },
-          { limit: 200 }
-        );
-        if (alive) setOwnedIds(new Set(page.items.map((t) => t.item_id).filter(Boolean)));
-      } catch {
-        /* ownership info is best-effort */
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [user]);
+  // Live ownership state: unrefunded purchases
+  const owned = new Set(
+    (purchases || []).filter((p) => !p.refunded).map((p) => p.item_id)
+  );
+  const myRewards = (purchases || []).filter((p) => !p.refunded);
 
   const buy = async (item) => {
     setBusyId(item.id);
@@ -65,8 +69,8 @@ export default function TokenShop() {
     try {
       const res = await base44.functions.invoke("economyPurchase", { item_id: item.id });
       if (res.data.wallet) setBalance(res.data.wallet.balance);
-      if (item.one_time) setOwnedIds((s) => new Set(s).add(item.id));
       setStatus({ ok: true, text: `Purchased "${item.name}" for ${item.price} HT.` });
+      await loadPurchases();
     } catch (e) {
       setStatus({ ok: false, text: e?.response?.data?.error || e.message });
     }
@@ -77,7 +81,7 @@ export default function TokenShop() {
     <PageShell
       kicker="SPEND HT"
       title="TOKEN SHOP"
-      sub="Rewards bought with Haven Tokens. Purchases are checked and deducted securely on the backend."
+      sub="Website rewards bought with Haven Tokens. Purchases are checked and deducted securely on the backend. These rewards are website-only — nothing changes your dinosaur in-game."
       right={<CoinBadge balance={balance} loading={balance === null} />}
     >
       {shopClosed && (
@@ -96,6 +100,30 @@ export default function TokenShop() {
         </div>
       )}
 
+      {/* My rewards */}
+      {user && myRewards.length > 0 && (
+        <div className="glass-panel rounded-lg p-6 mb-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles size={13} className="text-primary" />
+            <span className="font-mono text-[10px] tracking-[0.25em] text-primary">MY REWARDS</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {myRewards.map((p) => (
+              <span
+                key={p.id}
+                className="font-mono text-[10px] tracking-[0.15em] border border-primary/40 text-foreground rounded px-3 py-1.5 flex items-center gap-2"
+              >
+                {CATEGORY_LABELS[p.category] || "REWARD"} — {p.item_name}
+              </span>
+            ))}
+          </div>
+          <p className="font-mono text-[9px] text-muted-foreground mt-3">
+            WEBSITE-ONLY REWARDS: TITLES, BADGES AND PROFILE COSMETICS. YOUR IN-GAME DINOSAUR IS NEVER CHANGED.
+          </p>
+        </div>
+      )}
+
+      {/* Catalog */}
       {items === null ? (
         <div className="glass-panel rounded-lg p-10 flex items-center justify-center gap-3 font-mono text-xs text-muted-foreground">
           <Loader2 size={14} className="animate-spin" /> LOADING REWARDS...
@@ -110,10 +138,20 @@ export default function TokenShop() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {items.map((item) => {
-            const owned = item.one_time && ownedIds.has(item.id);
+            const isOwned = item.one_time && owned.has(item.id);
             const affordable = (balance ?? 0) >= (item.price || 0);
             return (
               <div key={item.id} className="glass-panel rounded-lg p-5 flex flex-col">
+                {item.image_url && (
+                  <div className="rounded overflow-hidden mb-4 h-32">
+                    <Image
+                      src={item.image_url}
+                      alt={item.name}
+                      fittingType="fill"
+                      className="w-full h-32"
+                    />
+                  </div>
+                )}
                 <div className="flex items-center justify-between mb-3">
                   <span className="font-mono text-[9px] tracking-[0.2em] text-primary border border-primary/40 rounded px-2 py-0.5">
                     {CATEGORY_LABELS[item.category] || "REWARD"}
@@ -124,12 +162,12 @@ export default function TokenShop() {
                 </div>
                 <div className="font-heading text-lg text-foreground mb-1 flex items-center gap-2">
                   {item.name}
-                  {owned && <Sparkles size={13} className="text-primary" />}
+                  {isOwned && <Sparkles size={13} className="text-primary" />}
                 </div>
                 <p className="text-xs text-muted-foreground leading-relaxed mb-5 flex-1">
                   {item.description || "Administrator-approved reward."}
                 </p>
-                {owned ? (
+                {isOwned ? (
                   <div className="font-mono text-[10px] tracking-[0.2em] text-emerald-400 border border-emerald-400/40 rounded px-3 py-2 text-center">
                     OWNED
                   </div>
@@ -157,6 +195,43 @@ export default function TokenShop() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Purchase history */}
+      {purchases !== null && purchases.length > 0 && (
+        <div className="glass-panel rounded-lg p-6 mt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <History size={13} className="text-muted-foreground" />
+            <span className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground">PURCHASE HISTORY</span>
+          </div>
+          <div className="flex flex-col divide-y divide-border">
+            {purchases.map((p) => (
+              <div key={p.id} className="py-3 flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4">
+                <div className="sm:w-32 shrink-0">
+                  <span className="font-mono text-[9px] tracking-[0.15em] border border-border text-muted-foreground rounded px-1.5 py-0.5">
+                    {CATEGORY_LABELS[p.category] || "REWARD"}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs text-foreground truncate flex items-center gap-2">
+                    {p.item_name}
+                    {p.refunded && (
+                      <span className="font-mono text-[8px] tracking-[0.15em] text-amber-400 border border-amber-400/40 rounded px-1.5 py-0.5">
+                        REFUNDED
+                      </span>
+                    )}
+                  </div>
+                  <div className="font-mono text-[9px] text-muted-foreground mt-0.5">
+                    {p.created_date ? new Date(p.created_date).toLocaleString() : ""}
+                  </div>
+                </div>
+                <div className="font-mono text-xs shrink-0 sm:text-right text-rose-400">
+                  -{p.price} HT
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </PageShell>
