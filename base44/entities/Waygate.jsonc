@@ -1,0 +1,62 @@
+{
+  "name": "Waygate",
+  "type": "object",
+  "description": "Admin-configured teleport destination on the Evrima map: a named waygate with world coordinates and a Haven Tokens (HT) price. Teleport delivery is handled by staff in-game; using a gate records a TeleportRequest and charges the wallet server-side.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Waygate display name, e.g. 'Northern Spire'"
+    },
+    "region": {
+      "type": "string",
+      "description": "Map region the gate sits in, e.g. 'Highlands' or 'Swamp'"
+    },
+    "description": {
+      "type": "string",
+      "description": "What players find at this destination"
+    },
+    "pos_x": {
+      "type": "number",
+      "description": "World X coordinate of the destination"
+    },
+    "pos_y": {
+      "type": "number",
+      "description": "World Y coordinate of the destination"
+    },
+    "pos_z": {
+      "type": "number",
+      "description": "World Z coordinate of the destination"
+    },
+    "price": {
+      "type": "number",
+      "description": "Cost in Haven Tokens (HT), whole positive number"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Only active waygates appear to players"
+    }
+  },
+  "required": [
+    "name",
+    "price"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
