@@ -20,7 +20,7 @@ const ART = {
   diabloceratops: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/2eae15277_generated_image.png",
   kentrosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/d8cb45549_generated_image.png",
   dryosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/7833a1e3b_generated_image.png",
-  hypsilophodon: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/0699b9a01_generated_image.png",
+  hypsilophodon: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/3e8479b7a_generated_image.png",
   gallimimus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/1c8e8736e_generated_image.png",
   beipiaosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/703fdefea_generated_image.png",
 };
