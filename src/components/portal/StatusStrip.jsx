@@ -34,12 +34,12 @@ export default function StatusStrip() {
   const online = rconLive
     ? true
     : authed && data?.configured
-      ? data.online === true
+      ? data.status?.online === true
       : true;
   const shown = rconLive
     ? details.currentPlayers
-    : authed && data?.configured && data.players !== null && data.players !== undefined
-      ? data.players
+    : authed && data?.configured && data.status?.players != null
+      ? data.status.players
       : players;
   const maxPlayers = rconLive ? details.maxPlayers : null;
   const map = details?.map || "Gateway";

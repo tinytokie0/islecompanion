@@ -94,8 +94,9 @@ export default function Home() {
   }, [arkani.authed]);
 
   const useArkani = arkani.authed && arkani.data?.configured;
-  const serverOnline = useArkani ? arkani.data.online === true : null;
-  const shownPlayers = useArkani && arkani.data.players != null ? arkani.data.players : players;
+  const liveStatus = arkani.data?.status;
+  const serverOnline = useArkani ? liveStatus?.online === true : null;
+  const shownPlayers = useArkani && liveStatus?.players != null ? liveStatus.players : players;
   const serverName = useArkani && arkani.data.server?.name ? arkani.data.server.name : "The Haven";
 
   return (
