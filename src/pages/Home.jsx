@@ -98,6 +98,9 @@ export default function Home() {
 
   return (
     <div className="px-4 md:px-8 py-6 md:py-8 max-w-[1500px] mx-auto">
+      {/* Steam linking */}
+      <SteamLinkCard />
+
       {/* Hero + server status */}
       <div className="grid lg:grid-cols-2 gap-5 mb-5">
         <div className="relative rounded-xl border border-border bg-card overflow-hidden">
@@ -218,9 +221,6 @@ export default function Home() {
           </Link>
         </div>
       </div>
-
-      {/* Steam linking */}
-      <SteamLinkCard />
 
       {/* Category grids */}
       {CATEGORIES.map((cat) => (
