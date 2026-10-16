@@ -158,3 +158,30 @@
   50% { transform: translateY(-12px) rotate(-1.2deg); }
 }
 .animate-dino-bob { animation: dino-bob 5s ease-in-out infinite; }
+
+/* Edge lurkers: peek in from the sides, occasionally dart out fast */
+@keyframes side-dino-peek {
+  0% { transform: translateX(-115%); }
+  4% { transform: translateX(-6%); }
+  15% { transform: translateX(-6%); }
+  19% { transform: translateX(-115%); }
+  100% { transform: translateX(-115%); }
+}
+@keyframes side-dino-peek-r {
+  0% { transform: translateX(115%); }
+  4% { transform: translateX(6%); }
+  15% { transform: translateX(6%); }
+  19% { transform: translateX(115%); }
+  100% { transform: translateX(115%); }
+}
+@keyframes side-dino-lunge-l {
+  0% { transform: translateX(-115%); }
+  1.5% { transform: translateX(2%); }
+  4% { transform: translateX(2%); }
+  5% { transform: translateX(-115%); }
+  100% { transform: translateX(-115%); }
+}
+.side-dino-peek-1 { animation: side-dino-peek 24s ease-in-out infinite; }
+.side-dino-lunge-l { animation: side-dino-lunge-l 29s ease-in infinite; animation-delay: -8s; }
+.side-dino-peek-r { animation: side-dino-peek-r 27s ease-in-out infinite; animation-delay: -6s; }
+.side-dino-peek-r2 { animation: side-dino-peek-r 34s ease-in-out infinite; animation-delay: -20s; }
