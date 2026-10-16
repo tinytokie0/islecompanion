@@ -11,7 +11,7 @@ const ART = {
   omniraptor: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/7f8f0f4de_generated_image.png",
   dilophosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/e5f4688fa_generated_image.png",
   herrerasaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/a1739a432_generated_image.png",
-  troodon: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/3e8479b7a_generated_image.png",
+  troodon: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/0699b9a01_generated_image.png",
   triceratops: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/affa61ef3_generated_image.png",
   maiasaura: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/324919a15_generated_image.png",
   stegosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/5923243e0_generated_image.png",
