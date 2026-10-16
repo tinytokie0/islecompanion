@@ -4,7 +4,6 @@ import TeleportHero from "@/components/teleports/TeleportHero";
 import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 import WaygateCard from "@/components/teleports/WaygateCard";
 import WaygateHistory from "@/components/teleports/WaygateHistory";
-import WaygateAdmin from "@/components/teleports/WaygateAdmin";
 import TeleportBar from "@/components/teleports/TeleportBar";
 import CoinBadge from "@/components/wallet/CoinBadge";
 import useWallet from "@/hooks/useWallet";
@@ -52,8 +51,6 @@ export default function Teleports() {
 
       <section className="px-4 md:px-8 py-8 md:py-10">
         <div className="max-w-[1500px] mx-auto">
-          {isAdmin && <WaygateAdmin onChanged={onUsed} />}
-
           {gates === null ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
               {[...Array(3)].map((_, i) => (
@@ -65,9 +62,7 @@ export default function Teleports() {
               <Zap size={22} className="mx-auto mb-3 text-muted-foreground" />
               <div className="font-heading text-xl text-foreground mb-2">No waygates configured yet</div>
               <p className="font-mono text-xs text-muted-foreground leading-relaxed">
-                {isAdmin
-                  ? "Use the configure panel above to add your first waygate."
-                  : "Waygates appear here as soon as admins set them up."}
+                "Waygates appear here as soon as admins set them up."
               </p>
             </div>
           ) : (
