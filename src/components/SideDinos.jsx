@@ -24,15 +24,23 @@ const SLOTS = [
 // Longest lurker cycle, so image swaps happen while the dino is off-screen
 const RESHUFFLE_MS = 35000;
 
-function shuffled() {
+function freshDeck() {
   return [...DINOS].sort(() => Math.random() - 0.5);
 }
 
+function randomFlips() {
+  return SLOTS.map(() => Math.random() < 0.5);
+}
+
 export default function SideDinos() {
-  // Random dino per slot on load, reshuffled periodically
-  const [deck, setDeck] = useState(shuffled);
+  // Random dino + random flip per slot, re-rolled every app load and reshuffled periodically
+  const [deck, setDeck] = useState(freshDeck);
+  const [flips, setFlips] = useState(randomFlips);
   useEffect(() => {
-    const t = setInterval(() => setDeck(shuffled()), RESHUFFLE_MS);
+    const t = setInterval(() => {
+      setDeck(freshDeck());
+      setFlips(randomFlips());
+    }, RESHUFFLE_MS);
     return () => clearInterval(t);
   }, []);
 
@@ -46,10 +54,10 @@ export default function SideDinos() {
         >
           <div className={`${tilt} animate-dino-bob`}>
             <img
-              key={deck[i]}
+              key={deck[i] + String(flips[i])}
               src={deck[i]}
               alt=""
-              className={`${size} h-auto ${side === "right" ? "-scale-x-100" : ""}`}
+              className={`${size} h-auto ${flips[i] ? "-scale-x-100" : ""}`}
               style={EDGE_FADE}
             />
           </div>
