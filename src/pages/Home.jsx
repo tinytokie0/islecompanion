@@ -41,7 +41,7 @@ export default function Home() {
       <SideDinos />
       <EdgeScare />
       {/* Steam sign-in */}
-      {isAuthenticated && <SteamLinkCard />}
+      <SteamLinkCard />
 
       {/* Hero card */}
       <div className="relative rounded-lg overflow-hidden glass-panel mb-6">

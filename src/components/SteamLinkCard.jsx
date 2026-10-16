@@ -22,8 +22,10 @@ export default function SteamLinkCard() {
   const load = async () => {
     setLoading(true);
     try {
-      const items = await base44.entities.SteamLink.filter({});
-      setLink(items[0] || null);
+      if (await base44.auth.isAuthenticated()) {
+        const items = await base44.entities.SteamLink.filter({});
+        setLink(items[0] || null);
+      }
     } catch (e) {
       setStatus({ type: "error", text: e.message });
     }
@@ -48,6 +50,11 @@ export default function SteamLinkCard() {
     setBusy(true);
     setStatus(null);
     try {
+      // Visitors without a Haven profile sign in first, then come back here to link Steam.
+      if (!(await base44.auth.isAuthenticated())) {
+        window.location.href = "/login?returnTo=%2F";
+        return;
+      }
       const res = await base44.functions.invoke("steamLinkStart", {});
       window.location.href = res.data.redirect_url;
     } catch (e) {
