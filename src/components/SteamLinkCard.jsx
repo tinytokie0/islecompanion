@@ -13,16 +13,22 @@ const REASONS = {
   bad_return_to: "Steam's response did not come back to this site correctly.",
 };
 
+// Set before sending a signed-out visitor to account creation, so they are
+// sent straight into Steam authentication when they come back.
+const PENDING_FLAG = "steam_link_pending";
+
 export default function SteamLinkCard() {
   const [link, setLink] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [authed, setAuthed] = useState(false);
   const [status, setStatus] = useState(null); // { type: 'ok' | 'error', text }
 
   const load = async () => {
     setLoading(true);
     try {
       if (await base44.auth.isAuthenticated()) {
+        setAuthed(true);
         const items = await base44.entities.SteamLink.filter({});
         setLink(items[0] || null);
       }
@@ -37,6 +43,7 @@ export default function SteamLinkCard() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const steam = params.get("steam");
+    if (steam) sessionStorage.removeItem(PENDING_FLAG);
     if (steam === "linked") {
       setStatus({ type: "ok", text: "Steam account linked." });
       load();
@@ -50,18 +57,38 @@ export default function SteamLinkCard() {
     setBusy(true);
     setStatus(null);
     try {
-      // Visitors without a Haven profile sign in first, then come back here to link Steam.
+      // Visitors without a Haven profile create it once, then come straight
+      // back to finish linking Steam.
       if (!(await base44.auth.isAuthenticated())) {
+        sessionStorage.setItem(PENDING_FLAG, "1");
         window.location.href = "/login?returnTo=%2F";
         return;
       }
-      const res = await base44.functions.invoke("steamLinkStart", {});
-      window.location.href = res.data.redirect_url;
+      await beginSteamLink();
     } catch (e) {
       setStatus({ type: "error", text: e.message });
       setBusy(false);
     }
   };
+
+  const beginSteamLink = async () => {
+    const res = await base44.functions.invoke("steamLinkStart", {});
+    window.location.href = res.data.redirect_url;
+  };
+
+  // A visitor who was sent to create their Haven account returns here and
+  // continues directly into Steam authentication.
+  useEffect(() => {
+    if (loading || busy) return;
+    if (sessionStorage.getItem(PENDING_FLAG) !== "1") return;
+    sessionStorage.removeItem(PENDING_FLAG);
+    if (!authed || link) return;
+    setBusy(true);
+    beginSteamLink().catch((e) => {
+      setBusy(false);
+      setStatus({ type: "error", text: e.message });
+    });
+  }, [loading, busy, authed, link]);
 
   const unlink = async () => {
     setBusy(true);
@@ -109,9 +136,9 @@ export default function SteamLinkCard() {
       ) : (
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <p className="flex-1 font-mono text-[11px] text-muted-foreground leading-relaxed">
-            Sign in with Steam to connect it to your Haven profile. You will sign in on
-            Steam's official page and be redirected back here. Your Steam account stays
-            linked to your profile across future sign-ins.
+            {authed
+              ? "Sign in with Steam to connect it to your Haven profile. You will sign in on Steam's official page and be redirected back here. Your Steam account stays linked to your profile across future sign-ins."
+              : "First time here? You'll create your free Haven account just once (email sign-in), then you'll be sent straight to Steam to finish linking. Returning players skip straight to Steam."}
           </p>
           <button
             onClick={startLink}
