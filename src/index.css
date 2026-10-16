@@ -233,3 +233,14 @@
 .side-raptor-6 { animation: raptor-peek-run-l 45s linear infinite; animation-delay: -65.5s; }
 .side-raptor-7 { animation: raptor-peek-run-r 45s linear infinite; animation-delay: -67.7s; }
 .side-raptor-8 { animation: raptor-peek-run-l 45s linear infinite; animation-delay: -69.9s; }
+
+/* Dino display art: on hover the dino lunges forward with a quick scale-up
+   and a hot-pink glow */
+.dino-react {
+  transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.45), filter 0.35s ease;
+  will-change: transform;
+}
+.dino-group:hover .dino-react {
+  transform: scale(1.15) translateY(-5px);
+  filter: drop-shadow(0 0 22px rgba(255, 46, 123, 0.55));
+}

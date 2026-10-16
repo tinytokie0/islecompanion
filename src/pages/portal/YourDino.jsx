@@ -6,6 +6,7 @@ import CoinBadge from "@/components/wallet/CoinBadge";
 import useMyDino from "@/hooks/useMyDino";
 import useWallet from "@/hooks/useWallet";
 import { stageFor } from "@/lib/growthStages";
+import DinoPortrait from "@/components/DinoPortrait";
 
 const ACCENTS = ["#dc2626", "#f59e0b", "#22c55e", "#84cc16", "#ef4444", "#38bdf8", "#a78bfa"];
 
@@ -75,10 +76,7 @@ export default function YourDino() {
               className="absolute w-3/4 h-3/4 rounded-full blur-3xl opacity-30"
               style={{ backgroundColor: accent }}
             />
-            <svg viewBox="0 0 200 200" className="relative w-3/4 h-3/4">
-              <path d={SILHOUETTE} fill={accent} opacity="0.9" className="animate-breathe" />
-              <circle cx="155" cy="80" r="3" fill="#0A0F0D" />
-            </svg>
+            <DinoPortrait species={dino.species} className="absolute inset-0" />
             <div className="absolute top-4 left-4 font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
               {dino.player_name ? dino.player_name.toUpperCase() : "UNKNOWN PLAYER"}
             </div>

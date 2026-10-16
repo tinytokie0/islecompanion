@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { stageFor } from "@/lib/growthStages";
+import DinoPortrait from "@/components/DinoPortrait";
 
 const ACCENTS = ["#dc2626", "#f59e0b", "#22c55e", "#84cc16", "#ef4444", "#38bdf8", "#a78bfa"];
 
@@ -106,23 +107,7 @@ export default function Garage() {
                   className="absolute w-3/4 h-3/4 rounded-full blur-3xl opacity-30 transition-colors duration-700"
                   style={{ backgroundColor: accentFor(active.steam_id) }}
                 />
-                <svg viewBox="0 0 200 200" className="relative w-3/4 h-3/4">
-                  <path
-                    d={SILHOUETTE}
-                    fill={accentFor(active.steam_id)}
-                    opacity="0.9"
-                    className="animate-breathe"
-                  />
-                  <circle cx="155" cy="80" r="3" fill="#0A0F0D" />
-                  {[...Array(5)].map((_, i) => (
-                    <path
-                      key={i}
-                      d={`M ${75 + i * 18} ${85 - i * 1} L ${80 + i * 18} ${75 - i * 1} L ${85 + i * 18} ${85 - i * 1}`}
-                      fill={accentFor(active.steam_id)}
-                      opacity="0.7"
-                    />
-                  ))}
-                </svg>
+                <DinoPortrait species={active.species} className="absolute inset-0" />
                 <div className="absolute top-4 left-4 font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
                   STEAM {String(active.steam_id || "").slice(-6)}
                 </div>
@@ -178,9 +163,7 @@ export default function Garage() {
                       className="w-full aspect-video mb-3 flex items-center justify-center relative overflow-hidden"
                       style={{ backgroundColor: `${accent}11` }}
                     >
-                      <svg viewBox="0 0 200 200" className="w-3/4 h-3/4">
-                        <path d={SILHOUETTE} fill={accent} opacity="0.8" />
-                      </svg>
+                      <DinoPortrait species={spec.species} className="absolute inset-0" />
                       <div className="absolute bottom-1 right-1 font-mono text-[8px] text-muted-foreground">
                         {spec.growth ?? 0}%
                       </div>

@@ -3,6 +3,7 @@ import { Coins, ShoppingBag } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
 import { stageFor } from "@/lib/growthStages";
 import { DINOS, START_SHARDS } from "@/lib/portalData";
+import DinoPortrait from "@/components/DinoPortrait";
 
 const RARITY_COLOR = { APEX: "#a78bfa", RARE: "#e6b84c", COMMON: "#94a3b8" };
 
@@ -45,16 +46,8 @@ export default function DinoShop() {
                   {dino.rarity}
                 </span>
               </div>
-              <div className="relative aspect-video glass-panel-light rounded-sm flex items-center justify-center mb-4 overflow-hidden">
-                <div className="absolute inset-0 grid-bg opacity-30" />
-                <svg viewBox="0 0 200 200" className="relative h-4/5">
-                  <path
-                    d="M 30 120 Q 40 100 60 95 L 80 85 Q 100 75 120 80 L 140 70 Q 160 65 170 75 L 165 90 Q 155 95 145 100 L 135 110 Q 130 125 120 130 L 110 135 Q 95 140 80 138 L 65 145 Q 45 150 35 140 Z"
-                    fill={dino.accent}
-                    opacity="0.85"
-                  />
-                  <circle cx="155" cy="80" r="3" fill="#0A0F0D" />
-                </svg>
+              <div className="relative aspect-video glass-panel-light rounded-sm mb-4 overflow-hidden">
+                <DinoPortrait species={dino.name} className="absolute inset-0" />
               </div>
               <div className="font-heading text-xl tracking-[0.05em] text-foreground mb-1">
                 {dino.name.toUpperCase()}
