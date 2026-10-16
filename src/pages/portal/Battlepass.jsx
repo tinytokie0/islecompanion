@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Coins, Crown, Lock, Check } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
+import useWallet from "@/hooks/useWallet";
 
-const LEVEL = 6;
-const XP = 340;
 const XP_MAX = 500;
 
 const TIERS = Array.from({ length: 10 }, (_, i) => {
@@ -16,6 +15,11 @@ const TIERS = Array.from({ length: 10 }, (_, i) => {
 });
 
 export default function Battlepass() {
+  // Level and XP now come from the real wallet: XP is earned by claiming quests.
+  const { wallet } = useWallet(60000);
+  const totalXp = wallet?.xp || 0;
+  const LEVEL = Math.floor(totalXp / XP_MAX) + 1;
+  const XP = totalXp % XP_MAX;
   const [claimedFree, setClaimedFree] = useState([1, 2]);
   const [claimedPremium, setClaimedPremium] = useState([2]);
 

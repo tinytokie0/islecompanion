@@ -1,7 +1,7 @@
 {
   "name": "CoinTransaction",
   "type": "object",
-  "description": "Auditable ledger of every Haven Tokens earning, purchase, staff adjustment and refund. Records are created only by backend functions; players can read their own and can never edit or delete them.",
+  "description": "Auditable ledger of every Haven Tokens earning, purchase, staff adjustment, quest reward and refund. Records are created only by backend functions; players can read their own and can never edit or delete them.",
   "properties": {
     "user_id": {
       "type": "string",
@@ -14,7 +14,8 @@
         "purchase",
         "staff_grant",
         "staff_deduct",
-        "refund"
+        "refund",
+        "quest"
       ],
       "description": "Transaction type"
     },

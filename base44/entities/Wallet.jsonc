@@ -19,6 +19,11 @@
       "type": "string",
       "format": "date-time",
       "description": "Start of the current playtime reward window; null until the player's first fresh server sighting"
+    },
+    "xp": {
+      "type": "number",
+      "description": "Total XP earned from quest rewards, feeding battlepass level progression",
+      "default": 0
     }
   },
   "required": [

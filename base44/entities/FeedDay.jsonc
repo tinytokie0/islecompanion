@@ -1,0 +1,72 @@
+{
+  "name": "FeedDay",
+  "type": "object",
+  "description": "Daily rollup of one player's live-feed sightings, one record per Steam ID per UTC day, written by the live-data recording run. Powers real quest progress (playtime, growth gained, days played).",
+  "properties": {
+    "steam_id": {
+      "type": "string",
+      "description": "64-bit Steam ID of the player (rollup key together with day)"
+    },
+    "day": {
+      "type": "string",
+      "format": "date",
+      "description": "UTC day this rollup covers (rollup key together with steam_id)"
+    },
+    "player_name": {
+      "type": "string",
+      "description": "In-game player name at last sighting"
+    },
+    "species": {
+      "type": "string",
+      "description": "Species at last sighting"
+    },
+    "sightings": {
+      "type": "number",
+      "description": "Number of live-feed sightings recorded this day (one per recording run, roughly one every 5 minutes)"
+    },
+    "first_seen": {
+      "type": "string",
+      "format": "date-time",
+      "description": "First sighting of the day"
+    },
+    "last_seen": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last sighting of the day"
+    },
+    "min_growth": {
+      "type": "number",
+      "description": "Lowest growth observed this day"
+    },
+    "max_growth": {
+      "type": "number",
+      "description": "Highest growth observed this day"
+    }
+  },
+  "required": [
+    "steam_id",
+    "day"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

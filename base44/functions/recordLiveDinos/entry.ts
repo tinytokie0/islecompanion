@@ -79,6 +79,40 @@ export default async function(req) {
       recorded = (res?.records || records).length;
     }
 
+    // Daily rollups (one per player per UTC day) power real quest progress:
+    // playtime (sightings x 5 min), growth gained and days played.
+    const day = now.slice(0, 10);
+    const steamIds = records.map((r) => r.steam_id);
+    const rollPage = await base44.asServiceRole.entities.FeedDay.filter(
+      { steam_id: { $in: steamIds }, day },
+      { limit: 500 }
+    );
+    const bySteam = new Map((rollPage.items || []).map((r) => [r.steam_id, r]));
+    for (const r of records) {
+      const prev = bySteam.get(r.steam_id);
+      const growth = typeof r.growth === 'number' ? r.growth : null;
+      const minG = growth != null && prev?.min_growth != null
+        ? Math.min(prev.min_growth, growth)
+        : (growth ?? prev?.min_growth ?? 0);
+      const maxG = growth != null && prev?.max_growth != null
+        ? Math.max(prev.max_growth, growth)
+        : (growth ?? prev?.max_growth ?? 0);
+      const payload = {
+        steam_id: r.steam_id,
+        day,
+        player_name: r.player_name,
+        species: r.species,
+        sightings: (prev?.sightings || 0) + 1,
+        first_seen: prev?.first_seen || now,
+        last_seen: now,
+        min_growth: minG,
+        max_growth: maxG,
+      };
+      const service = base44.asServiceRole;
+      if (prev) await service.entities.FeedDay.update(prev.id, payload);
+      else await service.entities.FeedDay.create(payload);
+    }
+
     return Response.json({ online: status.online === true, player_count: typeof status.player_count === 'number' ? status.player_count : records.length, recorded });
   } catch (error) {
     return Response.json({ error: error.message, recorded: 0 }, { status: 200 });
