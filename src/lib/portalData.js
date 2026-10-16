@@ -1,17 +1,33 @@
 // Shared sample data for the portal pages
 export const START_SHARDS = 12500;
 
+// Full playable roster of The Isle: Evrima branch (patch 0.21.784).
 export const DINOS = [
+  // Carnivores
   { name: "Tyrannosaurus", code: "T-REX-001", growth: 92, price: 24000, rarity: "APEX", accent: "#dc2626" },
-  { name: "Carnotaurus", code: "CARNO-014", growth: 78, price: 9500, rarity: "RARE", accent: "#f59e0b" },
-  { name: "Dakotaraptor", code: "RAPT-007", growth: 100, price: 12500, rarity: "RARE", accent: "#22c55e" },
-  { name: "Stegosaurus", code: "STEG-003", growth: 85, price: 7000, rarity: "COMMON", accent: "#84cc16" },
-  { name: "Acrocanthosaurus", code: "ACRO-009", growth: 64, price: 15000, rarity: "RARE", accent: "#ef4444" },
-  { name: "Diabloceratops", code: "DIAB-008", growth: 58, price: 5200, rarity: "COMMON", accent: "#a78bfa" },
-  { name: "Utahraptor", code: "UTAH-021", growth: 55, price: 4800, rarity: "COMMON", accent: "#c98a5e" },
-  { name: "Pteranodon", code: "PTER-011", growth: 70, price: 8800, rarity: "RARE", accent: "#e6b84c" },
   { name: "Deinosuchus", code: "DEIN-002", growth: 88, price: 18000, rarity: "APEX", accent: "#3b82f6" },
+  { name: "Allosaurus", code: "ALLO-004", growth: 75, price: 13000, rarity: "RARE", accent: "#ef4444" },
+  { name: "Carnotaurus", code: "CARNO-014", growth: 78, price: 9500, rarity: "RARE", accent: "#f59e0b" },
+  { name: "Austroraptor", code: "AUST-017", growth: 85, price: 9800, rarity: "RARE", accent: "#60a5fa" },
+  { name: "Pteranodon", code: "PTER-011", growth: 70, price: 8800, rarity: "RARE", accent: "#e6b84c" },
+  { name: "Ceratosaurus", code: "CERA-006", growth: 70, price: 6500, rarity: "COMMON", accent: "#e879f9" },
+  { name: "Omniraptor", code: "OMNI-005", growth: 100, price: 6000, rarity: "COMMON", accent: "#22c55e" },
+  { name: "Dilophosaurus", code: "DILO-012", growth: 62, price: 5500, rarity: "COMMON", accent: "#34d399" },
+  { name: "Herrerasaurus", code: "HER-003", growth: 66, price: 4200, rarity: "COMMON", accent: "#fb923c" },
+  { name: "Troodon", code: "TROO-019", growth: 55, price: 3800, rarity: "COMMON", accent: "#a5b4fc" },
+  // Herbivores
+  { name: "Triceratops", code: "TRIC-002", growth: 90, price: 16000, rarity: "APEX", accent: "#fb7185" },
+  { name: "Maiasaura", code: "MAIA-013", growth: 80, price: 7200, rarity: "COMMON", accent: "#fbbf24" },
+  { name: "Stegosaurus", code: "STEG-003", growth: 85, price: 7000, rarity: "COMMON", accent: "#84cc16" },
+  { name: "Tenontosaurus", code: "TENO-007", growth: 74, price: 5800, rarity: "COMMON", accent: "#4ade80" },
+  { name: "Pachycephalosaurus", code: "PACH-009", growth: 68, price: 5600, rarity: "COMMON", accent: "#38bdf8" },
+  { name: "Diabloceratops", code: "DIAB-008", growth: 58, price: 5200, rarity: "COMMON", accent: "#a78bfa" },
+  { name: "Kentrosaurus", code: "KENT-010", growth: 72, price: 6400, rarity: "COMMON", accent: "#a3e635" },
+  { name: "Dryosaurus", code: "DRYO-016", growth: 50, price: 2800, rarity: "COMMON", accent: "#86efac" },
   { name: "Hypsilophodon", code: "HYP-045", growth: 40, price: 1500, rarity: "COMMON", accent: "#34d399" },
+  // Omnivores
+  { name: "Gallimimus", code: "GALL-018", growth: 76, price: 8200, rarity: "RARE", accent: "#c4b5fd" },
+  { name: "Beipiaosaurus", code: "BEIP-020", growth: 60, price: 4600, rarity: "COMMON", accent: "#fdba74" },
 ];
 
 export const SKINS = [
