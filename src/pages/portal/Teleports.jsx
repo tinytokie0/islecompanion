@@ -5,6 +5,7 @@ import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 import WaygateCard from "@/components/teleports/WaygateCard";
 import WaygateHistory from "@/components/teleports/WaygateHistory";
 import WaygateAdmin from "@/components/teleports/WaygateAdmin";
+import TeleportBar from "@/components/teleports/TeleportBar";
 import CoinBadge from "@/components/wallet/CoinBadge";
 import useWallet from "@/hooks/useWallet";
 import { base44 } from "@/api/base44Client";
@@ -16,6 +17,7 @@ export default function Teleports() {
   const { wallet } = useWallet();
   const [gates, setGates] = useState(null);
   const [requests, setRequests] = useState(null);
+  const [selected, setSelected] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
 
   const load = useCallback(async () => {
@@ -65,9 +67,18 @@ export default function Teleports() {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
           {gates.map((gate) => (
-            <WaygateCard key={gate.id} gate={gate} onUsed={onUsed} />
+            <WaygateCard
+              key={gate.id}
+              gate={gate}
+              selected={selected?.id === gate.id}
+              onSelect={setSelected}
+            />
           ))}
         </div>
+      )}
+
+      {selected && (
+        <TeleportBar key={selected.id} gate={selected} onUsed={onUsed} />
       )}
 
       <WaygateHistory requests={requests || []} />
