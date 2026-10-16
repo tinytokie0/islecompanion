@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Gamepad2, Link2, Unlink, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Gamepad2, Unlink, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import SteamIcon from "@/components/SteamIcon";
 
 const REASONS = {
   missing: "Linking request was incomplete.",
@@ -9,6 +10,7 @@ const REASONS = {
   expired: "The linking request expired. Try again.",
   taken: "That Steam account is already linked to another user.",
   server: "Something went wrong verifying the link.",
+  bad_return_to: "Steam's response did not come back to this site correctly.",
 };
 
 export default function SteamLinkCard() {
@@ -100,15 +102,16 @@ export default function SteamLinkCard() {
       ) : (
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <p className="flex-1 font-mono text-[11px] text-muted-foreground leading-relaxed">
-            Link your Steam account to your Haven profile. You will sign in on Steam and be
-            redirected back here.
+            Sign in with Steam to connect it to your Haven profile. You will sign in on
+            Steam's official page and be redirected back here. Your Steam account stays
+            linked to your profile across future sign-ins.
           </p>
           <button
             onClick={startLink}
             disabled={busy}
             className="shrink-0 font-mono text-[10px] tracking-[0.2em] border border-primary/40 text-primary px-4 py-2 rounded-sm hover:bg-primary/10 transition-colors flex items-center gap-2 disabled:opacity-50"
           >
-            <Link2 size={12} /> LINK STEAM
+            <SteamIcon className="w-3.5 h-3.5" /> SIGN IN WITH STEAM
           </button>
         </div>
       )}
