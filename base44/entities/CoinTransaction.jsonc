@@ -1,0 +1,81 @@
+{
+  "name": "CoinTransaction",
+  "type": "object",
+  "description": "Auditable ledger of every Haven Tokens earning, purchase, staff adjustment and refund. Records are created only by backend functions; players can read their own and can never edit or delete them.",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Base44 user id the transaction belongs to"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "playtime",
+        "purchase",
+        "staff_grant",
+        "staff_deduct",
+        "refund"
+      ],
+      "description": "Transaction type"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Signed HT amount (positive earned or refunded, negative spent or deducted)"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Human-readable reason recorded with the transaction"
+    },
+    "item_id": {
+      "type": "string",
+      "description": "ShopItem id, set on purchases"
+    },
+    "item_name": {
+      "type": "string",
+      "description": "ShopItem name at purchase time"
+    },
+    "staff_admin_id": {
+      "type": "string",
+      "description": "Base44 user id of the admin who made a staff adjustment"
+    },
+    "balance_after": {
+      "type": "number",
+      "description": "Wallet balance immediately after this transaction"
+    }
+  },
+  "required": [
+    "user_id",
+    "type",
+    "amount",
+    "reason"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

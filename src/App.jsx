@@ -36,6 +36,9 @@ import Leaderboard from '@/pages/portal/Leaderboard';
 import Giveaways from '@/pages/portal/Giveaways';
 import Tickets from '@/pages/portal/Tickets';
 import Apply from '@/pages/portal/Apply';
+import Wallet from '@/pages/portal/Wallet';
+import TokenShop from '@/pages/portal/TokenShop';
+import EconomyAdmin from '@/pages/portal/EconomyAdmin';
 import DinoPacks from '@/pages/portal/DinoPacks';
 import RewardPacks from '@/pages/portal/RewardPacks';
 import CarcassDrop from '@/pages/portal/CarcassDrop';
@@ -107,6 +110,9 @@ const AuthenticatedApp = () => {
           <Route path="/packs" element={<DinoPacks />} />
           <Route path="/claim" element={<RewardPacks />} />
           <Route path="/carcass" element={<CarcassDrop />} />
+          <Route path="/wallet" element={<Wallet />} />
+          <Route path="/store" element={<TokenShop />} />
+          <Route path="/admin-economy" element={<EconomyAdmin />} />
         </Route>
 
         <Route path="*" element={<PageNotFound />} />

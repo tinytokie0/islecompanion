@@ -3,7 +3,7 @@
     "document": {
       "dsl": "1.0.0",
       "name": "record_live_dinos",
-      "version": "1.0",
+      "version": "1.1",
       "namespace": "base44"
     },
     "do": [
@@ -13,10 +13,23 @@
           "with": {
             "function_name": "recordLiveDinos"
           },
-          "then": "end",
+          "then": "award_tokens",
           "x-base44": {
             "title": "Record live dinos",
             "description": "Upsert Arkanis players into LiveDino"
+          }
+        }
+      },
+      {
+        "award_tokens": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "economyAwardPlaytime"
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Award Haven Tokens",
+            "description": "Playtime rewards for fresh feed sightings"
           }
         }
       }
@@ -40,5 +53,5 @@
       "ends_after_count": null
     }
   },
-  "description": "Every 5 minutes, pulls live players from the Arkanis API and records them into LiveDino so the Garage, Live Map and player counts stay current."
+  "description": "Every 5 minutes, pulls live players from the Arkanis API into LiveDino, then awards Haven Tokens to verified wallets with fresh server sightings."
 }

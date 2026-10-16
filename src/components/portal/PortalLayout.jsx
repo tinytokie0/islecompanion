@@ -48,6 +48,8 @@ const NAV_GROUPS = [
   {
     label: "Market",
     items: [
+      { label: "Wallet", to: "/wallet" },
+      { label: "Token shop", to: "/store" },
       { label: "Dino shop", to: "/shop" },
       { label: "Trading", to: "/trading" },
       { label: "Casino", to: "/casino" },

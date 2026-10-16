@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Map as MapIcon, Skull, Trophy, Target, MapPin, Warehouse, Sprout, Bone, Brush,
   Palette, PackageOpen, Crown, ListChecks, Package, UserPlus, Gift,
-  ShoppingBag, ArrowLeftRight, Dices, LifeBuoy, FileText, Dna,
+  ShoppingBag, ArrowLeftRight, Dices, LifeBuoy, FileText, Dna, Coins, Store,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Image } from "@/components/ui/image";
@@ -50,6 +50,8 @@ const CATEGORIES = [
   {
     label: "Market",
     items: [
+      { icon: Coins, title: "Wallet", desc: "Your Haven Tokens and history", to: "/wallet" },
+      { icon: Store, title: "Token shop", desc: "Spend Haven Tokens on rewards", to: "/store" },
       { icon: ShoppingBag, title: "Dino Shop", desc: "Dinos, straight to your garage", to: "/shop" },
       { icon: ArrowLeftRight, title: "Trading", desc: "Swap dinos and skins", to: "/trading" },
       { icon: Dices, title: "Casino", desc: "Slots, coinflip and blackjack", to: "/casino" },

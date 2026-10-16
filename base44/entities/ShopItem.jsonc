@@ -1,0 +1,61 @@
+{
+  "name": "ShopItem",
+  "type": "object",
+  "description": "Admin-configured reward purchasable with Haven Tokens (HT): website cosmetics, titles, badges and other administrator-approved rewards.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Reward name shown in the shop"
+    },
+    "description": {
+      "type": "string",
+      "description": "What the reward is and where it applies (site profile, Discord role, in-game when supported)"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "cosmetic",
+        "title",
+        "badge",
+        "reward"
+      ],
+      "description": "Reward category"
+    },
+    "price": {
+      "type": "number",
+      "description": "Price in Haven Tokens (HT), whole positive number"
+    },
+    "one_time": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, a player can purchase this reward only once"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Only active items appear in the shop"
+    }
+  },
+  "required": [
+    "name",
+    "price"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

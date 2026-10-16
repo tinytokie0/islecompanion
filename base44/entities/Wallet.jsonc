@@ -1,0 +1,57 @@
+{
+  "name": "Wallet",
+  "type": "object",
+  "description": "Haven Tokens (HT) wallet, one per app user, keyed by user id and linked to the player's verified Steam account. Balance changes happen only through backend functions.",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Base44 user id that owns this wallet"
+    },
+    "steam_id": {
+      "type": "string",
+      "description": "Verified 64-bit Steam ID copied from the player's SteamLink (private, backfilled when the player links Steam)"
+    },
+    "balance": {
+      "type": "number",
+      "description": "Current Haven Tokens (HT) balance, never negative"
+    },
+    "last_reward_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Start of the current playtime reward window; null until the player's first fresh server sighting"
+    }
+  },
+  "required": [
+    "user_id",
+    "balance"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
