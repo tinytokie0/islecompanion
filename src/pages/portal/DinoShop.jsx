@@ -9,7 +9,7 @@ const RARITY_COLOR = { APEX: "#a78bfa", RARE: "#e6b84c", COMMON: "#94a3b8" };
 
 export default function DinoShop() {
   const [shards, setShards] = useState(START_SHARDS);
-  const [owned, setOwned] = useState(["CARNO-014", "STEG-003"]);
+  const [owned, setOwned] = useState([]);
 
   const buy = (dino) => {
     if (shards < dino.price) return;

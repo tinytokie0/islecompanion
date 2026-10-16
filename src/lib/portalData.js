@@ -41,57 +41,23 @@ export const SKINS = [
   { id: "prism", name: "Prismatic", pattern: "Crystalline", hex: "#c4b5fd", price: 9500 },
 ];
 
-export const TELEPORTS = [
-  { name: "Crystal Basin", biome: "Northern Highlands", cost: 250 },
-  { name: "Volcano Overlook", biome: "Ash Reaches", cost: 400 },
-  { name: "South Plains", biome: "Open Range", cost: 150 },
-  { name: "Swamps Center", biome: "Mire Delta", cost: 300 },
-  { name: "Skyshard Isles", biome: "Floating Reaches", cost: 550 },
-  { name: "Void Ridge", biome: "Western Cliffs", cost: 350 },
-];
-
 export const NESTING_GUIDE = [
   { species: "Tyrannosaurus", clutch: "4–6 eggs", nest: "Scraped ground nest", grounds: "Void Ridge", care: "High — guards until sub-adult" },
   { species: "Deinosuchus", clutch: "20–30 eggs", nest: "Buried sand mound", grounds: "Mire Delta", care: "None — eggs left to warm" },
   { species: "Carnotaurus", clutch: "1–2 eggs", nest: "Colonial ground nest", grounds: "Crystal Basin", care: "Moderate — rots nearby" },
-  { species: "Dakotaraptor", clutch: "6–8 eggs", nest: "Brooded mound nest", grounds: "Skyshard Isles", care: "High — constant brooding" },
+  { species: "Allosaurus", clutch: "3–5 eggs", nest: "Vegetation mound", grounds: "Void Ridge", care: "High — defends the mound" },
   { species: "Stegosaurus", clutch: "6–10 eggs", nest: "Ditch nest", grounds: "Crystal Basin", care: "Low — checks daily" },
-  { species: "Acrocanthosaurus", clutch: "3–5 eggs", nest: "Vegetation mound", grounds: "Void Ridge", care: "High — defends the mound" },
+  { species: "Ceratosaurus", clutch: "4–6 eggs", nest: "Scraped ground nest", grounds: "South Plains", care: "Moderate — nearby guarding" },
   { species: "Diabloceratops", clutch: "2–4 eggs", nest: "Crater colonial nest", grounds: "Crystal Basin", care: "Herd — defended as a group" },
-  { species: "Utahraptor", clutch: "5–7 eggs", nest: "Burrow nest", grounds: "Void Ridge", care: "Pack — shared guarding" },
+  { species: "Omniraptor", clutch: "5–7 eggs", nest: "Burrow nest", grounds: "Void Ridge", care: "Pack — shared guarding" },
   { species: "Pteranodon", clutch: "1–3 eggs", nest: "Cliff ledge scrape", grounds: "Skyshard Isles", care: "Moderate — rotated shifts" },
   { species: "Hypsilophodon", clutch: "8–12 eggs", nest: "Burrow nest", grounds: "South Plains", care: "Low — abandons at hatching" },
 ];
 
-export const INITIAL_BOUNTIES = [
-  { id: 1, target: "GRAVELORD", amount: 3000, placer: "REDCLAW-77" },
-  { id: 2, target: "SANDSTRIDER", amount: 1200, placer: "NIGHTFALL" },
-  { id: 3, target: "HOLLOW-9", amount: 2500, placer: "VOLT" },
-];
-
-export const GIVEAWAYS = [
-  { id: 1, title: "Apex Starter Giveaway", prize: "Tyrannosaurus (Sub-Adult)", entries: 214, endsIn: "2d 4h" },
-  { id: 2, title: "Shard Rain", prize: "5,000 Shards", entries: 389, endsIn: "18h" },
-  { id: 3, title: "Skin Drop", prize: "Prismatic Skin", entries: 152, endsIn: "5d 9h" },
-];
-
-export const WINNERS = [
-  "NIGHTFALL won the Goldenhour skin",
-  "MOSSBACK won 2,500 shards",
-  "VOLT won a Dakotaraptor",
-  "PALEHIDE won the Gilded Scales skin",
-];
-
 export const PACKS = [
-  { name: "Starter Pack", price: 2500, tier: "COMMON", accent: "#84cc16", pool: ["Hypsilophodon", "Stegosaurus", "Utahraptor", "Diabloceratops"] },
-  { name: "Apex Pack", price: 7500, tier: "RARE", accent: "#e6b84c", pool: ["Carnotaurus", "Pteranodon", "Acrocanthosaurus", "Dakotaraptor"] },
-  { name: "Mythic Pack", price: 20000, tier: "APEX", accent: "#a78bfa", pool: ["Tyrannosaurus", "Deinosuchus", "Tyrannosaurus", "Deinosuchus"] },
+  { name: "Starter Pack", price: 2500, tier: "COMMON", accent: "#84cc16", pool: ["Hypsilophodon", "Dryosaurus", "Omniraptor", "Diabloceratops"] },
+  { name: "Apex Pack", price: 7500, tier: "RARE", accent: "#e6b84c", pool: ["Carnotaurus", "Pteranodon", "Allosaurus", "Ceratosaurus"] },
+  { name: "Mythic Pack", price: 20000, tier: "APEX", accent: "#a78bfa", pool: ["Tyrannosaurus", "Deinosuchus", "Triceratops", "Maiasaura"] },
 ];
 
 export const REWARD_CODES = { HAVEN2026: 500, CRYSTAL: 250, PRIME: 1000, GOLDENHOUR: 750 };
-
-export const DROP_HISTORY = [
-  { region: "Swamps Center", contents: "Prime Stegosaurus carcass", claimedBy: "APEX-01", ago: "2h" },
-  { region: "East Plains", contents: "2,000 shard hoard", claimedBy: "NIGHTFALL", ago: "8h" },
-  { region: "West Rail Access", contents: "Sub-Adult Utahraptor carcass", claimedBy: "VOLT", ago: "1d" },
-];

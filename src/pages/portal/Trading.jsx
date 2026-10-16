@@ -6,18 +6,11 @@ import { DINOS, START_SHARDS } from "@/lib/portalData";
 
 const RARITY_COLOR = { APEX: "#a78bfa", RARE: "#e6b84c", COMMON: "#94a3b8" };
 
-const INITIAL_OWNED = ["CARNO-014", "STEG-003"];
-
-const INITIAL_OFFERS = [
-  { id: 1, from: "REDCLAW-77", wants: "STEG-003", name: "Utahraptor", code: "UTAH-021", growth: 55 },
-  { id: 2, from: "NIGHTFALL", wants: "CARNO-014", name: "Diabloceratops", code: "DIAB-008", growth: 40 },
-];
-
 export default function Trading() {
   const [shards, setShards] = useState(START_SHARDS);
-  const [owned, setOwned] = useState(INITIAL_OWNED);
+  const [owned, setOwned] = useState([]);
   const [listed, setListed] = useState([]);
-  const [offers, setOffers] = useState(INITIAL_OFFERS);
+  const [offers, setOffers] = useState([]);
 
   const market = DINOS.filter((d) => !owned.includes(d.code));
 
@@ -105,6 +98,11 @@ export default function Trading() {
             <ArrowLeftRight size={13} className="text-primary" /> YOUR SPECIMENS — {ownedDinos.length}
           </div>
           <div className="space-y-3">
+            {ownedDinos.length === 0 && (
+              <div className="font-mono text-[11px] text-muted-foreground py-6 text-center">
+                You don't own any dinos yet. Buy one from the market above.
+              </div>
+            )}
             {ownedDinos.map((d) => (
               <div key={d.code} className="flex justify-between items-center border-b border-border/60 pb-3">
                 <div>

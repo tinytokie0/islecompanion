@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Coins, Target, Crosshair } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
-import { INITIAL_BOUNTIES, START_SHARDS } from "@/lib/portalData";
+import { START_SHARDS } from "@/lib/portalData";
+import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 export default function Bounties() {
   const [shards, setShards] = useState(START_SHARDS);
-  const [bounties, setBounties] = useState(INITIAL_BOUNTIES);
+  const [bounties, setBounties] = useState([]);
   const [target, setTarget] = useState("");
   const [amount, setAmount] = useState(1000);
   const [error, setError] = useState(null);
@@ -107,6 +108,10 @@ export default function Bounties() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-8">
+        <LiveIslandStrip />
       </div>
     </PageShell>
   );

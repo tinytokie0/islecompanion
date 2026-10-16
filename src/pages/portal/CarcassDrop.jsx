@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Bone, Coins } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
-import { DROP_HISTORY, START_SHARDS } from "@/lib/portalData";
+import { START_SHARDS } from "@/lib/portalData";
+import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 const format = (s) => {
   const h = Math.floor(s / 3600);
@@ -70,27 +71,16 @@ export default function CarcassDrop() {
       </div>
 
       {/* History */}
-      <div className="glass-panel rounded-lg divide-y divide-border/60">
+      <div className="glass-panel rounded-lg divide-y divide-border/60 mb-8">
         <div className="p-5 font-mono text-[10px] tracking-[0.25em] text-muted-foreground">
           PAST DROPS
         </div>
-        {DROP_HISTORY.map((d, i) => (
-          <div key={i} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <div className="font-mono text-xs text-foreground">{d.contents}</div>
-              <div className="font-mono text-[9px] text-muted-foreground tracking-[0.15em]">
-                {d.region.toUpperCase()}
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="font-mono text-[10px] text-muted-foreground">
-                CLAIMED BY <span className="text-primary">{d.claimedBy}</span>
-              </span>
-              <span className="font-mono text-[9px] text-muted-foreground/70">{d.ago.toUpperCase()} AGO</span>
-            </div>
-          </div>
-        ))}
+        <div className="p-8 font-mono text-[11px] text-muted-foreground text-center">
+          No drops recorded yet.
+        </div>
       </div>
+
+      <LiveIslandStrip />
     </PageShell>
   );
 }

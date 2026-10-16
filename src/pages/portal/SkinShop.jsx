@@ -5,8 +5,8 @@ import { SKINS, START_SHARDS } from "@/lib/portalData";
 
 export default function SkinShop() {
   const [shards, setShards] = useState(START_SHARDS);
-  const [owned, setOwned] = useState(["ember"]);
-  const [equipped, setEquipped] = useState("ember");
+  const [owned, setOwned] = useState([]);
+  const [equipped, setEquipped] = useState(null);
 
   const buy = (skin) => {
     if (shards < skin.price) return;
