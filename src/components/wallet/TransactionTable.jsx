@@ -8,6 +8,7 @@ const TYPE_META = {
   staff_grant: { label: "STAFF GRANT", cls: "text-sky-400 border-sky-400/40" },
   staff_deduct: { label: "STAFF DEDUCTION", cls: "text-amber-400 border-amber-400/40" },
   refund: { label: "REFUND", cls: "text-sky-400 border-sky-400/40" },
+  daily_claim: { label: "DAILY CLAIM", cls: "text-primary border-primary/40" },
 };
 
 // The signed-in player's own ledger, read-only by design: every record was

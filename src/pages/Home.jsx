@@ -214,12 +214,12 @@ export default function Home() {
         </div>
         <div className="rounded-xl border border-border bg-card p-7 md:p-8 flex flex-col">
           <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-5">DAILY CLAIM</div>
-          <p className="text-sm text-muted-foreground mb-6">Free DNA once a day for signed-in players.</p>
+          <p className="text-sm text-muted-foreground mb-6">3,000 HT once every 24 hours for signed-in players.</p>
           <Link
-            to={isAuthenticated ? "/claim" : "/login"}
-            className="mt-auto self-start border border-border text-foreground text-sm font-medium px-4 py-2.5 rounded-md hover:bg-secondary transition-colors"
+            to={isAuthenticated ? "/wallet" : "/login"}
+            className="mt-auto self-start bg-primary text-primary-foreground text-sm font-medium px-4 py-2.5 rounded-md hover:opacity-90 transition-opacity"
           >
-            {isAuthenticated ? "Claim" : "Sign in to claim"}
+            {isAuthenticated ? "Claim 3,000 HT" : "Sign in to claim"}
           </Link>
         </div>
       </div>

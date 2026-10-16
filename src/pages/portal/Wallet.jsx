@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import { Coins, Loader2, Radio } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
 import TransactionTable from "@/components/wallet/TransactionTable";
+import DailyClaimCard from "@/components/wallet/DailyClaimCard";
 import useWallet from "@/hooks/useWallet";
 
 export default function Wallet() {
-  const { loading, wallet, config, earn, error } = useWallet();
+  const { loading, wallet, config, earn, daily_claim, error, refresh } = useWallet();
 
   const interval = earn?.interval_minutes || 30;
   const progress =
@@ -104,6 +105,8 @@ export default function Wallet() {
               )}
             </div>
           </div>
+
+          <DailyClaimCard dailyClaim={daily_claim} onClaimed={refresh} />
 
           <TransactionTable />
         </>

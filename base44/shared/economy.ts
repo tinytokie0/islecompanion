@@ -8,6 +8,23 @@ const DEFAULT_CONFIG = {
   shop_enabled: true,
 };
 
+// Daily claim: a flat HT reward any authenticated player with a verified
+// Steam-linked wallet can claim once every 24 hours.
+export const DAILY_CLAIM_AMOUNT = 3000;
+export const DAILY_CLAIM_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+
+// Projection for API responses: when the player can claim next.
+export function dailyClaimInfo(wallet) {
+  const last = wallet && wallet.last_daily_claim_at
+    ? new Date(wallet.last_daily_claim_at).getTime()
+    : 0;
+  return {
+    amount: DAILY_CLAIM_AMOUNT,
+    eligible: Date.now() >= (last ? last + DAILY_CLAIM_COOLDOWN_MS : 0),
+    next_available_at: last ? new Date(last + DAILY_CLAIM_COOLDOWN_MS).toISOString() : null,
+  };
+}
+
 // Load the singleton config, creating it with default rules on first use.
 export async function getConfig(service) {
   const items = await service.entities.EconomyConfig.filter({});

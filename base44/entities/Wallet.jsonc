@@ -20,6 +20,11 @@
       "format": "date-time",
       "description": "Start of the current playtime reward window; null until the player's first fresh server sighting"
     },
+    "last_daily_claim_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the player last claimed the daily reward; guards the 24-hour cooldown"
+    },
     "xp": {
       "type": "number",
       "description": "Total XP earned from quest rewards, feeding battlepass level progression",

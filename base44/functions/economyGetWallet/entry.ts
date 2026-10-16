@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
-import { getConfig, getWalletForUser, isFeedFresh, publicWallet } from '../../shared/economy.ts';
+import { getConfig, getWalletForUser, isFeedFresh, publicWallet, dailyClaimInfo } from '../../shared/economy.ts';
 
 // Signed-in player's own wallet, economy rules and live earning progress.
 // Creates the wallet on first visit and backfills the verified Steam id.
@@ -40,7 +40,12 @@ export default async function(req) {
       }
     }
 
-    return Response.json({ wallet: publicWallet(wallet), config, earn });
+    return Response.json({
+      wallet: publicWallet(wallet),
+      config,
+      earn,
+      daily_claim: dailyClaimInfo(wallet),
+    });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

@@ -15,7 +15,8 @@
         "staff_grant",
         "staff_deduct",
         "refund",
-        "quest"
+        "quest",
+        "daily_claim"
       ],
       "description": "Transaction type"
     },
