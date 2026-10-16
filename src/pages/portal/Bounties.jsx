@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Coins, Target, Crosshair } from "lucide-react";
-import PageShell from "@/components/portal/PageShell";
-import usePlayShards from "@/hooks/usePlayShards";
+import { Coins, Crosshair, Target } from "lucide-react";
 import EconomyChips from "@/components/portal/EconomyChips";
 import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
+import usePlayShards from "@/hooks/usePlayShards";
 
 export default function Bounties() {
   const [shards, setShards] = usePlayShards();
@@ -34,80 +33,94 @@ export default function Bounties() {
   };
 
   return (
-    <PageShell
-      kicker="BLOOD PRICE"
-      title="BOUNTIES"
-      sub="Put a price on a player's head. Kill the target to collect the pot."
-      right={<EconomyChips shards={shards} />}
-    >
-      {/* Place bounty */}
-      <form onSubmit={place} className="glass-panel rounded-lg p-6 mb-8">
-        <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
-          PLACE A BOUNTY
-        </div>
-        <div className="flex flex-col md:flex-row gap-3">
-          <input
-            value={target}
-            onChange={(e) => setTarget(e.target.value)}
-            placeholder="PLAYER NAME"
-            className="flex-1 bg-secondary border border-border rounded-sm font-mono text-xs text-foreground px-4 py-3 outline-none focus:border-primary/60 placeholder:text-muted-foreground/50"
-          />
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            min={100}
-            className="w-full md:w-44 bg-secondary border border-border rounded-sm font-mono text-xs text-foreground px-4 py-3 outline-none focus:border-primary/60"
-          />
-          <button
-            type="submit"
-            className="font-mono text-[10px] tracking-[0.25em] bg-primary text-primary-foreground px-6 py-3 rounded-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-          >
-            <Target size={13} /> PLACE BOUNTY
-          </button>
-        </div>
-        {error && <div className="font-mono text-[10px] text-destructive mt-3 tracking-wide">{error}</div>}
-      </form>
-
-      {/* Bounty board */}
-      <div className="glass-panel rounded-lg divide-y divide-border/60">
-        <div className="p-5 font-mono text-[10px] tracking-[0.25em] text-muted-foreground">
-          OPEN CONTRACTS — {bounties.length}
-        </div>
-        {bounties.length === 0 && (
-          <div className="p-8 font-mono text-[11px] text-muted-foreground text-center">
-            The board is clear. No blood owed.
+    <section className="px-4 md:px-8 py-10 md:py-14">
+      <div className="max-w-4xl mx-auto">
+        {/* Heading */}
+        <div className="text-center mb-10">
+          <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground">Bounties</h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            Put a price on a player's head. Whoever kills them collects the reward.
+          </p>
+          <div className="flex justify-center mt-4">
+            <EconomyChips shards={shards} />
           </div>
-        )}
-        {bounties.map((b) => (
-          <div key={b.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <span className="w-9 h-9 rounded-md border border-destructive/40 bg-destructive/10 flex items-center justify-center text-destructive shrink-0">
-                <Crosshair size={15} />
-              </span>
-              <div>
-                <div className="font-mono text-xs text-foreground tracking-wide">{b.target}</div>
-                <div className="font-mono text-[9px] text-muted-foreground tracking-[0.15em]">
-                  PLACED BY {b.placer}
+        </div>
+
+        {/* Place a bounty */}
+        <div className="rounded-xl border border-border bg-card p-6 md:p-8 mb-10">
+          <h2 className="font-heading text-2xl font-semibold text-foreground mb-1">Place a bounty</h2>
+          <p className="text-xs text-muted-foreground mb-5">
+            Name the player and the price. The pot is deducted from your shards up front.
+          </p>
+          <form onSubmit={place} className="flex flex-col md:flex-row gap-3">
+            <input
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+              placeholder="Player name"
+              className="flex-1 bg-secondary border border-border rounded-md font-mono text-xs text-foreground px-4 py-3 outline-none focus:border-primary/60 placeholder:text-muted-foreground/50"
+            />
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              min={100}
+              className="w-full md:w-44 bg-secondary border border-border rounded-md font-mono text-xs text-foreground px-4 py-3 outline-none focus:border-primary/60"
+            />
+            <button
+              type="submit"
+              className="font-heading text-sm font-bold tracking-wide bg-primary text-primary-foreground px-6 py-3 rounded-md hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            >
+              <Target size={15} /> Place bounty
+            </button>
+          </form>
+          {error && <div className="font-mono text-[10px] text-destructive mt-3 tracking-wide">{error}</div>}
+        </div>
+
+        {/* Bounty board */}
+        <div className="rounded-xl border border-border bg-card">
+          <div className="p-5 border-b border-border/60 font-mono text-[10px] tracking-[0.25em] text-muted-foreground">
+            ACTIVE BOUNTIES — {bounties.length}
+          </div>
+          {bounties.length === 0 ? (
+            <div className="p-10 text-center text-sm text-muted-foreground">
+              No active bounties. Be the first to post one.
+            </div>
+          ) : (
+            <div className="divide-y divide-border/60">
+              {bounties.map((b) => (
+                <div key={b.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="w-9 h-9 rounded-md border border-destructive/40 bg-destructive/10 flex items-center justify-center text-destructive shrink-0">
+                      <Crosshair size={15} />
+                    </span>
+                    <div>
+                      <div className="font-mono text-xs text-foreground tracking-wide">{b.target}</div>
+                      <div className="font-mono text-[9px] text-muted-foreground tracking-[0.15em]">
+                        PLACED BY {b.placer}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="font-mono text-sm text-accent flex items-center gap-1.5">
+                      <Coins size={13} /> {b.amount.toLocaleString()} SHARDS
+                    </span>
+                    <button
+                      onClick={() => collect(b)}
+                      className="font-heading text-xs font-bold tracking-wide border border-primary/40 text-primary px-4 py-2 rounded-md hover:bg-primary/10 transition-colors"
+                    >
+                      Collect
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-            <div className="flex items-center gap-4">
-              <span className="font-mono text-sm text-accent">{b.amount.toLocaleString()} SHARDS</span>
-              <button
-                onClick={() => collect(b)}
-                className="font-mono text-[9px] tracking-[0.2em] border border-primary/40 text-primary px-4 py-2 rounded-sm hover:bg-primary/10 transition-colors"
-              >
-                COLLECT
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          )}
+        </div>
 
-      <div className="mt-8">
-        <LiveIslandStrip />
+        <div className="mt-10">
+          <LiveIslandStrip />
+        </div>
       </div>
-    </PageShell>
+    </section>
   );
 }
