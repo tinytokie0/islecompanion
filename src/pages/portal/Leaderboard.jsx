@@ -4,17 +4,79 @@ import useLiveDinos from "@/hooks/useLiveDinos";
 import { NESTING_GUIDE } from "@/lib/portalData";
 import { stageFor } from "@/lib/growthStages";
 
+// Full playable roster: every species tab is always shown, like the reference
+// board, even when no one is currently playing that species.
+const ROSTER = [
+  "Allosaurus", "Austroraptor", "Beipiaosaurus", "Carnotaurus", "Ceratosaurus",
+  "Deinosuchus", "Diabloceratops", "Dilophosaurus", "Dryosaurus", "Gallimimus",
+  "Herrerasaurus", "Hypsilophodon", "Kentrosaurus", "Maiasaura", "Omniraptor",
+  "Pachycephalosaurus", "Pteranodon", "Stegosaurus", "Tenontosaurus",
+  "Triceratops", "Troodon", "Tyrannosaurus",
+];
+
+const TABS = {
+  growth: { label: "Growth", sort: "-growth", stat: "Highest growth on the island right now." },
+  deaths: { label: "Most Deaths", sort: "-deaths", stat: "Most respawns recorded by the island feed." },
+  life: { label: "Longest Life", sort: "-best_life_minutes", stat: "Longest tracked life on the island." },
+};
+
+const fmtLife = (min) => {
+  const m = Math.round(min || 0);
+  if (m < 60) return `${m}m`;
+  return `${Math.floor(m / 60)}h ${m % 60}m`;
+};
+
 export default function Leaderboard() {
-  // Real board: every dino seen on the island in the last 24 hours, ranked by growth
+  const [tab, setTab] = useState("growth");
+  // Real board: every dino seen on the island in the last 24 hours
   const { dinos, loading } = useLiveDinos({
     windowMinutes: 24 * 60,
     refreshMs: 60000,
-    sort: "-growth",
+    sort: TABS[tab].sort,
   });
-  const rows = dinos || [];
+
   const [species, setSpecies] = useState("All");
-  const speciesList = ["All", ...Array.from(new Set(rows.map((r) => r.species).filter(Boolean)))];
+  const now = Date.now();
+
+  let rows = dinos || [];
+  if (tab === "life") {
+    // An ongoing life counts toward "longest life" until it ends
+    rows = [...rows].sort((a, b) => {
+      const dur = (r) => Math.max(
+        r.best_life_minutes || 0,
+        r.life_started_at ? (now - Date.parse(r.life_started_at)) / 60000 : 0
+      );
+      return dur(b) - dur(a);
+    });
+  }
   const filtered = species === "All" ? rows : rows.filter((r) => r.species === species);
+
+  const valueFor = (r) =>
+    tab === "growth"
+      ? `${Math.round(r.growth ?? 0)}`
+      : tab === "deaths"
+      ? `${r.deaths || 0}`
+      : fmtLife(
+          Math.max(
+            r.best_life_minutes || 0,
+            r.life_started_at ? (now - Date.parse(r.life_started_at)) / 60000 : 0
+          )
+        );
+  const unitFor = tab === "growth" ? "GROWTH" : tab === "deaths" ? "DEATHS" : "LIFE";
+
+  const headValue =
+    tab === "growth"
+      ? `${Math.round(filtered[0]?.growth ?? 0)}%`
+      : tab === "deaths"
+      ? `${filtered[0]?.deaths || 0}`
+      : fmtLife(
+          filtered[0]
+            ? Math.max(
+                filtered[0].best_life_minutes || 0,
+                filtered[0].life_started_at ? (now - Date.parse(filtered[0].life_started_at)) / 60000 : 0
+              )
+            : 0
+        );
 
   return (
     <section className="px-4 md:px-8 py-10 md:py-14">
@@ -23,28 +85,53 @@ export default function Leaderboard() {
         <div className="text-center mb-8">
           <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground">Leaderboard</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Growth standings across the server, updated every five minutes.
+            Kills, K/D, deaths and nesting across the server.
           </p>
         </div>
 
         {/* Species filter pills */}
-        {!loading && filtered.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {speciesList.map((s) => (
-              <button
-                key={s}
-                onClick={() => setSpecies(s)}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                  s === species
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary/80 text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {s === "All" ? "All dinos" : s}
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
+          <button
+            onClick={() => setSpecies("All")}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              species === "All"
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary/80 text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            All dinos
+          </button>
+          {ROSTER.map((s) => (
+            <button
+              key={s}
+              onClick={() => setSpecies(s)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                s === species
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary/80 text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+
+        {/* Metric tabs */}
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
+          {Object.entries(TABS).map(([key, t]) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={`font-heading text-sm font-bold tracking-wide px-5 py-2 rounded-md border transition-colors ${
+                tab === key
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-transparent text-muted-foreground border-border hover:text-foreground"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
 
         {loading ? (
           <div className="rounded-xl border border-border bg-card p-10 flex items-center justify-center gap-3 text-sm text-muted-foreground mb-6">
@@ -60,12 +147,10 @@ export default function Leaderboard() {
           <>
             {/* Summary card */}
             <div className="rounded-xl border border-border bg-card p-6 mb-8">
-              <div className="font-heading text-2xl font-bold text-foreground">Growth</div>
-              <div className="text-sm text-muted-foreground mb-4">
-                Highest growth on the island right now.
-              </div>
+              <div className="font-heading text-2xl font-bold text-foreground">{TABS[tab].label}</div>
+              <div className="text-sm text-muted-foreground mb-4">{TABS[tab].stat}</div>
               <div className="font-heading text-5xl font-bold text-primary">
-                {Math.round(filtered[0]?.growth ?? 0)}%
+                {headValue}
                 <span className="text-sm text-muted-foreground font-medium ml-2">counted</span>
               </div>
             </div>
@@ -99,9 +184,9 @@ export default function Leaderboard() {
                     <div className="h-1 rounded-full bg-secondary w-20 hidden sm:block overflow-hidden">
                       <div className="h-full rounded-full bg-primary" style={{ width: `${row.growth ?? 0}%` }} />
                     </div>
-                    <span className="font-mono text-sm text-primary font-semibold shrink-0">
-                      {Math.round(row.growth ?? 0)}
-                      <span className="text-[9px] text-muted-foreground ml-1">GROWTH</span>
+                    <span className="font-mono text-sm text-primary font-semibold shrink-0 text-right">
+                      {valueFor(row)}
+                      <span className="text-[9px] text-muted-foreground ml-1">{unitFor}</span>
                     </span>
                   </div>
                 );

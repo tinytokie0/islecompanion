@@ -55,6 +55,21 @@
       "type": "string",
       "description": "Name of the server this dino is connected to"
     },
+    "deaths": {
+      "type": "number",
+      "default": 0,
+      "description": "Respawns tracked by the feed: how many times this player's growth reset (i.e. died) since tracking began"
+    },
+    "life_started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the current life began (last time growth reset or tracking started)"
+    },
+    "best_life_minutes": {
+      "type": "number",
+      "default": 0,
+      "description": "Longest completed life tracked for this player, in minutes"
+    },
     "last_seen": {
       "type": "string",
       "format": "date-time",
