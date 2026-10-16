@@ -34,58 +34,6 @@ export const TELEPORTS = [
   { name: "Void Ridge", biome: "Western Cliffs", cost: 350 },
 ];
 
-export const KILLFEED = [
-  { killer: "REDCLAW-77", dino: "Tyrannosaurus", victim: "MOSSBACK", vdino: "Hypsilophodon", region: "South Plains", ago: "2m", tier: "high" },
-  { killer: "NIGHTFALL", dino: "Dakotaraptor", victim: "GRAVELORD", vdino: "Stegosaurus", region: "Swamps East", ago: "9m", tier: "medium" },
-  { killer: "APEX-01", dino: "Deinosuchus", victim: "SANDSTRIDER", vdino: "Pteranodon", region: "North Lake", ago: "21m", tier: "critical" },
-  { killer: "VOLT", dino: "Carnotaurus", victim: "HOLLOW-9", vdino: "Utahraptor", region: "West Rail Access", ago: "34m", tier: "medium" },
-  { killer: "EMBERWING", dino: "Acrocanthosaurus", victim: "TINY-22", vdino: "Hypsilophodon", region: "East Plains", ago: "48m", tier: "low" },
-  { killer: "GRAVEHOWL", dino: "Tyrannosaurus", victim: "PALEHIDE", vdino: "Diabloceratops", region: "Volcano", ago: "1h", tier: "high" },
-];
-
-export const BOARDS = {
-  growth: [
-    { name: "REDCLAW-77", dino: "Tyrannosaurus", value: "98%" },
-    { name: "APEX-01", dino: "Deinosuchus", value: "95%" },
-    { name: "GRAVEHOWL", dino: "Tyrannosaurus", value: "91%" },
-    { name: "EMBERWING", dino: "Acrocanthosaurus", value: "87%" },
-    { name: "NIGHTFALL", dino: "Dakotaraptor", value: "84%" },
-    { name: "VOLT", dino: "Carnotaurus", value: "79%" },
-    { name: "MOSSBACK", dino: "Stegosaurus", value: "71%" },
-    { name: "PALEHIDE", dino: "Diabloceratops", value: "63%" },
-  ],
-  kills: [
-    { name: "APEX-01", dino: "Deinosuchus", value: 142 },
-    { name: "REDCLAW-77", dino: "Tyrannosaurus", value: 118 },
-    { name: "NIGHTFALL", dino: "Dakotaraptor", value: 97 },
-    { name: "GRAVEHOWL", dino: "Tyrannosaurus", value: 81 },
-    { name: "VOLT", dino: "Carnotaurus", value: 64 },
-    { name: "EMBERWING", dino: "Acrocanthosaurus", value: 52 },
-    { name: "MOSSBACK", dino: "Stegosaurus", value: 30 },
-    { name: "PALEHIDE", dino: "Diabloceratops", value: 18 },
-  ],
-  nesting: [
-    { name: "APEX-01", dino: "Deinosuchus", value: "12", nest: "Mire Delta — 24-egg mound, unattended" },
-    { name: "NIGHTFALL", dino: "Dakotaraptor", value: "8", nest: "Skyshard Isles — 7 eggs, brooding" },
-    { name: "REDCLAW-77", dino: "Tyrannosaurus", value: "9", nest: "Void Ridge — 5 eggs, guarding" },
-    { name: "MOSSBACK", dino: "Stegosaurus", value: "6", nest: "Crystal Basin — 8-egg ditch nest" },
-    { name: "GRAVEHOWL", dino: "Tyrannosaurus", value: "7", nest: "Void Ridge — 4 eggs, guarding" },
-    { name: "EMBERWING", dino: "Acrocanthosaurus", value: "5", nest: "Void Ridge — 3-egg mound" },
-    { name: "VOLT", dino: "Carnotaurus", value: "4", nest: "Crystal Basin — 2 eggs, colonial" },
-    { name: "PALEHIDE", dino: "Diabloceratops", value: "3", nest: "Crystal Basin — 3 eggs, herd nest" },
-  ],
-  shards: [
-    { name: "REDCLAW-77", dino: "Trader", value: "48,200" },
-    { name: "NIGHTFALL", dino: "Trader", value: "36,900" },
-    { name: "APEX-01", dino: "Trader", value: "31,450" },
-    { name: "VOLT", dino: "Trader", value: "22,100" },
-    { name: "GRAVEHOWL", dino: "Trader", value: "18,750" },
-    { name: "EMBERWING", dino: "Trader", value: "15,300" },
-    { name: "PALEHIDE", dino: "Trader", value: "9,800" },
-    { name: "MOSSBACK", dino: "Trader", value: "7,250" },
-  ],
-};
-
 export const NESTING_GUIDE = [
   { species: "Tyrannosaurus", clutch: "4–6 eggs", nest: "Scraped ground nest", grounds: "Void Ridge", care: "High — guards until sub-adult" },
   { species: "Deinosuchus", clutch: "20–30 eggs", nest: "Buried sand mound", grounds: "Mire Delta", care: "None — eggs left to warm" },

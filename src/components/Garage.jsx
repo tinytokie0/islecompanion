@@ -80,7 +80,7 @@ export default function Garage() {
           </div>
           <p className="font-mono text-xs text-muted-foreground max-w-md tracking-wide leading-relaxed">
             Every dino currently on the island, recorded live from the server
-            every two minutes. Select one to inspect it.
+            every five minutes. Select one to inspect it.
           </p>
         </div>
 
