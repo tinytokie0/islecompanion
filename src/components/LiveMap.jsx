@@ -22,6 +22,40 @@ const ZONES = [
   { name: "West Rail Access", x: 24.7, y: 51.6 },
 ];
 
+// World units -> Gateway map percentage. Evrima spans about ±350,000 units on
+// both axes: UE X runs south-to-north (up the image), Y west-to-east (right).
+const WORLD_HALF = 350000;
+function worldToMap(d) {
+  if (d.pos_x == null || d.pos_y == null) return null;
+  const x = ((d.pos_y + WORLD_HALF) / (WORLD_HALF * 2)) * 100;
+  const y = ((WORLD_HALF - d.pos_x) / (WORLD_HALF * 2)) * 100;
+  return {
+    x: Math.min(99, Math.max(1, x)),
+    y: Math.min(99, Math.max(1, y)),
+  };
+}
+
+// Blip color by diet
+const CARNIVORES = new Set([
+  "Allosaurus", "Austroraptor", "Carnotaurus", "Ceratosaurus", "Deinosuchus",
+  "Dilophosaurus", "Herrerasaurus", "Omniraptor", "Pteranodon", "Troodon",
+  "Tyrannosaurus",
+]);
+const OMNIVORES = new Set(["Beipiaosaurus", "Hypsilophodon"]);
+function blipColor(species) {
+  if (CARNIVORES.has(species)) return "#ef4444";
+  if (OMNIVORES.has(species)) return "#f59e0b";
+  return "#22c55e";
+}
+
+function seenAgo(iso) {
+  if (!iso) return "—";
+  const min = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60000));
+  if (min < 1) return "just now";
+  if (min < 60) return `${min}m ago`;
+  return `${Math.floor(min / 60)}h ${min % 60}m ago`;
+}
+
 export default function LiveMap() {
   const { dinos, loading } = useLiveDinos({ windowMinutes: 15, refreshMs: 30000 });
   const players = dinos || [];
@@ -40,8 +74,8 @@ export default function LiveMap() {
             </h2>
           </div>
           <p className="font-mono text-xs text-muted-foreground max-w-md tracking-wide leading-relaxed">
-            Gateway, the Evrima branch island, with live players recorded from
-            the server every five minutes.
+            Gateway, the Evrima branch island, tracking live player positions
+            and last-seen times from the server feed.
           </p>
         </div>
 
@@ -79,6 +113,40 @@ export default function LiveMap() {
               </div>
             ))}
 
+            {/* Live player blips */}
+            {!loading && players.map((d) => {
+              const p = worldToMap(d);
+              if (!p) return null;
+              const color = blipColor(d.species);
+              return (
+                <div
+                  key={d.steam_id}
+                  className="absolute group pointer-events-auto"
+                  style={{ left: `${p.x}%`, top: `${p.y}%`, transform: "translate(-50%, -50%)" }}
+                >
+                  {/* parent box sized to the dot so the pulse ring can fill it */}
+                  <div className="relative w-2.5 h-2.5">
+                    <span
+                      className="absolute inset-0 rounded-full animate-blip"
+                      style={{ backgroundColor: color, opacity: 0.4 }}
+                    />
+                    <span
+                      className="block w-2.5 h-2.5 rounded-full border border-black/60"
+                      style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}` }}
+                    />
+                  </div>
+                  <div className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 hidden group-hover:block glass-panel rounded-md px-3 py-2 whitespace-nowrap z-20">
+                    <div className="font-mono text-[10px] text-foreground">
+                      {d.player_name || "Unknown"}
+                    </div>
+                    <div className="font-mono text-[9px] text-muted-foreground">
+                      {d.species || "?"} · {d.growth ?? 0}% · seen {seenAgo(d.last_seen)}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
             {/* Compass */}
             <div className="absolute top-6 right-6 w-16 h-16 glass-panel-light flex items-center justify-center">
               <div className="font-mono text-[10px] text-primary tracking-widest">N</div>
@@ -105,7 +173,7 @@ export default function LiveMap() {
                     <div key={d.steam_id} className="font-mono text-[10px] leading-tight">
                       <span className="text-foreground">{d.player_name || "Unknown"}</span>
                       <span className="text-muted-foreground">
-                        {" "}· {d.species || "?"} · {d.growth ?? 0}%
+                        {" "}· {d.species || "?"} · {d.growth ?? 0}% · {seenAgo(d.last_seen)}
                       </span>
                     </div>
                   ))}
