@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { secrets } from 'base44:runtime';
+import { applyFeedRecords } from '../../shared/feed.ts';
 
 // Inbound feed for The Isle server player data (Arkanis Isle Plugin roster
 // or any UE4SS mod). POST JSON:
@@ -77,11 +78,12 @@ export default async function (req) {
       }, { status: 400 });
     }
 
-    // One upsert keeps the latest snapshot per Steam ID (one record per player).
+    // Shared path: one LiveDino snapshot per player plus a daily sighting in
+    // FeedDay, so plugin-fed players count toward quests and rewards too.
     const base44 = createClientFromRequest(req);
-    await base44.asServiceRole.entities.LiveDino.upsert(records, { key: 'steam_id' });
+    const { upserted } = await applyFeedRecords(base44.asServiceRole, records, now);
 
-    return Response.json({ success: true, players: records.length });
+    return Response.json({ success: true, players: upserted });
   } catch (error) {
     console.error('dinoFeedIngest failed');
     return Response.json(

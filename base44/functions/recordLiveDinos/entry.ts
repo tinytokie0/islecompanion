@@ -1,19 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { secrets } from 'base44:runtime';
+import { speciesFromPath, growthNumber, applyFeedRecords } from '../../shared/feed.ts';
 
 const API_BASE = 'https://api.arkanis.gg';
-
-function speciesFromPath(path) {
-  const m = /BP_([A-Za-z]+)\.BP_[A-Za-z]+_C/.exec(path || '');
-  if (!m) return 'Unknown';
-  return m[1].replace(/([a-z])([A-Z])/g, '$1 $2');
-}
-
-function growthNumber(raw) {
-  if (typeof raw === 'number' && Number.isFinite(raw)) return raw;
-  const n = parseFloat(String(raw || '').replace('%', ''));
-  return Number.isFinite(n) ? n : null;
-}
 
 export default async function(req) {
   try {
@@ -29,7 +18,6 @@ export default async function(req) {
     }
 
     const headers = { Authorization: `Bearer ${token}`, Accept: 'application/json' };
-
     const serversRes = await fetch(`${API_BASE}/api/public/v1/guilds/${guildId}/servers`, {
       headers,
       signal: AbortSignal.timeout(10000),
@@ -39,81 +27,51 @@ export default async function(req) {
     }
     const serversEnv = await serversRes.json();
     const servers = serversEnv?.items || serversEnv?.servers || serversEnv?.data || [];
-    const server =
-      servers.find((s) => s.kind === 'rcon' && s.game_type) ||
-      servers.find((s) => s.game_type) ||
-      servers.find((s) => s.is_default) ||
-      servers[0];
-    if (!server) {
-      return Response.json({ error: 'No servers registered in Arkanis', recorded: 0 }, { status: 200 });
-    }
-
-    const statusRes = await fetch(
-      `${API_BASE}/api/public/v1/guilds/${guildId}/servers/${encodeURIComponent(server.id)}/status`,
-      { headers, signal: AbortSignal.timeout(10000) }
+    // Every Isle game server on the account, so players on any of them are
+    // accounted for — not just the first one.
+    const gameServers = servers.filter(
+      (s) => s.kind === 'rcon' && String(s.game_type || '').startsWith('the_isle')
     );
-    if (!statusRes.ok) {
-      return Response.json({ error: `Arkanis status request returned ${statusRes.status}`, recorded: 0 }, { status: 200 });
+    if (gameServers.length === 0) {
+      return Response.json({ error: 'No Isle servers registered in Arkanis', recorded: 0 }, { status: 200 });
     }
-    const statusEnv = await statusRes.json();
-    const status = statusEnv?.status || statusEnv || {};
-    const players = Array.isArray(status.players) ? status.players : [];
 
     const now = new Date().toISOString();
     const records = [];
-    for (const p of players) {
-      if (!p || !p.steamId) continue;
-      records.push({
-        steam_id: String(p.steamId),
-        player_name: p.name || 'Unknown',
-        species: speciesFromPath(p.dinosaur),
-        growth: growthNumber(p.growth),
-        server_name: server.server_name || 'The Haven',
-        last_seen: now,
-      });
+    let online = false;
+    let playerCount = 0;
+    for (const server of gameServers) {
+      const statusRes = await fetch(
+        `${API_BASE}/api/public/v1/guilds/${guildId}/servers/${encodeURIComponent(server.id)}/status`,
+        { headers, signal: AbortSignal.timeout(10000) }
+      );
+      if (!statusRes.ok) continue; // one unreachable server never blocks the others
+      const statusEnv = await statusRes.json();
+      const status = statusEnv?.status || statusEnv || {};
+      if (status.online === true) online = true;
+      if (typeof status.player_count === 'number') playerCount += status.player_count;
+      const players = Array.isArray(status.players) ? status.players : [];
+      for (const p of players) {
+        if (!p || !p.steamId) continue;
+        records.push({
+          steam_id: String(p.steamId),
+          player_name: p.name || 'Unknown',
+          species: speciesFromPath(p.dinosaur),
+          growth: growthNumber(p.growth),
+          server_name: server.server_name || 'The Haven',
+          last_seen: now,
+        });
+      }
     }
 
-    let recorded = 0;
-    if (records.length > 0) {
-      const res = await base44.asServiceRole.entities.LiveDino.upsert(records, { key: 'steam_id' });
-      recorded = (res?.records || records).length;
-    }
+    const { upserted } = await applyFeedRecords(base44.asServiceRole, records, now);
 
-    // Daily rollups (one per player per UTC day) power real quest progress:
-    // playtime (sightings x 5 min), growth gained and days played.
-    const day = now.slice(0, 10);
-    const steamIds = records.map((r) => r.steam_id);
-    const rollPage = await base44.asServiceRole.entities.FeedDay.filter(
-      { steam_id: { $in: steamIds }, day },
-      { limit: 500 }
-    );
-    const bySteam = new Map((rollPage.items || []).map((r) => [r.steam_id, r]));
-    for (const r of records) {
-      const prev = bySteam.get(r.steam_id);
-      const growth = typeof r.growth === 'number' ? r.growth : null;
-      const minG = growth != null && prev?.min_growth != null
-        ? Math.min(prev.min_growth, growth)
-        : (growth ?? prev?.min_growth ?? 0);
-      const maxG = growth != null && prev?.max_growth != null
-        ? Math.max(prev.max_growth, growth)
-        : (growth ?? prev?.max_growth ?? 0);
-      const payload = {
-        steam_id: r.steam_id,
-        day,
-        player_name: r.player_name,
-        species: r.species,
-        sightings: (prev?.sightings || 0) + 1,
-        first_seen: prev?.first_seen || now,
-        last_seen: now,
-        min_growth: minG,
-        max_growth: maxG,
-      };
-      const service = base44.asServiceRole;
-      if (prev) await service.entities.FeedDay.update(prev.id, payload);
-      else await service.entities.FeedDay.create(payload);
-    }
-
-    return Response.json({ online: status.online === true, player_count: typeof status.player_count === 'number' ? status.player_count : records.length, recorded });
+    return Response.json({
+      online,
+      player_count: playerCount || upserted,
+      recorded: upserted,
+      servers_polled: gameServers.length,
+    });
   } catch (error) {
     return Response.json({ error: error.message, recorded: 0 }, { status: 200 });
   }

@@ -27,7 +27,7 @@ export default async function(req) {
       used: false
     });
 
-    const origin = req.headers.get('X-Base44-App-Url') || 'https://isle-tactical-hub.base44.app';
+    const origin = req.headers.get('X-Base44-App-Url') || new URL(req.url).origin;
     const params = new URLSearchParams({
       'openid.ns': 'http://specs.openid.net/auth/2.0',
       'openid.mode': 'checkid_setup',

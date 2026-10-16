@@ -1,8 +1,9 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { waitUntil } from 'base44:runtime';
+import { getWalletForUser } from '../../shared/economy.ts';
 
 export default async function(req) {
-  const origin = req.headers.get('X-Base44-App-Url') || 'https://isle-tactical-hub.base44.app';
+  const origin = req.headers.get('X-Base44-App-Url') || new URL(req.url).origin;
   const back = (status, reason) => {
     const target = new URL(`${origin}/me`);
     target.searchParams.set('steam', status);
@@ -53,6 +54,23 @@ export default async function(req) {
     if (!match) return back('error', 'bad_id');
     const steamId = match[1];
 
+    // Resolve the player's real persona name so the site shows it correctly
+    // everywhere; fall back to the ID if Steam doesn't answer.
+    let persona = steamId;
+    try {
+      const profRes = await fetch(`https://steamcommunity.com/profiles/${steamId}/?xml=1`, {
+        signal: AbortSignal.timeout(5000)
+      });
+      if (profRes.ok) {
+        const xml = await profRes.text();
+        const pm = /<steamID><!\[CDATA\[([\s\S]*?)\]\]><\/steamID>|<steamID>([^<]+)<\/steamID>/.exec(xml);
+        const name = (pm?.[1] || pm?.[2] || '').trim();
+        if (name) persona = name;
+      }
+    } catch {
+      // keep the Steam ID as persona
+    }
+
     const service = base44.asServiceRole;
 
     // 4. Consume the nonce exactly once, within its lifetime
@@ -73,10 +91,14 @@ export default async function(req) {
 
     await service.entities.SteamLink.create({
       steam_id: steamId,
-      steam_persona: steamId,
+      steam_persona: persona,
       user_id: linkRequest.user_id,
       linked_date: new Date().toISOString()
     });
+
+    // Connect the Steam account to the player's wallet immediately, so live
+    // server data flows into their quests and playtime rewards right away.
+    await getWalletForUser(service, linkRequest.user_id, steamId);
 
     // Housekeeping: drop expired requests
     waitUntil(
