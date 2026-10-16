@@ -8,14 +8,6 @@ const DINOS = [
   "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/b4308e1c5_generated_image.png", // allosaurus
 ];
 
-// Screen blend drops the dark photo backdrop into the dark page, and a soft
-// mask feathers the remaining edges so the dino melts out of the darkness
-const EDGE_FADE = {
-  mixBlendMode: "screen",
-  maskImage: "radial-gradient(ellipse 68% 64% at 42% 50%, black 45%, transparent 85%)",
-  WebkitMaskImage: "radial-gradient(ellipse 68% 64% at 42% 50%, black 45%, transparent 85%)",
-};
-
 // Each slot grips its edge and climbs in. Dinos always face inward: the
 // source art faces left, so left-edge dinos are mirrored, right-edge aren't.
 const SLOTS = [
@@ -28,6 +20,32 @@ const SLOTS = [
 // Longest climb cycle, so image swaps happen while the dino is off-screen
 const RESHUFFLE_MS = 35000;
 
+// Key out the dark photo backdrop: near-black pixels go fully transparent,
+// with a short ramp so the creature keeps soft, shadowed edges
+async function stripBackground(url) {
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.src = url;
+  await new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+  });
+  const canvas = document.createElement("canvas");
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const px = data.data;
+  for (let i = 0; i < px.length; i += 4) {
+    const lum = Math.max(px[i], px[i + 1], px[i + 2]);
+    if (lum <= 18) px[i + 3] = 0;
+    else if (lum < 44) px[i + 3] = Math.round(((lum - 18) / 26) * 255);
+  }
+  ctx.putImageData(data, 0, 0);
+  return canvas.toDataURL("image/png");
+}
+
 function freshDeck() {
   return [...DINOS].sort(() => Math.random() - 0.5);
 }
@@ -35,10 +53,28 @@ function freshDeck() {
 export default function SideDinos() {
   // Random dino per slot, re-rolled every app load and reshuffled periodically
   const [deck, setDeck] = useState(freshDeck);
+  // Transparent versions of each dino, keyed once per URL
+  const [cutouts, setCutouts] = useState({});
+
   useEffect(() => {
     const t = setInterval(() => setDeck(freshDeck()), RESHUFFLE_MS);
     return () => clearInterval(t);
   }, []);
+
+  useEffect(() => {
+    let alive = true;
+    deck.forEach((url) => {
+      if (cutouts[url]) return;
+      stripBackground(url)
+        .then((dataUrl) => {
+          if (alive) setCutouts((prev) => ({ ...prev, [url]: dataUrl }));
+        })
+        .catch(() => {});
+    });
+    return () => {
+      alive = false;
+    };
+  }, [deck]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="fixed inset-0 z-20 pointer-events-none overflow-hidden">
@@ -51,10 +87,9 @@ export default function SideDinos() {
           <div className={`${tilt} animate-dino-bob`}>
             <img
               key={deck[i]}
-              src={deck[i]}
+              src={cutouts[deck[i]] || deck[i]}
               alt=""
               className={`${size} h-auto ${mirror ? "-scale-x-100" : ""}`}
-              style={EDGE_FADE}
             />
           </div>
         </div>
