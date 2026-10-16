@@ -19,7 +19,7 @@ const ART = {
   tenontosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/c76517530_generated_image.png",
   pachycephalosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/0b6731922_generated_image.png",
   maiasaura: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/c7744f4fd_generated_image.png",
-  triceratops: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/692db6a49_generated_image.png",
+  triceratops: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/1ffb0425c_generated_image.png",
   kentrosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/9cb4a6f36_generated_image.png",
   beipiaosaurus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/039a2ff0a_generated_image.png",
   gallimimus: "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/5430becae_generated_image.png",
