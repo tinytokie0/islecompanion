@@ -159,25 +159,50 @@
 }
 .animate-dino-bob { animation: dino-bob 5s ease-in-out infinite; }
 
-/* Edge climbers: haul themselves over the page edge, cling, lose grip and
-   drop back out of view, then slide fully off-screen */
-@keyframes dino-grip-l {
-  0% { transform: translate(-110%, 55%); }
-  22% { transform: translate(-2%, 14%); }
-  32% { transform: translate(-2%, 0%); }
-  66% { transform: translate(-2%, 0%); }
-  78% { transform: translate(-1%, 38%); }
-  88%, 100% { transform: translate(-110%, 55%); }
+/* Choreographed edge dinosaurs — one full 90s cycle:
+   spino crosses right-to-left (0-27%), rex crosses left-to-right (31-58%),
+   then eight raptors peek from behind the cards and run off (60-89%) */
+@keyframes walk-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
-@keyframes dino-grip-r {
-  0% { transform: translate(110%, 55%); }
-  22% { transform: translate(2%, 14%); }
-  32% { transform: translate(2%, 0%); }
-  66% { transform: translate(2%, 0%); }
-  78% { transform: translate(1%, 38%); }
-  88%, 100% { transform: translate(110%, 55%); }
+.walk-bob { animation: walk-bob 0.9s ease-in-out infinite; }
+.walk-bob-slow { animation: walk-bob 1.4s ease-in-out infinite; }
+
+@keyframes spino-cross {
+  0% { transform: translateX(0); }
+  27% { transform: translateX(-118vw); }
+  100% { transform: translateX(-118vw); }
 }
-.side-dino-grip-1 { animation: dino-grip-l 24s ease-in-out infinite; }
-.side-dino-grip-2 { animation: dino-grip-r 30s ease-in-out infinite; animation-delay: -11s; }
-.side-dino-grip-3 { animation: dino-grip-l 27s ease-in-out infinite; animation-delay: -6s; }
-.side-dino-grip-4 { animation: dino-grip-r 34s ease-in-out infinite; animation-delay: -19s; }
+@keyframes rex-cross {
+  0%, 31% { transform: translateX(0); }
+  58% { transform: translateX(118vw); }
+  100% { transform: translateX(118vw); }
+}
+.side-spino { animation: spino-cross 90s linear infinite; }
+.side-rex { animation: rex-cross 90s linear infinite; }
+
+@keyframes raptor-peek-run-r {
+  0%, 60% { transform: translate(0, 95%); }
+  63% { transform: translate(0, 6%); }
+  72% { transform: translate(0, 10%); }
+  74% { transform: translate(3vw, 12%); }
+  88% { transform: translate(115vw, 12%); }
+  89%, 100% { transform: translate(115vw, 95%); }
+}
+@keyframes raptor-peek-run-l {
+  0%, 60% { transform: translate(0, 95%); }
+  63% { transform: translate(0, 6%); }
+  72% { transform: translate(0, 10%); }
+  74% { transform: translate(-3vw, 12%); }
+  88% { transform: translate(-115vw, 12%); }
+  89%, 100% { transform: translate(-115vw, 95%); }
+}
+.side-raptor-1 { animation: raptor-peek-run-r 90s linear infinite; animation-delay: -62s; }
+.side-raptor-2 { animation: raptor-peek-run-l 90s linear infinite; animation-delay: -64s; }
+.side-raptor-3 { animation: raptor-peek-run-r 90s linear infinite; animation-delay: -66s; }
+.side-raptor-4 { animation: raptor-peek-run-l 90s linear infinite; animation-delay: -68s; }
+.side-raptor-5 { animation: raptor-peek-run-r 90s linear infinite; animation-delay: -70s; }
+.side-raptor-6 { animation: raptor-peek-run-l 90s linear infinite; animation-delay: -72s; }
+.side-raptor-7 { animation: raptor-peek-run-r 90s linear infinite; animation-delay: -74s; }
+.side-raptor-8 { animation: raptor-peek-run-l 90s linear infinite; animation-delay: -76s; }
