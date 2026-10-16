@@ -1,5 +1,4 @@
 // Shared sample data for the portal pages
-export const START_SHARDS = 12500;
 
 // Full playable roster of The Isle: Evrima branch (patch 0.21.784).
 export const DINOS = [

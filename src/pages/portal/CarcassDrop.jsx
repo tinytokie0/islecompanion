@@ -1,19 +1,14 @@
 import React from "react";
 import { Bone } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
-import usePlayShards from "@/hooks/usePlayShards";
-import EconomyChips from "@/components/portal/EconomyChips";
 import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 export default function CarcassDrop() {
-  const [shards] = usePlayShards();
-
   return (
     <PageShell
       kicker="SCAVENGER FEED"
       title="CARCASS DROP"
       sub="A fresh carcass lands somewhere on the island every few hours. First scavenger takes the haul."
-      right={<EconomyChips shards={shards} />}
     >
       {/* Active drop */}
       <div className="glass-panel rounded-lg p-8 mb-8 text-center">

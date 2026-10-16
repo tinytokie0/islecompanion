@@ -8,7 +8,7 @@ export default function Giveaways() {
     <PageShell
       kicker="TRIBE FAVORS"
       title="GIVEAWAYS"
-      sub="Enter active giveaways for dinos, skins and shards. Winners drawn live on Discord."
+      sub="Enter active giveaways for dinos, skins and Haven Tokens. Winners drawn live on Discord."
     >
       <div className="glass-panel rounded-lg p-10 text-center mb-8">
         <Gift size={22} className="mx-auto mb-3 text-muted-foreground" />

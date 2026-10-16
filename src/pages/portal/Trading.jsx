@@ -2,24 +2,29 @@ import React, { useState } from "react";
 import { ArrowLeftRight } from "lucide-react";
 import { stageFor } from "@/lib/growthStages";
 import { DINOS } from "@/lib/portalData";
-import usePlayShards from "@/hooks/usePlayShards";
-import EconomyChips from "@/components/portal/EconomyChips";
+import useHt from "@/hooks/useHt";
 import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 const RARITY_COLOR = { APEX: "#a78bfa", RARE: "#e6b84c", COMMON: "#94a3b8" };
 
 export default function Trading() {
-  const [shards, setShards] = usePlayShards();
+  const { balance, spend } = useHt();
+  const [busy, setBusy] = useState(false);
   const [owned, setOwned] = useState([]);
   const [listed, setListed] = useState([]);
   const [offers, setOffers] = useState([]);
 
   const market = DINOS.filter((d) => !owned.includes(d.code));
 
-  const buy = (dino) => {
-    if (shards < dino.price) return;
-    setShards((s) => s - dino.price);
-    setOwned((o) => [...o, dino.code]);
+  const buy = async (dino) => {
+    if (busy || balance < dino.price) return;
+    setBusy(true);
+    try {
+      await spend(dino.price, `Trading market: ${dino.name}`);
+      setOwned((o) => [...o, dino.code]);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const toggleListed = (code) =>
@@ -42,9 +47,6 @@ export default function Trading() {
           <p className="text-sm text-muted-foreground mt-2">
             Buy dinos from the market, list your own and review incoming trade offers.
           </p>
-          <div className="flex justify-center mt-4">
-            <EconomyChips shards={shards} />
-          </div>
         </div>
 
         {/* Market */}
@@ -54,7 +56,7 @@ export default function Trading() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           {market.map((dino) => {
             const { current } = stageFor(dino.growth);
-            const afford = shards >= dino.price;
+            const afford = balance >= dino.price;
             return (
               <div key={dino.code} className="rounded-xl border border-border bg-card p-5 flex flex-col">
                 <div className="flex justify-between items-start mb-3">

@@ -4,19 +4,24 @@ import PageShell from "@/components/portal/PageShell";
 import { stageFor } from "@/lib/growthStages";
 import { DINOS } from "@/lib/portalData";
 import DinoPortrait from "@/components/DinoPortrait";
-import usePlayShards from "@/hooks/usePlayShards";
-import EconomyChips from "@/components/portal/EconomyChips";
+import useHt from "@/hooks/useHt";
 import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 export default function DinoShop() {
-  const [shards, setShards] = usePlayShards();
+  const { balance, spend } = useHt();
+  const [busy, setBusy] = useState(false);
   const [owned, setOwned] = useState([]);
   const [query, setQuery] = useState("");
 
-  const buy = (dino) => {
-    if (shards < dino.price) return;
-    setShards((s) => s - dino.price);
-    setOwned((o) => [...o, dino.code]);
+  const buy = async (dino) => {
+    if (busy || balance < dino.price) return;
+    setBusy(true);
+    try {
+      await spend(dino.price, `Dino shop: ${dino.name}`);
+      setOwned((o) => [...o, dino.code]);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const shown = DINOS.filter((d) =>
@@ -27,8 +32,7 @@ export default function DinoShop() {
     <PageShell
       icon={ShoppingBag}
       title="Dino shop"
-      sub="Buy a dino with your shards — every purchase is delivered straight to your garage."
-      right={<EconomyChips shards={shards} />}
+      sub="Buy a dino with Haven Tokens — every purchase is delivered straight to your garage."
     >
       {/* Search */}
       <div className="relative mb-6">
@@ -45,7 +49,7 @@ export default function DinoShop() {
         {shown.map((dino) => {
           const { current } = stageFor(dino.growth);
           const isOwned = owned.includes(dino.code);
-          const afford = shards >= dino.price;
+          const afford = balance >= dino.price;
           return (
             <div key={dino.code} className="rounded-xl border border-border bg-card p-6 flex flex-col">
               <div className="relative aspect-video rounded-lg overflow-hidden mb-4">
@@ -62,7 +66,7 @@ export default function DinoShop() {
               </div>
               <div className="font-heading text-xl font-bold text-foreground mb-4">
                 {dino.price.toLocaleString()}
-                <span className="text-xs text-muted-foreground font-medium ml-1.5">shards</span>
+                <span className="text-xs text-muted-foreground font-medium ml-1.5">HT</span>
               </div>
               {isOwned ? (
                 <span className="mt-auto rounded-md bg-secondary text-muted-foreground text-sm font-medium px-4 py-2 text-center">
@@ -78,7 +82,7 @@ export default function DinoShop() {
                       : "bg-primary/40 text-primary-foreground/70 cursor-not-allowed"
                   }`}
                 >
-                  {afford ? "Buy now" : "Not enough shards"}
+                  {afford ? "Buy now" : "Not enough HT"}
                 </button>
               )}
             </div>

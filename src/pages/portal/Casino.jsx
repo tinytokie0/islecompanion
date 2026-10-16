@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { Coins, Dices, Flame, Spade } from "lucide-react";
+import { Dices, Flame, Spade } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
-import usePlayShards from "@/hooks/usePlayShards";
-import EconomyChips from "@/components/portal/EconomyChips";
+import useHt from "@/hooks/useHt";
 import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 const SYMBOLS = ["🦖", "💎", "🦴", "🔥", "⭐"];
@@ -21,8 +20,8 @@ const handValue = (hand) => {
 };
 
 export default function Casino() {
-  const [shards, setShards] = usePlayShards();
-  const [bet, setBet] = useState(500);
+  const { balance, spend, award } = useHt();
+  const [bet, setBet] = useState(100);
 
   // Slots
   const [reels, setReels] = useState(["🦴", "💎", "🔥"]);
@@ -38,13 +37,23 @@ export default function Casino() {
   const [phase, setPhase] = useState("bet"); // bet | play | done
   const [bjMsg, setBjMsg] = useState(null);
 
-  const validBet = Math.max(10, Math.min(bet || 0, shards));
+  const validBet = Math.max(10, Math.min(bet || 0, balance));
 
-  const spin = () => {
+  const takeBet = async (game) => {
+    await spend(validBet, `Casino: ${game} bet`);
+  };
+
+  const spin = async () => {
     if (spinning || validBet < 10) return;
     setSpinning(true);
     setSlotsMsg(null);
-    setShards((s) => s - validBet);
+    try {
+      await takeBet("slots");
+    } catch {
+      setSpinning(false);
+      setSlotsMsg("BET REJECTED — CHECK YOUR BALANCE");
+      return;
+    }
     let ticks = 0;
     const iv = setInterval(() => {
       setReels([SYMBOLS[Math.floor(Math.random() * 5)], SYMBOLS[Math.floor(Math.random() * 5)], SYMBOLS[Math.floor(Math.random() * 5)]]);
@@ -57,8 +66,8 @@ export default function Casino() {
         if (final[0] === final[1] && final[1] === final[2]) win = validBet * 10;
         else if (final[0] === final[1] || final[1] === final[2] || final[0] === final[2]) win = validBet * 2;
         if (win) {
-          setShards((s) => s + win);
-          setSlotsMsg(`WIN +${win.toLocaleString()} SHARDS`);
+          award(win, "Casino: slots win").catch(() => {});
+          setSlotsMsg(`WIN +${win.toLocaleString()} HT`);
         } else {
           setSlotsMsg("NO MATCH — TRY AGAIN");
         }
@@ -67,27 +76,42 @@ export default function Casino() {
     }, 90);
   };
 
-  const allOrNothing = () => {
+  const allOrNothing = async () => {
     if (validBet < 10) return;
-    setShards((s) => s - validBet);
+    try {
+      await takeBet("all-or-nothing");
+    } catch {
+      setAonMsg("BET REJECTED — CHECK YOUR BALANCE");
+      return;
+    }
     if (Math.random() < 0.5) {
-      setShards((s) => s + validBet * 2);
-      setAonMsg(`DOUBLED! +${(validBet * 2).toLocaleString()} SHARDS`);
+      award(validBet * 2, "Casino: all-or-nothing win").catch(() => {});
+      setAonMsg(`DOUBLED! +${(validBet * 2).toLocaleString()} HT`);
     } else {
-      setAonMsg("GONE. THE VOID KEEPS YOUR SHARDS.");
+      setAonMsg("GONE. THE VOID KEEPS YOUR TOKENS.");
     }
   };
 
-  const deal = () => {
+  const deal = async () => {
     if (validBet < 10) return;
-    setShards((s) => s - validBet);
+    try {
+      await takeBet("blackjack");
+    } catch {
+      setBjMsg("BET REJECTED — CHECK YOUR BALANCE");
+      return;
+    }
     const p = [randCard(), randCard()];
     const d = [randCard(), randCard()];
     setPlayer(p);
     setDealer(d);
     setPhase("play");
     setBjMsg(null);
-    if (handValue(p) === 21) setPhase("done"), setBjMsg("BLACKJACK! +"), setShards((s) => s + validBet * 2.5);
+    if (handValue(p) === 21) {
+      setPhase("done");
+      const win = Math.floor(validBet * 2.5);
+      award(win, "Casino: blackjack").catch(() => {});
+      setBjMsg(`BLACKJACK! +${win.toLocaleString()} HT`);
+    }
   };
 
   const hit = () => {
@@ -99,7 +123,7 @@ export default function Casino() {
     }
   };
 
-  const stand = () => {
+  const stand = async () => {
     let d = [...dealer];
     while (handValue(d) < 17) d = [...d, randCard()];
     setDealer(d);
@@ -107,10 +131,11 @@ export default function Casino() {
     const dv = handValue(d);
     const pv = handValue(player);
     if (dv > 21 || pv > dv) {
-      setShards((s) => s + validBet * 2);
-      setBjMsg(`YOU WIN +${(validBet * 2).toLocaleString()} SHARDS`);
+      const win = validBet * 2;
+      award(win, "Casino: blackjack win").catch(() => {});
+      setBjMsg(`YOU WIN +${win.toLocaleString()} HT`);
     } else if (pv === dv) {
-      setShards((s) => s + validBet);
+      award(validBet, "Casino: blackjack push").catch(() => {});
       setBjMsg("PUSH — BET RETURNED");
     } else {
       setBjMsg("DEALER WINS");
@@ -125,14 +150,15 @@ export default function Casino() {
 
   return (
     <PageShell
-      kicker="THE SHARD DEN"
+      kicker="THE TOKEN DEN"
       title="CASINO"
-      sub="Slots, all-or-nothing and blackjack with your shards. Play sharp."
-      right={<EconomyChips shards={shards} />}
+      sub="Slots, all-or-nothing and blackjack with your Haven Tokens. Play sharp."
     >
       {/* Bet control */}
       <div className="glass-panel rounded-lg p-5 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <span className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground">BET SIZE</span>
+        <span className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground">
+          BET SIZE — {balance.toLocaleString()} HT AVAILABLE
+        </span>
         <div className="flex items-center gap-2 flex-1 max-w-xs">
           <input
             type="number"
@@ -170,7 +196,7 @@ export default function Casino() {
           </div>
           <button
             onClick={spin}
-            disabled={spinning}
+            disabled={spinning || validBet < 10}
             className="w-full font-mono text-[10px] tracking-[0.25em] bg-primary text-primary-foreground py-3 rounded-sm hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {spinning ? "SPINNING..." : "SPIN — 3 MATCH x10 / 2 MATCH x2"}
@@ -190,7 +216,8 @@ export default function Casino() {
           </p>
           <button
             onClick={allOrNothing}
-            className="w-full font-mono text-[10px] tracking-[0.25em] border border-accent/60 text-accent py-3 rounded-sm hover:bg-accent/10 transition-colors"
+            disabled={validBet < 10}
+            className="w-full font-mono text-[10px] tracking-[0.25em] border border-accent/60 text-accent py-3 rounded-sm hover:bg-accent/10 transition-colors disabled:opacity-50"
           >
             FLIP — x2 OR NOTHING
           </button>
@@ -245,10 +272,7 @@ export default function Casino() {
             )}
           </div>
           {bjMsg && (
-            <div className="font-mono text-[10px] tracking-[0.15em] text-accent mt-4">
-              {bjMsg}
-              {bjMsg.startsWith("BLACKJACK") && ` ${(validBet * 2.5).toLocaleString()} SHARDS`}
-            </div>
+            <div className="font-mono text-[10px] tracking-[0.15em] text-accent mt-4">{bjMsg}</div>
           )}
         </div>
       </div>

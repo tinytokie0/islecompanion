@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { PackageOpen } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
-import usePlayShards from "@/hooks/usePlayShards";
-import EconomyChips from "@/components/portal/EconomyChips";
 import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 export default function RewardPacks() {
-  const [shards] = usePlayShards();
   const [code, setCode] = useState("");
   const [error, setError] = useState(null);
 
@@ -22,7 +19,6 @@ export default function RewardPacks() {
       kicker="COMMUNITY GIFTS"
       title="REWARD PACKS"
       sub="Redeem codes from streams, events and Discord drops."
-      right={<EconomyChips shards={shards} />}
     >
       {/* Redeem */}
       <form onSubmit={redeem} className="glass-panel rounded-lg p-6 mb-8">

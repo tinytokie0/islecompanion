@@ -1,35 +1,46 @@
 import React, { useState } from "react";
 import { Coins, Crosshair, Target } from "lucide-react";
-import EconomyChips from "@/components/portal/EconomyChips";
 import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
-import usePlayShards from "@/hooks/usePlayShards";
+import useHt from "@/hooks/useHt";
 
 export default function Bounties() {
-  const [shards, setShards] = usePlayShards();
+  const { balance, spend, award } = useHt();
   const [bounties, setBounties] = useState([]);
   const [target, setTarget] = useState("");
   const [amount, setAmount] = useState(1000);
   const [error, setError] = useState(null);
+  const [busy, setBusy] = useState(false);
 
-  const place = (e) => {
+  const place = async (e) => {
     e.preventDefault();
     const amt = parseInt(amount, 10) || 0;
     if (!target.trim()) return setError("Enter a player name.");
-    if (amt < 100) return setError("Minimum bounty is 100 shards.");
-    if (amt > shards) return setError("Not enough shards.");
+    if (amt < 100) return setError("Minimum bounty is 100 HT.");
+    if (amt > balance) return setError("Not enough Haven Tokens.");
     setError(null);
-    setShards((s) => s - amt);
-    setBounties((prev) => [
-      { id: Date.now(), target: target.trim().toUpperCase(), amount: amt, placer: "YOU" },
-      ...prev,
-    ]);
-    setTarget("");
-    setAmount(1000);
+    setBusy(true);
+    try {
+      await spend(amt, `Bounty placed on ${target.trim()}`);
+      setBounties((prev) => [
+        { id: Date.now(), target: target.trim().toUpperCase(), amount: amt, placer: "YOU" },
+        ...prev,
+      ]);
+      setTarget("");
+      setAmount(1000);
+    } catch {
+      setError("Could not place the bounty — check your balance.");
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const collect = (b) => {
-    setShards((s) => s + b.amount);
-    setBounties((prev) => prev.filter((x) => x.id !== b.id));
+  const collect = async (b) => {
+    try {
+      await award(b.amount, `Bounty collected on ${b.target}`);
+      setBounties((prev) => prev.filter((x) => x.id !== b.id));
+    } catch {
+      /* balance unchanged — the bounty stays on the board */
+    }
   };
 
   return (
@@ -41,16 +52,13 @@ export default function Bounties() {
           <p className="text-sm text-muted-foreground mt-2">
             Put a price on a player's head. Whoever kills them collects the reward.
           </p>
-          <div className="flex justify-center mt-4">
-            <EconomyChips shards={shards} />
-          </div>
         </div>
 
         {/* Place a bounty */}
         <div className="rounded-xl border border-border bg-card p-6 md:p-8 mb-10">
           <h2 className="font-heading text-2xl font-semibold text-foreground mb-1">Place a bounty</h2>
           <p className="text-xs text-muted-foreground mb-5">
-            Name the player and the price. The pot is deducted from your shards up front.
+            Name the player and the price. The pot is deducted from your Haven Tokens up front.
           </p>
           <form onSubmit={place} className="flex flex-col md:flex-row gap-3">
             <input
@@ -68,7 +76,8 @@ export default function Bounties() {
             />
             <button
               type="submit"
-              className="font-heading text-sm font-bold tracking-wide bg-primary text-primary-foreground px-6 py-3 rounded-md hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+              disabled={busy}
+              className="font-heading text-sm font-bold tracking-wide bg-primary text-primary-foreground px-6 py-3 rounded-md hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:opacity-60"
             >
               <Target size={15} /> Place bounty
             </button>
@@ -102,7 +111,7 @@ export default function Bounties() {
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="font-mono text-sm text-accent flex items-center gap-1.5">
-                      <Coins size={13} /> {b.amount.toLocaleString()} SHARDS
+                      <Coins size={13} /> {b.amount.toLocaleString()} HT
                     </span>
                     <button
                       onClick={() => collect(b)}

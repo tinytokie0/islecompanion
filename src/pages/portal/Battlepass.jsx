@@ -9,8 +9,8 @@ const TIERS = Array.from({ length: 10 }, (_, i) => {
   const tier = i + 1;
   return {
     tier,
-    free: ["500 Shards", "Mossback Skin", "Teleport Voucher", "750 Shards", "Ember Stripe", "Reward Pack", "1,000 Shards", "Gilded Scales", "Carcass Beacon", "Mythic Pack"][i],
-    premium: ["1,000 Shards", "Amethyst Veil", "2x XP Weekend", "1,500 Shards", "Abyss Watcher", "Apex Pack", "2,500 Shards", "Blood Moon", "Prismatic", "Legendary Dino"][i],
+    free: ["500 HT", "Mossback Skin", "Teleport Voucher", "750 HT", "Ember Stripe", "Reward Pack", "1,000 HT", "Gilded Scales", "Carcass Beacon", "Mythic Pack"][i],
+    premium: ["1,000 HT", "Amethyst Veil", "2x XP Weekend", "1,500 HT", "Abyss Watcher", "Apex Pack", "2,500 HT", "Blood Moon", "Prismatic", "Legendary Dino"][i],
   };
 });
 

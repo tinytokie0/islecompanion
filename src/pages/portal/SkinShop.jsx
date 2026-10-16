@@ -2,34 +2,38 @@ import React, { useState } from "react";
 import { Coins, Palette, Check } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
 import { SKINS } from "@/lib/portalData";
-import usePlayShards from "@/hooks/usePlayShards";
-import EconomyChips from "@/components/portal/EconomyChips";
+import useHt from "@/hooks/useHt";
 import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 export default function SkinShop() {
-  const [shards, setShards] = usePlayShards();
+  const { balance, spend } = useHt();
+  const [busy, setBusy] = useState(false);
   const [owned, setOwned] = useState([]);
   const [equipped, setEquipped] = useState(null);
 
-  const buy = (skin) => {
-    if (shards < skin.price) return;
-    setShards((s) => s - skin.price);
-    setOwned((o) => [...o, skin.id]);
-    setEquipped(skin.id);
+  const buy = async (skin) => {
+    if (busy || balance < skin.price) return;
+    setBusy(true);
+    try {
+      await spend(skin.price, `Skin shop: ${skin.name}`);
+      setOwned((o) => [...o, skin.id]);
+      setEquipped(skin.id);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <PageShell
       kicker="CRYSTAL ATELIER STORE"
       title="SKIN SHOP"
-      sub="Buy skins with your shards and equip them — applied to your dino in-game."
-      right={<EconomyChips shards={shards} />}
+      sub="Buy skins with Haven Tokens and equip them — applied to your dino in-game."
     >
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {SKINS.map((skin) => {
           const isOwned = owned.includes(skin.id);
           const isEquipped = equipped === skin.id;
-          const afford = shards >= skin.price;
+          const afford = balance >= skin.price;
           return (
             <div
               key={skin.id}

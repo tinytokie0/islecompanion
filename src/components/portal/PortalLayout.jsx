@@ -12,6 +12,7 @@ import {
 import { Image } from "@/components/ui/image";
 import { useAuth } from "@/lib/AuthContext";
 import StatusStrip from "@/components/portal/StatusStrip";
+import EconomyChips from "@/components/portal/EconomyChips";
 import DiscordIcon from "@/components/DiscordIcon";
 
 const LOGO = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/d4ae5dc23_TheHaven_CrystalDinosaurCrest.png";
@@ -92,6 +93,7 @@ function Navbar() {
           </DropdownMenu>
         </nav>
         <div className="ml-auto flex items-center gap-2 shrink-0">
+          <EconomyChips />
           <a
             href="https://discord.gg/4EMZ62VyD"
             target="_blank"

@@ -3,20 +3,25 @@ import { Coins, Package, PackageOpen } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
 import { stageFor } from "@/lib/growthStages";
 import { PACKS } from "@/lib/portalData";
-import usePlayShards from "@/hooks/usePlayShards";
-import EconomyChips from "@/components/portal/EconomyChips";
+import useHt from "@/hooks/useHt";
 import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 export default function DinoPacks() {
-  const [shards, setShards] = usePlayShards();
+  const { balance, spend } = useHt();
+  const [busy, setBusy] = useState(false);
   const [reveal, setReveal] = useState(null); // {name, tier, accent, growth}
 
-  const open = (pack) => {
-    if (shards < pack.price) return;
-    setShards((s) => s - pack.price);
-    const name = pack.pool[Math.floor(Math.random() * pack.pool.length)];
-    const growth = 30 + Math.floor(Math.random() * 60);
-    setReveal({ name, tier: pack.tier, accent: pack.accent, growth });
+  const open = async (pack) => {
+    if (busy || balance < pack.price) return;
+    setBusy(true);
+    try {
+      await spend(pack.price, `Dino pack: ${pack.name}`);
+      const name = pack.pool[Math.floor(Math.random() * pack.pool.length)];
+      const growth = 30 + Math.floor(Math.random() * 60);
+      setReveal({ name, tier: pack.tier, accent: pack.accent, growth });
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -24,7 +29,6 @@ export default function DinoPacks() {
       kicker="CRYSTAL EGG VAULT"
       title="DINO PACKS"
       sub="Open packs for a random dino, delivered straight to your garage."
-      right={<EconomyChips shards={shards} />}
     >
       {/* Reveal */}
       <div className="glass-panel rounded-lg p-8 mb-8 flex flex-col items-center text-center min-h-[220px] justify-center">
@@ -57,7 +61,7 @@ export default function DinoPacks() {
       {/* Packs */}
       <div className="grid md:grid-cols-3 gap-5">
         {PACKS.map((pack) => {
-          const afford = shards >= pack.price;
+          const afford = balance >= pack.price;
           return (
             <div key={pack.name} className="glass-panel rounded-lg p-6 flex flex-col items-center text-center">
               <span
@@ -87,7 +91,7 @@ export default function DinoPacks() {
                     : "border-border text-muted-foreground/50 cursor-not-allowed"
                 }`}
               >
-                OPEN — {pack.price.toLocaleString()} SHARDS
+                OPEN — {pack.price.toLocaleString()} HT
               </button>
             </div>
           );
