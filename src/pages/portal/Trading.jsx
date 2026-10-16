@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import { Coins, ArrowLeftRight } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
 import { stageFor } from "@/lib/growthStages";
-import { DINOS, START_SHARDS } from "@/lib/portalData";
+import { DINOS } from "@/lib/portalData";
+import usePlayShards from "@/hooks/usePlayShards";
+import EconomyChips from "@/components/portal/EconomyChips";
+import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 const RARITY_COLOR = { APEX: "#a78bfa", RARE: "#e6b84c", COMMON: "#94a3b8" };
 
 export default function Trading() {
-  const [shards, setShards] = useState(START_SHARDS);
+  const [shards, setShards] = usePlayShards();
   const [owned, setOwned] = useState([]);
   const [listed, setListed] = useState([]);
   const [offers, setOffers] = useState([]);
@@ -36,13 +39,7 @@ export default function Trading() {
       kicker="SHARD MARKET"
       title="TRADING"
       sub="Buy dinos from the market, list your own and review incoming trade offers."
-      right={
-        <div className="glass-panel-light px-4 py-2 flex items-center gap-2 w-fit">
-          <Coins size={14} className="text-accent" />
-          <span className="font-mono text-xs text-foreground">{shards.toLocaleString()}</span>
-          <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">SHARDS</span>
-        </div>
-      }
+      right={<EconomyChips shards={shards} />}
     >
       {/* Market */}
       <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
@@ -176,6 +173,10 @@ export default function Trading() {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="mt-8">
+        <LiveIslandStrip />
       </div>
     </PageShell>
   );

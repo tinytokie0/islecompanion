@@ -59,5 +59,3 @@ export const PACKS = [
   { name: "Apex Pack", price: 7500, tier: "RARE", accent: "#e6b84c", pool: ["Carnotaurus", "Pteranodon", "Allosaurus", "Ceratosaurus"] },
   { name: "Mythic Pack", price: 20000, tier: "APEX", accent: "#a78bfa", pool: ["Tyrannosaurus", "Deinosuchus", "Triceratops", "Maiasaura"] },
 ];
-
-export const REWARD_CODES = { HAVEN2026: 500, CRYSTAL: 250, PRIME: 1000, GOLDENHOUR: 750 };

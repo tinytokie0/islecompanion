@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Coins, Dices, Flame, Spade } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
-import { START_SHARDS } from "@/lib/portalData";
+import usePlayShards from "@/hooks/usePlayShards";
+import EconomyChips from "@/components/portal/EconomyChips";
+import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 const SYMBOLS = ["🦖", "💎", "🦴", "🔥", "⭐"];
 
@@ -19,7 +21,7 @@ const handValue = (hand) => {
 };
 
 export default function Casino() {
-  const [shards, setShards] = useState(START_SHARDS);
+  const [shards, setShards] = usePlayShards();
   const [bet, setBet] = useState(500);
 
   // Slots
@@ -126,13 +128,7 @@ export default function Casino() {
       kicker="THE SHARD DEN"
       title="CASINO"
       sub="Slots, all-or-nothing and blackjack with your shards. Play sharp."
-      right={
-        <div className="glass-panel-light px-4 py-2 flex items-center gap-2 w-fit">
-          <Coins size={14} className="text-accent" />
-          <span className="font-mono text-xs text-foreground">{shards.toLocaleString()}</span>
-          <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">SHARDS</span>
-        </div>
-      }
+      right={<EconomyChips shards={shards} />}
     >
       {/* Bet control */}
       <div className="glass-panel rounded-lg p-5 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -255,6 +251,10 @@ export default function Casino() {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="mt-8">
+        <LiveIslandStrip />
       </div>
     </PageShell>
   );

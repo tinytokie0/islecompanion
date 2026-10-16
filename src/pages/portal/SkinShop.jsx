@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { Coins, Palette, Check } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
-import { SKINS, START_SHARDS } from "@/lib/portalData";
+import { SKINS } from "@/lib/portalData";
+import usePlayShards from "@/hooks/usePlayShards";
+import EconomyChips from "@/components/portal/EconomyChips";
+import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 export default function SkinShop() {
-  const [shards, setShards] = useState(START_SHARDS);
+  const [shards, setShards] = usePlayShards();
   const [owned, setOwned] = useState([]);
   const [equipped, setEquipped] = useState(null);
 
@@ -20,13 +23,7 @@ export default function SkinShop() {
       kicker="CRYSTAL ATELIER STORE"
       title="SKIN SHOP"
       sub="Buy skins with your shards and equip them — applied to your dino in-game."
-      right={
-        <div className="glass-panel-light px-4 py-2 flex items-center gap-2 w-fit">
-          <Coins size={14} className="text-accent" />
-          <span className="font-mono text-xs text-foreground">{shards.toLocaleString()}</span>
-          <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">SHARDS</span>
-        </div>
-      }
+      right={<EconomyChips shards={shards} />}
     >
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {SKINS.map((skin) => {
@@ -83,6 +80,10 @@ export default function SkinShop() {
             </div>
           );
         })}
+      </div>
+
+      <div className="mt-8">
+        <LiveIslandStrip />
       </div>
     </PageShell>
   );

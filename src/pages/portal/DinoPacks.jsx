@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import { Coins, Package, PackageOpen } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
 import { stageFor } from "@/lib/growthStages";
-import { PACKS, START_SHARDS } from "@/lib/portalData";
+import { PACKS } from "@/lib/portalData";
+import usePlayShards from "@/hooks/usePlayShards";
+import EconomyChips from "@/components/portal/EconomyChips";
+import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 export default function DinoPacks() {
-  const [shards, setShards] = useState(START_SHARDS);
+  const [shards, setShards] = usePlayShards();
   const [reveal, setReveal] = useState(null); // {name, tier, accent, growth}
 
   const open = (pack) => {
@@ -21,13 +24,7 @@ export default function DinoPacks() {
       kicker="CRYSTAL EGG VAULT"
       title="DINO PACKS"
       sub="Open packs for a random dino, delivered straight to your garage."
-      right={
-        <div className="glass-panel-light px-4 py-2 flex items-center gap-2 w-fit">
-          <Coins size={14} className="text-accent" />
-          <span className="font-mono text-xs text-foreground">{shards.toLocaleString()}</span>
-          <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">SHARDS</span>
-        </div>
-      }
+      right={<EconomyChips shards={shards} />}
     >
       {/* Reveal */}
       <div className="glass-panel rounded-lg p-8 mb-8 flex flex-col items-center text-center min-h-[220px] justify-center">
@@ -95,6 +92,10 @@ export default function DinoPacks() {
             </div>
           );
         })}
+      </div>
+
+      <div className="mt-8">
+        <LiveIslandStrip />
       </div>
     </PageShell>
   );

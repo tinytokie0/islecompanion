@@ -2,13 +2,16 @@ import React, { useState } from "react";
 import { Coins, ShoppingBag } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
 import { stageFor } from "@/lib/growthStages";
-import { DINOS, START_SHARDS } from "@/lib/portalData";
+import { DINOS } from "@/lib/portalData";
 import DinoPortrait from "@/components/DinoPortrait";
+import usePlayShards from "@/hooks/usePlayShards";
+import EconomyChips from "@/components/portal/EconomyChips";
+import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 
 const RARITY_COLOR = { APEX: "#a78bfa", RARE: "#e6b84c", COMMON: "#94a3b8" };
 
 export default function DinoShop() {
-  const [shards, setShards] = useState(START_SHARDS);
+  const [shards, setShards] = usePlayShards();
   const [owned, setOwned] = useState([]);
 
   const buy = (dino) => {
@@ -22,13 +25,7 @@ export default function DinoShop() {
       kicker="THE VAULT STORE"
       title="DINO SHOP"
       sub="Buy dinos with your shards — every purchase is delivered straight to your garage."
-      right={
-        <div className="glass-panel-light px-4 py-2 flex items-center gap-2 w-fit">
-          <Coins size={14} className="text-accent" />
-          <span className="font-mono text-xs text-foreground">{shards.toLocaleString()}</span>
-          <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">SHARDS</span>
-        </div>
-      }
+      right={<EconomyChips shards={shards} />}
     >
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {DINOS.map((dino) => {
@@ -83,6 +80,10 @@ export default function DinoShop() {
             </div>
           );
         })}
+      </div>
+
+      <div className="mt-8">
+        <LiveIslandStrip />
       </div>
     </PageShell>
   );
