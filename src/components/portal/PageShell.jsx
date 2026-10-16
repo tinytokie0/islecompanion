@@ -1,21 +1,23 @@
 import React from "react";
 
-export default function PageShell({ kicker, title, sub, right, children }) {
+export default function PageShell({ icon: Icon, title, sub, right, children }) {
   return (
-    <section className="px-6 md:px-10 py-12 md:py-16">
+    <section className="px-4 md:px-8 py-8 md:py-10">
       <div className="max-w-[1500px] mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-7">
           <div>
-            {kicker && (
-              <span className="font-mono text-[10px] tracking-[0.3em] text-primary mb-3 block">
-                {kicker}
-              </span>
-            )}
-            <h1 className="font-heading text-3xl md:text-4xl tracking-[0.08em] text-foreground">
-              {title}
-            </h1>
+            <div className="flex items-center gap-3 mb-1.5">
+              {Icon && (
+                <span className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <Icon size={17} />
+                </span>
+              )}
+              <h1 className="font-heading text-3xl font-bold text-foreground">
+                {title}
+              </h1>
+            </div>
             {sub && (
-              <p className="font-mono text-xs text-muted-foreground mt-2 max-w-xl tracking-wide leading-relaxed">
+              <p className="text-sm text-muted-foreground max-w-xl leading-relaxed">
                 {sub}
               </p>
             )}
