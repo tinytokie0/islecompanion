@@ -1,6 +1,11 @@
 import React from "react";
-import { Outlet, Link } from "react-router-dom";
-import { ChevronDown } from "lucide-react";
+import { Outlet, Link, useLocation } from "react-router-dom";
+import {
+  Home as HomeIcon, Map, Skull, Trophy, Target, MapPin, Warehouse, Dna, Dices,
+  ArrowLeftRight, Coins, ChevronDown, Brush, Palette, Sprout, Bone, PackageOpen,
+  Crown, ListChecks, Package, UserPlus, Gift, Store, LifeBuoy, FileText,
+  ShoppingBag as ShoppingBagIcon,
+} from "lucide-react";
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
@@ -10,87 +15,81 @@ import StatusStrip from "@/components/portal/StatusStrip";
 import DiscordIcon from "@/components/DiscordIcon";
 
 const LOGO = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/d4ae5dc23_TheHaven_CrystalDinosaurCrest.png";
-const JUNGLE_BG = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/d7754492b_generated_image.png";
+const JUNGLE_BG = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/d8aef576a_generated_image.png";
 
-const NAV_GROUPS = [
-  {
-    label: "Play",
-    items: [
-      { label: "Live map", to: "/map" },
-      { label: "Killfeed", to: "/killfeed" },
-      { label: "Leaderboard", to: "/leaderboard" },
-      { label: "Bounties", to: "/bounties" },
-      { label: "Teleports", to: "/teleport" },
-    ],
-  },
-  {
-    label: "My Dino",
-    items: [
-      { label: "Overview", to: "/me" },
-      { label: "Garage", to: "/garage" },
-      { label: "Skin editor", to: "/skin" },
-      { label: "Skin shop", to: "/skinshop" },
-      { label: "Growth", to: "/growth" },
-      { label: "Carcass drop", to: "/carcass" },
-    ],
-  },
-  {
-    label: "Rewards",
-    items: [
-      { label: "Reward packs", to: "/claim" },
-      { label: "Battlepass", to: "/battlepass" },
-      { label: "Quests", to: "/quests" },
-      { label: "Dino packs", to: "/packs" },
-      { label: "Invite friends", to: "/referral" },
-      { label: "Giveaways", to: "/giveaways" },
-    ],
-  },
-  {
-    label: "Market",
-    items: [
-      { label: "Wallet", to: "/wallet" },
-      { label: "Token shop", to: "/store" },
-      { label: "Dino shop", to: "/shop" },
-      { label: "Trading", to: "/trading" },
-      { label: "Casino", to: "/casino" },
-    ],
-  },
-  {
-    label: "Community",
-    items: [
-      { label: "Support tickets", to: "/tickets" },
-      { label: "Staff applications", to: "/apply" },
-    ],
-  },
+const NAV_LINKS = [
+  { label: "Home", to: "/", icon: HomeIcon },
+  { label: "Live Map", to: "/map", icon: Map },
+  { label: "Killfeed", to: "/killfeed", icon: Skull },
+  { label: "Leaderboard", to: "/leaderboard", icon: Trophy },
+  { label: "Bounties", to: "/bounties", icon: Target },
+  { label: "Teleports", to: "/teleport", icon: MapPin },
+  { label: "My Dino", to: "/me", icon: Dna },
+  { label: "Garage", to: "/garage", icon: Warehouse },
+  { label: "Battlepass", to: "/battlepass", icon: Crown },
+  { label: "Quests", to: "/quests", icon: ListChecks },
+  { label: "Casino", to: "/casino", icon: Dices },
+  { label: "Dino Shop", to: "/shop", icon: ShoppingBagIcon },
+  { label: "Trading", to: "/trading", icon: ArrowLeftRight },
+  { label: "Wallet", to: "/wallet", icon: Coins },
 ];
+const MORE_LINKS = [
+  { label: "Skin editor", to: "/skin", icon: Brush },
+  { label: "Skin shop", to: "/skinshop", icon: Palette },
+  { label: "Growth", to: "/growth", icon: Sprout },
+  { label: "Carcass Drop", to: "/carcass", icon: Bone },
+  { label: "Reward packs", to: "/claim", icon: PackageOpen },
+  { label: "Dino Packs", to: "/packs", icon: Package },
+  { label: "Invite friends", to: "/referral", icon: UserPlus },
+  { label: "Giveaways", to: "/giveaways", icon: Gift },
+  { label: "Token shop", to: "/store", icon: Store },
+  { label: "Support", to: "/tickets", icon: LifeBuoy },
+  { label: "Apply", to: "/apply", icon: FileText },
+];
+
+function NavPill({ to, icon: Icon, label }) {
+  const { pathname } = useLocation();
+  const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
+  return (
+    <Link
+      to={to}
+      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md font-heading text-xs font-semibold uppercase tracking-wide whitespace-nowrap transition-colors ${
+        active ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      <Icon size={12} /> {label}
+    </Link>
+  );
+}
 
 function Navbar() {
   const { isAuthenticated } = useAuth();
   return (
     <header className="sticky top-0 inset-x-0 z-50 bg-[#0c0c0f]/95 backdrop-blur-md border-b border-border">
-      <div className="max-w-[1500px] mx-auto flex items-center gap-3 px-4 md:px-6 h-14">
+      <div className="max-w-[1500px] mx-auto flex items-center gap-2 px-4 md:px-6 py-2">
         <Link to="/" className="flex items-center gap-2.5 shrink-0">
           <Image src={LOGO} alt="The Haven" className="w-7 h-7" fittingType="fit" />
-          <span className="font-heading font-bold text-[15px] text-foreground hidden sm:block">
+          <span className="font-heading font-bold text-[15px] uppercase text-foreground hidden sm:block">
             The Haven
           </span>
         </Link>
-        <nav className="flex-1 flex items-center gap-0.5 overflow-x-auto hide-scrollbar min-w-0">
-          {NAV_GROUPS.map((group) => (
-            <DropdownMenu key={group.label}>
-              <DropdownMenuTrigger className="flex items-center gap-1 px-3 py-2 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-secondary data-[state=open]:text-foreground data-[state=open]:bg-secondary whitespace-nowrap">
-                {group.label}
-                <ChevronDown size={14} className="opacity-70" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-52 border-border bg-popover">
-                {group.items.map((item) => (
-                  <DropdownMenuItem key={item.to} asChild>
-                    <Link to={item.to}>{item.label}</Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+        <nav className="flex-1 flex items-center justify-center flex-wrap gap-0.5 min-w-0">
+          {NAV_LINKS.map((item) => (
+            <NavPill key={item.to} {...item} />
           ))}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 px-2.5 py-1.5 rounded-md font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground hover:bg-secondary data-[state=open]:text-foreground data-[state=open]:bg-secondary whitespace-nowrap">
+              <PackageOpen size={12} /> More
+              <ChevronDown size={12} className="opacity-70" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-52 border-border bg-popover">
+              {MORE_LINKS.map((item) => (
+                <DropdownMenuItem key={item.to} asChild>
+                  <Link to={item.to}>{item.label}</Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
         <div className="ml-auto flex items-center gap-2 shrink-0">
           <a
@@ -98,15 +97,15 @@ function Navbar() {
             target="_blank"
             rel="noreferrer"
             aria-label="Join our Discord"
-            className="w-9 h-9 rounded-md bg-[#5865F2] flex items-center justify-center text-white hover:opacity-90 transition-opacity"
+            className="w-8 h-8 rounded-md bg-[#5865F2] flex items-center justify-center text-white hover:opacity-90 transition-opacity"
           >
-            <DiscordIcon className="w-4 h-4" />
+            <DiscordIcon className="w-3.5 h-3.5" />
           </a>
           <Link
             to={isAuthenticated ? "/me" : "/login"}
-            className="bg-primary text-primary-foreground text-sm font-medium px-4 py-2 rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
+            className="bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
           >
-            {isAuthenticated ? "My dino" : "Sign in"}
+            {isAuthenticated ? "My dino" : "Sign in with Steam"}
           </Link>
         </div>
       </div>
@@ -180,7 +179,7 @@ export default function PortalLayout() {
       {/* Fixed jungle backdrop */}
       <div className="fixed inset-0 z-0">
         <Image src={JUNGLE_BG} alt="" className="w-full h-full" fittingType="fill" />
-        <div className="absolute inset-0 bg-background/70" />
+        <div className="absolute inset-0 bg-background/45" />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
       </div>
       <Navbar />
