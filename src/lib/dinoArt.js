@@ -27,11 +27,27 @@ const ART = {
 
 const FALLBACK = ART.tyrannosaurus;
 
-// Match a live species string ("Tyrannosaurus", "carno-014"...) to its art.
+// In-game shorthand players and feeds use ("Tenonto", "Hypsi", "T-Rex"...).
+const ALIASES = {
+  trex: "tyrannosaurus",
+  trike: "triceratops",
+  tenonto: "tenontosaurus",
+  hypsi: "hypsilophodon",
+  dilo: "dilophosaurus",
+  carno: "carnotaurus",
+  pachy: "pachycephalosaurus",
+  omni: "omniraptor",
+};
+
+// Match a live species string ("Tyrannosaurus", "TRIC-002", "Tenonto"...)
+// to its art by full name, so "Triceratops" never grabs Ceratosaurus.
 export function dinoArtFor(species) {
-  const s = String(species || "").toLowerCase();
+  const s = String(species || "").toLowerCase().replace(/[^a-z]/g, "");
+  for (const [alias, key] of Object.entries(ALIASES)) {
+    if (s.includes(alias)) return ART[key];
+  }
   for (const key of Object.keys(ART)) {
-    if (s.includes(key.slice(0, 5))) return ART[key];
+    if (s.includes(key)) return ART[key];
   }
   return FALLBACK;
 }
