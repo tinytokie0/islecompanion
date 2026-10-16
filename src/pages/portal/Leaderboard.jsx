@@ -15,9 +15,21 @@ const ROSTER = [
 ];
 
 const TABS = {
-  growth: { label: "Growth", sort: "-growth", stat: "Highest growth on the island right now." },
-  deaths: { label: "Most Deaths", sort: "-deaths", stat: "Most respawns recorded by the island feed." },
-  life: { label: "Longest Life", sort: "-best_life_minutes", stat: "Longest tracked life on the island." },
+  kills: { label: "Kills", sort: "-kills", unit: "KILLS", stat: "Most credited kills on the server. Kills are a proximity estimate from the feed." },
+  kd: { label: "K/D", sort: "-kills", unit: "K/D", stat: "Kill/death ratio across the island." },
+  deaths: { label: "Most Deaths", sort: "-deaths", unit: "DEATHS", stat: "Most respawns recorded by the island feed." },
+  nesting: { label: "Nesting", stat: "Nesting events aren't reported by the island feed yet." },
+  carnivore: { label: "Carnivore hunter", sort: "-kills_carnivore", unit: "KILLS", stat: "Most credited kills of carnivore prey." },
+  herbivore: { label: "Herbivore hunter", sort: "-kills_herbivore", unit: "KILLS", stat: "Most credited kills of herbivore prey." },
+  omnivore: { label: "Omnivore hunter", sort: "-kills_omnivore", unit: "KILLS", stat: "Most credited kills of omnivore prey." },
+  growth: { label: "Growth", sort: "-growth", unit: "GROWTH", stat: "Highest growth on the island right now." },
+  life: { label: "Longest Life", sort: "-best_life_minutes", unit: "LIFE", stat: "Longest tracked life on the island." },
+};
+
+const fmtRatio = (kills, deaths) => {
+  const k = kills || 0;
+  const d = deaths || 0;
+  return d > 0 ? (k / d).toFixed(2) : `${k}`;
 };
 
 const fmtLife = (min) => {
@@ -27,56 +39,41 @@ const fmtLife = (min) => {
 };
 
 export default function Leaderboard() {
-  const [tab, setTab] = useState("growth");
+  const [tab, setTab] = useState("kills");
   // Real board: every dino seen on the island in the last 24 hours
   const { dinos, loading } = useLiveDinos({
     windowMinutes: 24 * 60,
     refreshMs: 60000,
-    sort: TABS[tab].sort,
+    sort: TABS[tab].sort || "-growth",
   });
 
   const [species, setSpecies] = useState("All");
   const now = Date.now();
+  const liveLife = (r) => Math.max(
+    r.best_life_minutes || 0,
+    r.life_started_at ? (now - Date.parse(r.life_started_at)) / 60000 : 0
+  );
 
   let rows = dinos || [];
-  if (tab === "life") {
-    // An ongoing life counts toward "longest life" until it ends
-    rows = [...rows].sort((a, b) => {
-      const dur = (r) => Math.max(
-        r.best_life_minutes || 0,
-        r.life_started_at ? (now - Date.parse(r.life_started_at)) / 60000 : 0
-      );
-      return dur(b) - dur(a);
-    });
-  }
+  if (tab === "kd") rows = [...rows].sort((a, b) => (b.kills || 0) / Math.max(b.deaths || 0, 1) - (a.kills || 0) / Math.max(a.deaths || 0, 1));
+  if (tab === "life") rows = [...rows].sort((a, b) => liveLife(b) - liveLife(a));
   const filtered = species === "All" ? rows : rows.filter((r) => r.species === species);
 
-  const valueFor = (r) =>
-    tab === "growth"
-      ? `${Math.round(r.growth ?? 0)}`
-      : tab === "deaths"
-      ? `${r.deaths || 0}`
-      : fmtLife(
-          Math.max(
-            r.best_life_minutes || 0,
-            r.life_started_at ? (now - Date.parse(r.life_started_at)) / 60000 : 0
-          )
-        );
-  const unitFor = tab === "growth" ? "GROWTH" : tab === "deaths" ? "DEATHS" : "LIFE";
-
-  const headValue =
-    tab === "growth"
-      ? `${Math.round(filtered[0]?.growth ?? 0)}%`
-      : tab === "deaths"
-      ? `${filtered[0]?.deaths || 0}`
-      : fmtLife(
-          filtered[0]
-            ? Math.max(
-                filtered[0].best_life_minutes || 0,
-                filtered[0].life_started_at ? (now - Date.parse(filtered[0].life_started_at)) / 60000 : 0
-              )
-            : 0
-        );
+  const valueFor = (r) => {
+    switch (tab) {
+      case "kills": return `${r.kills || 0}`;
+      case "kd": return fmtRatio(r.kills, r.deaths);
+      case "deaths": return `${r.deaths || 0}`;
+      case "nesting": return "0";
+      case "carnivore": return `${r.kills_carnivore || 0}`;
+      case "herbivore": return `${r.kills_herbivore || 0}`;
+      case "omnivore": return `${r.kills_omnivore || 0}`;
+      case "growth": return `${Math.round(r.growth ?? 0)}`;
+      default: return fmtLife(liveLife(r));
+    }
+  };
+  const headValue = filtered.length ? valueFor(filtered[0]) : "0";
+  const unitFor = tab === "growth" ? "GROWTH" : tab === "life" ? "LIFE" : TABS[tab].unit;
 
   return (
     <section className="px-4 md:px-8 py-10 md:py-14">
@@ -137,6 +134,14 @@ export default function Leaderboard() {
           <div className="rounded-xl border border-border bg-card p-10 flex items-center justify-center gap-3 text-sm text-muted-foreground mb-6">
             <Loader2 size={14} className="animate-spin" /> Reading island data...
           </div>
+        ) : tab === "nesting" ? (
+          <div className="rounded-xl border border-border bg-card p-10 text-center mb-10">
+            <Egg size={22} className="mx-auto mb-3 text-muted-foreground" />
+            <div className="font-heading text-xl font-bold text-foreground mb-2">No nesting events recorded yet</div>
+            <p className="text-sm text-muted-foreground">
+              Nesting isn't reported by the island feed. This board fills in as soon as nesting events arrive.
+            </p>
+          </div>
         ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-border bg-card p-10 text-center mb-6">
             <Trophy size={22} className="mx-auto mb-3 text-muted-foreground" />
@@ -151,7 +156,15 @@ export default function Leaderboard() {
               <div className="text-sm text-muted-foreground mb-4">{TABS[tab].stat}</div>
               <div className="font-heading text-5xl font-bold text-primary">
                 {headValue}
-                <span className="text-sm text-muted-foreground font-medium ml-2">counted</span>
+                <span className="text-sm text-muted-foreground font-medium ml-2">
+                  {tab === "kills" || tab === "carnivore" || tab === "herbivore" || tab === "omnivore"
+                    ? "kills counted"
+                    : tab === "deaths"
+                    ? "deaths counted"
+                    : tab === "kd"
+                    ? "top K/D"
+                    : "counted"}
+                </span>
               </div>
             </div>
 

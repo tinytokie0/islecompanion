@@ -3,6 +3,28 @@
 // daily FeedDay rollups (which power quests and playtime rewards) so every
 // player who appears on the server is accounted for — no matter which
 // function recorded them.
+//
+// Deaths and kills: the feed never reports combat events directly, but a
+// death always resets growth to near zero, so a big growth drop between two
+// snapshots is treated as a respawn. Kills are a proximity estimate — when a
+// player dies, the nearest other player recorded in the same snapshot, within
+// radius, is credited with the kill and its prey-diet tally.
+const KILL_RADIUS = 2500; // world units
+
+const CARNIVORES = new Set([
+  'Allosaurus', 'Austroraptor', 'Carnotaurus', 'Ceratosaurus', 'Deinosuchus',
+  'Dilophosaurus', 'Herrerasaurus', 'Omniraptor', 'Pteranodon', 'Troodon',
+  'Tyrannosaurus',
+]);
+const OMNIVORES = new Set(['Beipiaosaurus', 'Hypsilophodon']);
+
+export function dietOf(species) {
+  if (!species) return null;
+  if (CARNIVORES.has(species)) return 'carnivore';
+  if (OMNIVORES.has(species)) return 'omnivore';
+  return 'herbivore';
+}
+
 export function speciesFromPath(path) {
   const m = /BP_([A-Za-z]+)\.BP_[A-Za-z]+_C/.exec(path || '');
   if (!m) return 'Unknown';
@@ -18,11 +40,6 @@ export function growthNumber(raw) {
 // Upsert the latest snapshot per player and record one sighting per player
 // for the UTC day. Duplicate Steam IDs in one batch collapse to the last
 // entry, so a player seen on two feeds in the same run counts once.
-//
-// Deaths and life spans: the feed never reports death events directly, but a
-// death always resets growth to near zero, so a big growth drop between two
-// snapshots is treated as a respawn. Each player accumulates a death count
-// and their best tracked life (minutes between life start and the death).
 export async function applyFeedRecords(service, records, nowIso) {
   const bySteam = new Map();
   for (const r of records) {
@@ -38,6 +55,7 @@ export async function applyFeedRecords(service, records, nowIso) {
   );
   const prevBySteam = new Map((dinoPage.items || []).map((r) => [r.steam_id, r]));
 
+  const dead = new Set();
   const enriched = clean.map((r) => {
     const prev = prevBySteam.get(r.steam_id) || null;
     const growth = typeof r.growth === 'number' ? r.growth : null;
@@ -49,6 +67,7 @@ export async function applyFeedRecords(service, records, nowIso) {
 
     if (growth != null && prevGrowth != null && growth < prevGrowth - 15) {
       deaths += 1;
+      dead.add(r.steam_id);
       if (lifeStarted) {
         const lifeMin = Math.round((Date.now() - Date.parse(lifeStarted)) / 60000);
         if (lifeMin > bestLife) bestLife = lifeMin;
@@ -57,8 +76,43 @@ export async function applyFeedRecords(service, records, nowIso) {
     }
     if (!lifeStarted) lifeStarted = nowIso;
 
-    return { ...r, deaths, life_started_at: lifeStarted, best_life_minutes: bestLife };
+    return {
+      ...r,
+      deaths,
+      life_started_at: lifeStarted,
+      best_life_minutes: bestLife,
+      kills: prev?.kills || 0,
+      kills_carnivore: prev?.kills_carnivore || 0,
+      kills_herbivore: prev?.kills_herbivore || 0,
+      kills_omnivore: prev?.kills_omnivore || 0,
+    };
   });
+
+  // Proximity kill attribution: each detected death is credited to the
+  // nearest other player in the same snapshot, when they stand within radius
+  // and both positions are known.
+  const dist = (a, b) => {
+    const ax = a.pos_x, ay = a.pos_y, bx = b.pos_x, by = b.pos_y;
+    if (ax == null || ay == null || bx == null || by == null) return Infinity;
+    return Math.hypot(ax - bx, ay - by);
+  };
+  for (const victim of enriched) {
+    if (!dead.has(victim.steam_id)) continue;
+    let killer = null;
+    let killerDist = Infinity;
+    for (const cand of enriched) {
+      if (cand.steam_id === victim.steam_id) continue;
+      const d = dist(cand, victim);
+      if (d < killerDist) { killerDist = d; killer = cand; }
+    }
+    if (killer && killerDist <= KILL_RADIUS) {
+      killer.kills += 1;
+      const diet = dietOf(victim.species);
+      if (diet === 'carnivore') killer.kills_carnivore += 1;
+      else if (diet === 'herbivore') killer.kills_herbivore += 1;
+      else if (diet === 'omnivore') killer.kills_omnivore += 1;
+    }
+  }
 
   await service.entities.LiveDino.upsert(enriched, { key: 'steam_id' });
 

@@ -60,6 +60,26 @@
       "default": 0,
       "description": "Respawns tracked by the feed: how many times this player's growth reset (i.e. died) since tracking began"
     },
+    "kills": {
+      "type": "number",
+      "default": 0,
+      "description": "Proximity-estimated kills: times this player was the nearest other player recorded near a detected death"
+    },
+    "kills_carnivore": {
+      "type": "number",
+      "default": 0,
+      "description": "Proximity-estimated kills of carnivore prey"
+    },
+    "kills_herbivore": {
+      "type": "number",
+      "default": 0,
+      "description": "Proximity-estimated kills of herbivore prey"
+    },
+    "kills_omnivore": {
+      "type": "number",
+      "default": 0,
+      "description": "Proximity-estimated kills of omnivore prey"
+    },
     "life_started_at": {
       "type": "string",
       "format": "date-time",
