@@ -138,6 +138,29 @@
 }
 .animate-flap { animation: wing-flap 1.6s ease-in-out infinite; transform-origin: center; }
 
+/* Side-of-screen jumpscare dinos: lunge in fast with a slight overshoot,
+   then hold the edge with a subtle breathing idle */
+@keyframes scare-in-left {
+  0% { transform: translateX(-108%); }
+  55% { transform: translateX(-22%); }
+  72% { transform: translateX(-34%); }
+  100% { transform: translateX(-30%); }
+}
+@keyframes scare-in-right {
+  0% { transform: translateX(108%); }
+  55% { transform: translateX(22%); }
+  72% { transform: translateX(34%); }
+  100% { transform: translateX(30%); }
+}
+.scare-in-left { animation: scare-in-left 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+.scare-in-right { animation: scare-in-right 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+
+@keyframes scare-idle {
+  0%, 100% { transform: translateY(0) rotate(-0.6deg) scale(1); }
+  50% { transform: translateY(-6px) rotate(0.6deg) scale(1.02); }
+}
+.scare-idle { animation: scare-idle 4s ease-in-out infinite; }
+
 @keyframes firefly-float {
   0%, 100% { transform: translate(0, 0); opacity: 0.1; }
   30% { opacity: 0.9; }
