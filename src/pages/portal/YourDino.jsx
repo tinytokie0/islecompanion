@@ -4,7 +4,6 @@ import { Warehouse, Brush, Coins } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
 import { stageFor } from "@/lib/growthStages";
 import { START_SHARDS } from "@/lib/portalData";
-import SteamLinkCard from "@/components/SteamLinkCard";
 
 const SPECIMEN = {
   name: "Tyrannosaurus",
@@ -118,8 +117,6 @@ export default function YourDino() {
           </div>
         </div>
       </div>
-
-      <SteamLinkCard />
     </PageShell>
   );
 }
