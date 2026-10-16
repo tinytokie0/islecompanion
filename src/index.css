@@ -248,14 +248,14 @@
 }
 .dino-group:hover .dino-react {
   transform: scale(1.2);
-  filter: drop-shadow(0 0 26px rgba(255, 46, 123, 0.65)) brightness(1.08) saturate(1.15);
+  filter: drop-shadow(0 0 26px rgba(230, 184, 76, 0.65)) brightness(1.08) saturate(1.15);
 }
 
 .dino-sheen {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(105deg, transparent 38%, rgba(255, 46, 123, 0.22) 50%, transparent 62%);
+  background: linear-gradient(105deg, transparent 38%, rgba(230, 184, 76, 0.22) 50%, transparent 62%);
   transform: translateX(-110%);
 }
 .dino-group:hover .dino-sheen {
