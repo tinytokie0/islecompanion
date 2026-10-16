@@ -92,7 +92,7 @@ function Navbar() {
         </nav>
         <div className="ml-auto flex items-center gap-2 shrink-0">
           <a
-            href="https://discord.com"
+            href="https://discord.gg/4EMZ62VyD"
             target="_blank"
             rel="noreferrer"
             aria-label="Join our Discord"

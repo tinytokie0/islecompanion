@@ -180,7 +180,7 @@ export default function Home() {
           </div>
         </div>
         <a
-          href="https://discord.com"
+          href="https://discord.gg/4EMZ62VyD"
           target="_blank"
           rel="noreferrer"
           className="shrink-0 bg-[#5865F2] text-white text-sm font-medium px-5 py-2.5 rounded-md hover:opacity-90 transition-opacity flex items-center gap-2"
