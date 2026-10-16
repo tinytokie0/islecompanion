@@ -31,8 +31,8 @@ function Navbar() {
   const { pathname } = useLocation();
   const isActive = (to) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
   return (
-    <header className="fixed top-0 inset-x-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
-      <div className="flex items-center h-14">
+    <header className="sticky top-0 inset-x-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
+      <div className="flex flex-wrap items-center py-2 gap-y-1">
         {/* Brand */}
         <Link to="/" className="flex items-center gap-2 px-4 md:px-6 shrink-0">
           <Image src={LOGO} alt="The Haven" className="w-9 h-9" fittingType="fit" />
@@ -41,7 +41,7 @@ function Navbar() {
           </span>
         </Link>
         {/* Links */}
-        <nav className="flex-1 flex items-center gap-1 overflow-x-auto hide-scrollbar px-2">
+        <nav className="flex-1 flex flex-wrap items-center gap-1 px-2">
           {LINKS.map(({ label, to, icon: Icon }) => (
             <Link
               key={to}
@@ -129,7 +129,7 @@ export default function PortalLayout() {
     <div className="min-h-screen bg-background grid-bg">
       <DinoBackground />
       <Navbar />
-      <main className="pt-14 relative z-10">
+      <main className="relative z-10">
         <Outlet />
       </main>
       <Footer />
