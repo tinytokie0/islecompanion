@@ -58,7 +58,13 @@ export default async function(req) {
       return Response.json({ configured: true, error: 'No servers are registered in Arkanis yet.' }, { status: 200 });
     }
 
-    const server = servers.find((s) => s.is_default) || servers[0];
+    // Prefer a real game server (RCON with a known game type) over the
+    // Pterodactyl passthrough entry, even when the latter is the default.
+    const server =
+      servers.find((s) => s.kind === 'rcon' && s.game_type) ||
+      servers.find((s) => s.game_type) ||
+      servers.find((s) => s.is_default) ||
+      servers[0];
 
     const statusRes = await fetch(`${API_BASE}/api/public/v1/guilds/${guildId}/servers/${encodeURIComponent(server.id)}/status`, {
       headers,
