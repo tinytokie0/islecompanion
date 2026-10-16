@@ -1,0 +1,44 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "record_live_dinos",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "record": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "recordLiveDinos"
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Record live dinos",
+            "description": "Upsert Arkanis players into LiveDino"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Record Live Dinos",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": 5,
+      "interval_unit": "minutes",
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "description": "Every 5 minutes, pulls live players from the Arkanis API and records them into LiveDino so the Garage, Live Map and player counts stay current."
+}
