@@ -7,6 +7,7 @@ import {
 import { Image } from "@/components/ui/image";
 import { useAuth } from "@/lib/AuthContext";
 import HeroDino from "@/components/HeroDino";
+import SideDinos from "@/components/SideDinos";
 
 const HERO_BG =
   "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/046e1d3f5_79baba85-cefc-4a35-8c70-bc181598d114.png";
@@ -35,6 +36,7 @@ export default function Home() {
 
   return (
     <div className="relative z-10 px-6 md:px-10 py-10 md:py-14 max-w-[1500px] mx-auto">
+      <SideDinos />
       {/* Hero card */}
       <div className="relative rounded-lg overflow-hidden glass-panel mb-6">
         <div className="absolute inset-0">
