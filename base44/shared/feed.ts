@@ -90,12 +90,14 @@ export async function applyFeedRecords(service, records, nowIso) {
 
   // Proximity kill attribution: each detected death is credited to the
   // nearest other player in the same snapshot, when they stand within radius
-  // and both positions are known.
+  // and both positions are known. Every death is also logged as a KillEvent
+  // for the killfeed, with the killer left empty for environmental deaths.
   const dist = (a, b) => {
     const ax = a.pos_x, ay = a.pos_y, bx = b.pos_x, by = b.pos_y;
     if (ax == null || ay == null || bx == null || by == null) return Infinity;
     return Math.hypot(ax - bx, ay - by);
   };
+  const killEvents = [];
   for (const victim of enriched) {
     if (!dead.has(victim.steam_id)) continue;
     let killer = null;
@@ -112,9 +114,24 @@ export async function applyFeedRecords(service, records, nowIso) {
       else if (diet === 'herbivore') killer.kills_herbivore += 1;
       else if (diet === 'omnivore') killer.kills_omnivore += 1;
     }
+    const prevVictim = prevBySteam.get(victim.steam_id);
+    killEvents.push({
+      victim_steam_id: victim.steam_id,
+      victim_name: victim.player_name || 'Unknown',
+      victim_species: victim.species || 'Unknown',
+      victim_growth: prevVictim && typeof prevVictim.growth === 'number' ? prevVictim.growth : null,
+      killer_steam_id: killer ? killer.steam_id : '',
+      killer_name: killer ? killer.player_name || 'Unknown' : '',
+      killer_species: killer ? killer.species || '' : '',
+      killer_growth: killer && typeof killer.growth === 'number' ? killer.growth : null,
+      killed_date: nowIso,
+    });
   }
 
   await service.entities.LiveDino.upsert(enriched, { key: 'steam_id' });
+  if (killEvents.length > 0) {
+    await service.entities.KillEvent.bulkCreate(killEvents);
+  }
 
   const day = nowIso.slice(0, 10);
   const rollPage = await service.entities.FeedDay.filter(
