@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Loader2, Save, Trash2 } from "lucide-react";
+import { Loader2, Save, Trash2, Palette } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { DINOS } from "@/lib/portalData";
+import { Image } from "@/components/ui/image";
+
+// Full-bleed moonlit jungle art matching the Cretaceous Gone Wild skin page
+const BACKDROP =
+  "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/05e44146b_generated_image.png";
 
 const PATTERNS = [
   { id: "default", name: "Wild Type", desc: "Natural camouflage" },
@@ -113,248 +118,261 @@ export default function SkinEditor() {
   };
 
   return (
-    <section id="skins" className="relative py-24 md:py-32 px-6 md:px-10">
-      <div className="max-w-[1600px] mx-auto">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-          <div>
-            <span className="font-mono text-[10px] tracking-[0.3em] text-primary mb-3 block">
-              03 — CRYSTAL ATELIER
-            </span>
-            <h2 className="font-heading text-3xl md:text-5xl tracking-[0.08em] text-foreground">
-              SKIN EDITOR
-            </h2>
-          </div>
-          <p className="font-mono text-xs text-muted-foreground max-w-md tracking-wide leading-relaxed">
-            Engineer your evolutionary identity. Toggle genetic patterns and
-            chromatic base layers with zero friction.
-          </p>
-        </div>
+    <section id="skins" className="relative">
+      {/* ============ Full-bleed moonlit jungle backdrop ============ */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <Image
+          src={BACKDROP}
+          alt=""
+          fittingType="fill"
+          className="w-full h-full animate-ken-burns"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/45 to-background" />
+        <div className="absolute inset-0 grid-bg opacity-20" />
+      </div>
 
-        <div className="grid lg:grid-cols-2 gap-6">
-          {/* Render viewport */}
-          <div className="glass-panel aspect-square lg:aspect-auto relative overflow-hidden flex items-center justify-center">
-            <div className="absolute inset-0 grid-bg opacity-30" />
-            <div
-              className="absolute w-2/3 h-2/3 rounded-full blur-3xl opacity-25 transition-colors duration-700"
-              style={{ backgroundColor: getRenderColor() }}
-            />
-            {/* Dino silhouette */}
-            <svg viewBox="0 0 200 200" className="relative w-4/5 h-4/5">
-              <defs>
-                <pattern id="brindlePattern" patternUnits="userSpaceOnUse" width="8" height="8">
-                  <rect width="8" height="8" fill={getRenderColor()} />
-                  <rect width="3" height="8" fill={getAccentColor()} opacity="0.5" />
-                </pattern>
-              </defs>
-              <path
-                d="M 30 120 Q 40 100 60 95 L 80 85 Q 100 75 120 80 L 140 70 Q 160 65 170 75 L 165 90 Q 155 95 145 100 L 135 110 Q 130 125 120 130 L 110 135 Q 95 140 80 138 L 65 145 Q 45 150 35 140 Z"
-                fill={pattern === "brindle" ? "url(#brindlePattern)" : getRenderColor()}
-                className="animate-breathe transition-all duration-500"
-              />
-              <circle cx="155" cy="80" r="3" fill="#0A0F0D" />
-              {[...Array(5)].map((_, i) => (
-                <path
-                  key={i}
-                  d={`M ${75 + i * 18} ${85 - i * 1} L ${80 + i * 18} ${75 - i * 1} L ${85 + i * 18} ${85 - i * 1}`}
-                  fill={getAccentColor()}
-                  opacity="0.7"
-                />
-              ))}
-              {/* Belly stripe */}
-              <path
-                d="M 50 135 Q 80 145 120 138 L 115 142 Q 80 148 55 142 Z"
-                fill={getAccentColor()}
-                opacity="0.3"
-              />
-              {/* Crystal shards */}
-              {pattern === "crystal" && (
-                <g>
-                  <polygon points="100,55 108,72 92,72" fill="#e6b84c" className="animate-crystal" />
-                  <polygon points="68,95 76,112 60,112" fill="#c98a5e" className="animate-crystal" style={{ animationDelay: "1s" }} />
-                  <polygon points="132,100 140,117 124,117" fill="#c4b5fd" className="animate-crystal" style={{ animationDelay: "2s" }} />
-                  <polygon points="40,110 47,126 33,126" fill="#f0d49a" className="animate-crystal" style={{ animationDelay: "0.5s" }} />
-                </g>
-              )}
-            </svg>
-
-            {/* Scan line */}
-            <div className="absolute left-0 right-0 h-20 scanline animate-scan pointer-events-none" />
-
-            {/* Info overlay */}
-            <div className="absolute top-4 left-4">
-              <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
-                SPECIES: <span className="text-primary">{species.toUpperCase()}</span>
-              </div>
-              <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground mt-1">
-                PATTERN: <span className="text-primary">{PATTERNS.find((p) => p.id === pattern)?.name.toUpperCase()}</span>
-              </div>
-            </div>
-            <div className="absolute bottom-4 left-4 flex items-center gap-2">
-              <span className="w-4 h-4 border border-foreground/30" style={{ backgroundColor: color }} />
-              <span className="font-mono text-[10px] tracking-[0.15em] text-muted-foreground">
-                {color.toUpperCase()}
+      <div className="relative px-6 md:px-10 py-14 md:py-20">
+        <div className="max-w-[1500px] mx-auto">
+          {/* ============ Hero card, like the reference ============ */}
+          <div className="flex justify-center mb-14">
+            <div className="glass-panel rounded-2xl px-10 md:px-20 py-12 text-center max-w-xl w-full">
+              <span className="inline-flex w-14 h-14 rounded-xl bg-primary/15 text-primary items-center justify-center mb-5">
+                <Palette size={24} />
               </span>
+              <h1 className="font-heading text-3xl md:text-4xl tracking-[0.06em] text-foreground text-glow mb-3">
+                SKIN EDITOR
+              </h1>
+              <p className="font-mono text-xs md:text-sm text-muted-foreground leading-relaxed tracking-wide">
+                Design your dino's genetic pattern and chromatic base, save it, and it carries into the game.
+              </p>
             </div>
-            {savedMsg && (
-              <div className="absolute bottom-4 right-4 font-mono text-[10px] tracking-[0.15em] text-primary">
-                {savedMsg.toUpperCase()}
-              </div>
-            )}
           </div>
 
-          {/* Controls panel */}
-          <div className="flex flex-col gap-6">
-            {/* Species selection */}
-            <div className="glass-panel p-6">
-              <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
-                SPECIMEN
-              </div>
-              <div className="grid grid-cols-3 md:grid-cols-4 gap-2 max-h-44 overflow-y-auto hide-scrollbar pr-1">
-                {DINOS.map((d) => (
-                  <button
-                    key={d.code}
-                    onClick={() => setSpecies(d.name)}
-                    className={`px-3 py-2 font-mono text-[10px] tracking-wide border transition-all duration-200 ${
-                      species === d.name
-                        ? "border-primary/60 bg-primary/10 text-primary"
-                        : "border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
-                    }`}
-                  >
-                    {d.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Pattern selection */}
-            <div className="glass-panel p-6">
-              <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
-                GENETIC PATTERN
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                {PATTERNS.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => setPattern(p.id)}
-                    className={`p-4 text-left border transition-all duration-300 ${
-                      pattern === p.id
-                        ? "border-primary/60 bg-primary/10"
-                        : "border-border hover:border-primary/30"
-                    }`}
-                  >
-                    <div className="font-mono text-xs text-foreground tracking-wide mb-1">
-                      {p.name}
-                    </div>
-                    <div className="font-mono text-[9px] text-muted-foreground tracking-wide">
-                      {p.desc}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Color palette */}
-            <div className="glass-panel p-6">
-              <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
-                CHROMATIC BASE
-              </div>
-              <div className="grid grid-cols-5 gap-3 mb-4">
-                {SWATCHES.map((sw) => (
-                  <button
-                    key={sw}
-                    onClick={() => { setColor(sw); setHexText(sw); }}
-                    className={`aspect-square border-2 transition-all duration-200 hover:scale-110 ${
-                      color === sw ? "border-primary scale-110" : "border-transparent"
-                    }`}
-                    style={{ backgroundColor: sw }}
-                  />
-                ))}
-              </div>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={color}
-                  onChange={(e) => { setColor(e.target.value); setHexText(e.target.value); }}
-                  className="w-14 h-14 bg-transparent border border-border cursor-pointer p-1"
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* ============ Render viewport ============ */}
+            <div className="glass-panel rounded-xl aspect-square lg:aspect-auto relative overflow-hidden flex items-center justify-center">
+              <div className="absolute inset-0 grid-bg opacity-30" />
+              <div
+                className="absolute w-2/3 h-2/3 rounded-full blur-3xl opacity-25 transition-colors duration-700"
+                style={{ backgroundColor: getRenderColor() }}
+              />
+              {/* Dino silhouette */}
+              <svg viewBox="0 0 200 200" className="relative w-4/5 h-4/5">
+                <defs>
+                  <pattern id="brindlePattern" patternUnits="userSpaceOnUse" width="8" height="8">
+                    <rect width="8" height="8" fill={getRenderColor()} />
+                    <rect width="3" height="8" fill={getAccentColor()} opacity="0.5" />
+                  </pattern>
+                </defs>
+                <path
+                  d="M 30 120 Q 40 100 60 95 L 80 85 Q 100 75 120 80 L 140 70 Q 160 65 170 75 L 165 90 Q 155 95 145 100 L 135 110 Q 130 125 120 130 L 110 135 Q 95 140 80 138 L 65 145 Q 45 150 35 140 Z"
+                  fill={pattern === "brindle" ? "url(#brindlePattern)" : getRenderColor()}
+                  className="animate-breathe transition-all duration-500"
                 />
-                <div className="flex-1">
-                  <div className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground mb-1">
-                    ANY HEX CODE
-                  </div>
-                  <input
-                    type="text"
-                    value={hexText}
-                    onChange={(e) => applyHex(e.target.value)}
-                    placeholder="#6b4423"
-                    className="w-full bg-secondary border border-border font-mono text-xs text-foreground px-3 py-2 outline-none focus:border-primary/60"
+                <circle cx="155" cy="80" r="3" fill="#0A0F0D" />
+                {[...Array(5)].map((_, i) => (
+                  <path
+                    key={i}
+                    d={`M ${75 + i * 18} ${85 - i * 1} L ${80 + i * 18} ${75 - i * 1} L ${85 + i * 18} ${85 - i * 1}`}
+                    fill={getAccentColor()}
+                    opacity="0.7"
                   />
+                ))}
+                {/* Belly stripe */}
+                <path
+                  d="M 50 135 Q 80 145 120 138 L 115 142 Q 80 148 55 142 Z"
+                  fill={getAccentColor()}
+                  opacity="0.3"
+                />
+                {/* Crystal shards */}
+                {pattern === "crystal" && (
+                  <g>
+                    <polygon points="100,55 108,72 92,72" fill="#e6b84c" className="animate-crystal" />
+                    <polygon points="68,95 76,112 60,112" fill="#c98a5e" className="animate-crystal" style={{ animationDelay: "1s" }} />
+                    <polygon points="132,100 140,117 124,117" fill="#c4b5fd" className="animate-crystal" style={{ animationDelay: "2s" }} />
+                    <polygon points="40,110 47,126 33,126" fill="#f0d49a" className="animate-crystal" style={{ animationDelay: "0.5s" }} />
+                  </g>
+                )}
+              </svg>
+
+              {/* Scan line */}
+              <div className="absolute left-0 right-0 h-20 scanline animate-scan pointer-events-none" />
+
+              {/* Info overlay */}
+              <div className="absolute top-4 left-4">
+                <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
+                  SPECIES: <span className="text-primary">{species.toUpperCase()}</span>
+                </div>
+                <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground mt-1">
+                  PATTERN: <span className="text-primary">{PATTERNS.find((p) => p.id === pattern)?.name.toUpperCase()}</span>
                 </div>
               </div>
+              <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                <span className="w-4 h-4 border border-foreground/30" style={{ backgroundColor: color }} />
+                <span className="font-mono text-[10px] tracking-[0.15em] text-muted-foreground">
+                  {color.toUpperCase()}
+                </span>
+              </div>
+              {savedMsg && (
+                <div className="absolute bottom-4 right-4 font-mono text-[10px] tracking-[0.15em] text-primary">
+                  {savedMsg.toUpperCase()}
+                </div>
+              )}
             </div>
 
-            {/* Save button */}
-            <button
-              onClick={saveSkin}
-              disabled={saving}
-              className="font-mono text-[10px] tracking-[0.25em] bg-primary text-primary-foreground px-6 py-4 hover:scale-[1.02] transition-transform disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-2"
-            >
-              {saving ? (
-                <><Loader2 size={13} className="animate-spin" /> SAVING...</>
-              ) : (
-                <><Save size={13} /> SAVE SKIN FOR {species.toUpperCase()}</>
-              )}
-            </button>
-
-            {/* Saved skins */}
-            <div className="glass-panel p-6">
-              <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
-                MY SAVED SKINS
-              </div>
-              {savedSkins === null ? (
-                <div className="py-3 flex items-center justify-center gap-2 font-mono text-[10px] text-muted-foreground">
-                  <Loader2 size={12} className="animate-spin" /> LOADING...
+            {/* ============ Controls ============ */}
+            <div className="flex flex-col gap-6">
+              {/* Species selection */}
+              <div className="glass-panel rounded-xl p-6">
+                <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
+                  SPECIMEN
                 </div>
-              ) : savedSkins.length === 0 ? (
-                <div className="py-3 font-mono text-[10px] text-muted-foreground text-center">
-                  No skins saved yet — design one above and save it.
-                </div>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {savedSkins.map((skin) => (
-                    <div
-                      key={skin.id}
-                      className="flex items-center gap-3 border border-border px-3 py-2"
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-2 max-h-44 overflow-y-auto hide-scrollbar pr-1">
+                  {DINOS.map((d) => (
+                    <button
+                      key={d.code}
+                      onClick={() => setSpecies(d.name)}
+                      className={`px-3 py-2 font-mono text-[10px] tracking-wide border transition-all duration-200 ${
+                        species === d.name
+                          ? "border-primary/60 bg-primary/10 text-primary"
+                          : "border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
+                      }`}
                     >
-                      <span
-                        className="w-6 h-6 border border-foreground/30 shrink-0"
-                        style={{ backgroundColor: skin.color }}
-                      />
-                      <button
-                        onClick={() => loadSkin(skin)}
-                        className="flex-1 text-left font-mono text-[11px] text-foreground hover:text-primary transition-colors"
-                      >
-                        {skin.species}
-                        <span className="text-muted-foreground ml-2">
-                          {(PATTERNS.find((p) => p.id === skin.pattern)?.name || skin.pattern).toUpperCase()}
-                        </span>
-                      </button>
-                      <button
-                        onClick={() => removeSkin(skin)}
-                        disabled={deleteId === skin.id}
-                        className="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
-                        aria-label={`Delete ${skin.species} skin`}
-                      >
-                        {deleteId === skin.id ? (
-                          <Loader2 size={13} className="animate-spin" />
-                        ) : (
-                          <Trash2 size={13} />
-                        )}
-                      </button>
-                    </div>
+                      {d.name}
+                    </button>
                   ))}
                 </div>
-              )}
+              </div>
+
+              {/* Pattern selection */}
+              <div className="glass-panel rounded-xl p-6">
+                <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
+                  GENETIC PATTERN
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {PATTERNS.map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => setPattern(p.id)}
+                      className={`p-4 text-left border transition-all duration-300 ${
+                        pattern === p.id
+                          ? "border-primary/60 bg-primary/10"
+                          : "border-border hover:border-primary/30"
+                      }`}
+                    >
+                      <div className="font-mono text-xs text-foreground tracking-wide mb-1">
+                        {p.name}
+                      </div>
+                      <div className="font-mono text-[9px] text-muted-foreground tracking-wide">
+                        {p.desc}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Color palette */}
+              <div className="glass-panel rounded-xl p-6">
+                <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
+                  CHROMATIC BASE
+                </div>
+                <div className="grid grid-cols-5 gap-3 mb-4">
+                  {SWATCHES.map((sw) => (
+                    <button
+                      key={sw}
+                      onClick={() => { setColor(sw); setHexText(sw); }}
+                      className={`aspect-square border-2 transition-all duration-200 hover:scale-110 ${
+                        color === sw ? "border-primary scale-110" : "border-transparent"
+                      }`}
+                      style={{ backgroundColor: sw }}
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={color}
+                    onChange={(e) => { setColor(e.target.value); setHexText(e.target.value); }}
+                    className="w-14 h-14 bg-transparent border border-border cursor-pointer p-1"
+                  />
+                  <div className="flex-1">
+                    <div className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground mb-1">
+                      ANY HEX CODE
+                    </div>
+                    <input
+                      type="text"
+                      value={hexText}
+                      onChange={(e) => applyHex(e.target.value)}
+                      placeholder="#6b4423"
+                      className="w-full bg-secondary border border-border font-mono text-xs text-foreground px-3 py-2 outline-none focus:border-primary/60"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Save button */}
+              <button
+                onClick={saveSkin}
+                disabled={saving}
+                className="font-mono text-[10px] tracking-[0.25em] bg-primary text-primary-foreground px-6 py-4 hover:scale-[1.02] transition-transform disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-2"
+              >
+                {saving ? (
+                  <><Loader2 size={13} className="animate-spin" /> SAVING...</>
+                ) : (
+                  <><Save size={13} /> SAVE SKIN FOR {species.toUpperCase()}</>
+                )}
+              </button>
+
+              {/* Saved skins */}
+              <div className="glass-panel rounded-xl p-6">
+                <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
+                  MY SAVED SKINS
+                </div>
+                {savedSkins === null ? (
+                  <div className="py-3 flex items-center justify-center gap-2 font-mono text-[10px] text-muted-foreground">
+                    <Loader2 size={12} className="animate-spin" /> LOADING...
+                  </div>
+                ) : savedSkins.length === 0 ? (
+                  <div className="py-3 font-mono text-[10px] text-muted-foreground text-center">
+                    No skins saved yet — design one above and save it.
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {savedSkins.map((skin) => (
+                      <div
+                        key={skin.id}
+                        className="flex items-center gap-3 border border-border px-3 py-2"
+                      >
+                        <span
+                          className="w-6 h-6 border border-foreground/30 shrink-0"
+                          style={{ backgroundColor: skin.color }}
+                        />
+                        <button
+                          onClick={() => loadSkin(skin)}
+                          className="flex-1 text-left font-mono text-[11px] text-foreground hover:text-primary transition-colors"
+                        >
+                          {skin.species}
+                          <span className="text-muted-foreground ml-2">
+                            {(PATTERNS.find((p) => p.id === skin.pattern)?.name || skin.pattern).toUpperCase()}
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => removeSkin(skin)}
+                          disabled={deleteId === skin.id}
+                          className="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
+                          aria-label={`Delete ${skin.species} skin`}
+                        >
+                          {deleteId === skin.id ? (
+                            <Loader2 size={13} className="animate-spin" />
+                          ) : (
+                            <Trash2 size={13} />
+                          )}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
