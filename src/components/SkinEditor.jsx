@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Loader2, Save, Trash2, Palette } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { DINOS } from "@/lib/portalData";
+import { dinoArtFor } from "@/lib/dinoArt";
 import { Image } from "@/components/ui/image";
 import Dino3D from "@/components/Dino3D";
 
@@ -194,7 +195,7 @@ export default function SkinEditor() {
               <div className="absolute top-4 right-4 z-10 flex gap-1">
                 {[
                   ["3D MODEL", true],
-                  ["BLUEPRINT", false],
+                  ["KEY ART", false],
                 ].map(([label, val]) => (
                   <button
                     key={label}
@@ -220,54 +221,37 @@ export default function SkinEditor() {
                 />
               )}
 
-              {/* Dino silhouette: body, belly, horns and claws each take their zone color */}
+              {/* Realistic Evrima key art for the selected species, tinted
+                  live with the chosen zone colors */}
               {!view3d && (
-              <svg viewBox="0 0 200 200" className="relative w-4/5 h-4/5">
-                <defs>
-                  <pattern id="brindlePattern" patternUnits="userSpaceOnUse" width="8" height="8">
-                    <rect width="8" height="8" fill={bodyColor} />
-                    <rect width="3" height="8" fill={getAccentColor()} opacity="0.5" />
-                  </pattern>
-                </defs>
-
-                {/* Horns on the head */}
-                <polygon points="147,70 151,52 157,70" fill={hornColor} />
-                <polygon points="162,74 169,58 173,76" fill={hornColor} className="animate-crystal" />
-
-                {/* Body + flank (torso, neck, head) */}
-                <path
-                  d="M 30 120 Q 40 100 60 95 L 80 85 Q 100 75 120 80 L 140 70 Q 160 65 170 75 L 165 90 Q 155 95 145 100 L 135 110 Q 130 125 120 130 L 110 135 Q 95 140 80 138 L 65 145 Q 45 150 35 140 Z"
-                  fill={pattern === "brindle" ? "url(#brindlePattern)" : bodyColor}
-                  className="animate-breathe transition-all duration-500"
-                />
-
-                {/* Belly / underside panel */}
-                <path
-                  d="M 48 132 Q 70 142 100 139 L 118 134 Q 112 146 90 148 Q 65 148 48 132 Z"
-                  fill={bellyColor}
-                  opacity="0.9"
-                  className="transition-all duration-500"
-                />
-
-                {/* Eye */}
-                <circle cx="155" cy="80" r="3" fill="#0A0F0D" />
-
-                {/* Back stripes take the pattern accent */}
-                {[...Array(5)].map((_, i) => (
-                  <path
-                    key={i}
-                    d={`M ${75 + i * 18} ${85 - i * 1} L ${80 + i * 18} ${75 - i * 1} L ${85 + i * 18} ${85 - i * 1}`}
-                    fill={getAccentColor()}
-                    opacity="0.7"
+                <div className="absolute inset-0">
+                  <Image
+                    src={dinoArtFor(species)}
+                    fittingType="fill"
+                    className="w-full h-full"
+                    alt={species}
                   />
-                ))}
-
-                {/* Claws on the feet */}
-                <polygon points="58,148 62,142 66,148" fill={hornColor} />
-                <polygon points="66,150 70,144 74,150" fill={hornColor} />
-                <polygon points="106,142 110,136 114,142" fill={hornColor} />
-                <polygon points="114,144 118,138 122,144" fill={hornColor} />
-              </svg>
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ backgroundColor: bodyColor, mixBlendMode: "soft-light", opacity: 0.6 }}
+                  />
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: `linear-gradient(to top, ${bellyColor}55 0%, transparent 40%)`,
+                      mixBlendMode: "soft-light",
+                    }}
+                  />
+                  {pattern === "brindle" && (
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        background: `repeating-linear-gradient(75deg, transparent 0px, transparent 26px, ${getAccentColor()}44 34px, transparent 48px)`,
+                        mixBlendMode: "soft-light",
+                      }}
+                    />
+                  )}
+                </div>
               )}
 
               {/* Scan line */}
