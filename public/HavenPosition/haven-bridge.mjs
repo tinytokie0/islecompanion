@@ -133,6 +133,7 @@ async function post() {
 
 let acksOffset = 0;
 const reportedAcks = new Set();
+const deliveredTypes = new Map(); // cmd id -> "garage" | "skin"
 
 function appendCommandFile(row) {
   fs.mkdirSync(CMDS_FILE.replace(/[/\\][^/\\]+$/, ""), { recursive: true });
@@ -148,12 +149,24 @@ async function pollGarageCommands() {
     });
     const body = await res.json().catch(() => ({}));
     for (const cmd of body.commands || []) {
-      // The mod reads a flat, known-shape line; id/action/steam only.
-      appendCommandFile({
-        cmd: String(cmd.id),
-        action: cmd.command === "restore" ? "restore" : "park",
-        steam: String(cmd.steam_id),
-      });
+      // The mod reads a flat, known-shape line; only the fields the given
+      // action needs go on the wire.
+      const row =
+        cmd.command === "skin"
+          ? {
+              cmd: String(cmd.id),
+              action: "skin",
+              steam: String(cmd.steam_id),
+              pattern: String(cmd.pattern || "default"),
+              color: String(cmd.color || "#ffffff"),
+            }
+          : {
+              cmd: String(cmd.id),
+              action: cmd.command === "restore" ? "restore" : "park",
+              steam: String(cmd.steam_id),
+            };
+      appendCommandFile(row);
+      deliveredTypes.set(String(cmd.id), cmd.command === "skin" ? "skin" : "garage");
       console.log(`[HavenBridge] delivered ${cmd.command} command to the mod (${cmd.steam_id})`);
     }
   } catch (err) {
@@ -169,6 +182,7 @@ async function reportResult(row) {
       body: JSON.stringify({
         action: "result",
         id: String(row.cmd),
+        type: deliveredTypes.get(String(row.cmd)) || "garage",
         ok: row.ok === true,
         error: row.error || null,
       }),

@@ -30,14 +30,14 @@ export const DINOS = [
 ];
 
 export const SKINS = [
-  { id: "ember", name: "Ember Stripe", pattern: "Brindle", hex: "#c98a5e", price: 3200 },
-  { id: "gilded", name: "Gilded Scales", pattern: "Wild Type", hex: "#e6b84c", price: 4500 },
-  { id: "amethyst", name: "Amethyst Veil", pattern: "Melanistic", hex: "#a78bfa", price: 6000 },
-  { id: "abyss", name: "Abyss Watcher", pattern: "Melanistic", hex: "#1e3a8a", price: 5400 },
-  { id: "bone", name: "Bleached Bone", pattern: "Leucistic", hex: "#e7e5e4", price: 3800 },
-  { id: "bloodmoon", name: "Blood Moon", pattern: "Erythristic", hex: "#dc2626", price: 7200 },
-  { id: "moss", name: "Mossback", pattern: "Wild Type", hex: "#3d5a3d", price: 2400 },
-  { id: "prism", name: "Prismatic", pattern: "Crystalline", hex: "#c4b5fd", price: 9500 },
+  { id: "ember", name: "Ember Stripe", pattern: "Brindle", hex: "#c98a5e", price: 560 },
+  { id: "gilded", name: "Gilded Scales", pattern: "Wild Type", hex: "#e6b84c", price: 720 },
+  { id: "amethyst", name: "Amethyst Veil", pattern: "Melanistic", hex: "#a78bfa", price: 880 },
+  { id: "abyss", name: "Abyss Watcher", pattern: "Melanistic", hex: "#1e3a8a", price: 820 },
+  { id: "bone", name: "Bleached Bone", pattern: "Leucistic", hex: "#e7e5e4", price: 640 },
+  { id: "bloodmoon", name: "Blood Moon", pattern: "Erythristic", hex: "#dc2626", price: 900 },
+  { id: "moss", name: "Mossback", pattern: "Wild Type", hex: "#3d5a3d", price: 500 },
+  { id: "prism", name: "Prismatic", pattern: "Crystalline", hex: "#c4b5fd", price: 850 },
 ];
 
 export const NESTING_GUIDE = [

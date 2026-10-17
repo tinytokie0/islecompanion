@@ -333,7 +333,13 @@ local function readAndClearCommands()
         local action = flatGet(line, "action")
         local steam = flatGet(line, "steam")
         if cmd ~= nil and cmd ~= "" and action ~= nil and steam ~= nil and steam ~= "" then
-            cmds[#cmds + 1] = { cmd = cmd, action = action, steam = steam }
+            cmds[#cmds + 1] = {
+                cmd = cmd,
+                action = action,
+                steam = steam,
+                pattern = flatGet(line, "pattern"),
+                color = flatGet(line, "color"),
+            }
         end
     end
     return cmds
@@ -474,6 +480,34 @@ local function executeRestore(cmd)
     ack(cmd.cmd, true, "")
 end
 
+-- SKIN: apply a purchased skin (genetic pattern + base color) to the
+-- player's live dino. The engine exposes skin entry points depending on
+-- build, so the known ones are tried in order and the first that runs
+-- without error wins.
+local function executeSkin(cmd)
+    local ctrl, pawn, err = findPlayer(cmd.steam)
+    if pawn == nil then
+        ack(cmd.cmd, false, err or "player has no live dino")
+        return
+    end
+
+    local applied = false
+    pcall(function() pawn:SetSkinColor(cmd.color) applied = true end)
+    if not applied then
+        pcall(function() pawn:SetSkinPattern(cmd.pattern) applied = true end)
+    end
+    if not applied then
+        pcall(function() pawn:ApplySkin(cmd.pattern, cmd.color) applied = true end)
+    end
+
+    if applied then
+        log("Applied skin for steam " .. cmd.steam)
+        ack(cmd.cmd, true, "")
+    else
+        ack(cmd.cmd, false, "could not apply the skin to the dino")
+    end
+end
+
 local function processCommands()
     local cmds = readAndClearCommands()
     for _, cmd in ipairs(cmds) do
@@ -483,6 +517,9 @@ local function processCommands()
         elseif cmd.action == "restore" then
             local ok, err = pcall(executeRestore, cmd)
             if not ok then ack(cmd.cmd, false, "restore failed: " .. tostring(err)) end
+        elseif cmd.action == "skin" then
+            local ok, err = pcall(executeSkin, cmd)
+            if not ok then ack(cmd.cmd, false, "skin failed: " .. tostring(err)) end
         else
             ack(cmd.cmd, false, "unknown action")
         end

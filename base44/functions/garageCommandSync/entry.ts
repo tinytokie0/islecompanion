@@ -44,21 +44,54 @@ export default async function (req) {
         thirst: r.thirst,
         player_name: r.player_name,
       }));
-      if (commands.length > 0) {
+      // Queued skin commands ride the same poll so the bridge delivers
+      // them with one request.
+      const skinPage = await base44.asServiceRole.entities.OwnedSkin.filter(
+        { server_status: 'queued' },
+        { sort: '-purchased_date', limit: 20 }
+      );
+      const skinCommands = skinPage.items.map((r) => ({
+        id: r.id,
+        type: 'skin',
+        command: 'skin',
+        steam_id: r.steam_id,
+        pattern: r.pattern,
+        color: r.color,
+        skin_name: r.name,
+      }));
+      if (skinCommands.length > 0) {
+        await base44.asServiceRole.entities.OwnedSkin.bulkUpdate(
+          skinCommands.map((c) => ({ id: c.id, server_status: 'sent' }))
+        );
+      }
+      const all = [...commands, ...skinCommands];
+      if (all.length > 0) {
         await base44.asServiceRole.entities.ParkedDino.bulkUpdate(
           commands.map((c) => ({ id: c.id, server_status: 'sent' }))
         );
       }
-      return Response.json({ success: true, commands });
+      return Response.json({ success: true, commands: all });
     }
 
     if (body?.action === 'result') {
       const { id, ok, error } = body;
       if (!id) return Response.json({ success: false, error: 'Missing id.' }, { status: 400 });
-      await base44.asServiceRole.entities.ParkedDino.update(id, {
+      const fields = {
         server_status: ok ? 'applied' : 'failed',
         server_error: ok ? null : String(error || 'Server could not apply the command'),
-      });
+      };
+      let target = body.type === 'skin' ? 'OwnedSkin' : 'ParkedDino';
+      if (!body.type) {
+        // Legacy acks without a type: try the garage record first.
+        const garage = await base44.asServiceRole.entities.ParkedDino.get(id).catch(() => null);
+        if (!garage) target = 'OwnedSkin';
+      }
+      if (target === 'OwnedSkin') {
+        fields.applied_date = ok ? new Date().toISOString() : null;
+        await base44.asServiceRole.entities.OwnedSkin.update(id, fields);
+      } else {
+        await base44.asServiceRole.entities.ParkedDino.update(id, fields);
+      }
       return Response.json({ success: true });
     }
 
