@@ -213,6 +213,7 @@ export default function SkinEditor() {
 
               {view3d && (
                 <Dino3D
+                  species={species}
                   bodyColor={bodyColor}
                   bellyColor={bellyColor}
                   hornColor={hornColor}
