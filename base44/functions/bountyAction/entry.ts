@@ -39,18 +39,29 @@ export default async function(req) {
       if (bounty.poster_user_id !== user.id) {
         return Response.json({ error: 'Only the bounty poster can cancel it.' }, { status: 403 });
       }
+      // Cancel atomically too: only one request (cancel, claim or the live
+      // feed's settlement) can flip the status away from 'open'.
+      await service.entities.Bounty.updateMany(
+        { id: bounty.id, status: 'open' },
+        { $set: { status: 'cancelled' } }
+      );
+      const verify = await service.entities.Bounty.get(bounty.id);
+      if (!verify || verify.status !== 'cancelled') {
+        return Response.json({ error: 'This bounty is no longer open.' }, { status: 409 });
+      }
+      await service.entities.Wallet.updateMany(
+        { user_id: user.id },
+        { $inc: { balance: bounty.amount } }
+      );
       const wallet = await getWalletForUser(service, user.id);
-      const after = (wallet.balance || 0) + bounty.amount;
-      await service.entities.Wallet.update(wallet.id, { balance: after });
       await service.entities.CoinTransaction.create({
         user_id: user.id,
         type: 'refund',
         amount: bounty.amount,
         reason: `Bounty on ${bounty.target_name} cancelled`,
-        balance_after: after,
+        balance_after: wallet.balance,
       });
-      await service.entities.Bounty.update(bounty.id, { status: 'cancelled' });
-      return Response.json({ ok: true, action, balance: after });
+      return Response.json({ ok: true, action, balance: wallet.balance });
     }
 
     // Claim: verify a real in-game kill from the live feed.
@@ -82,6 +93,9 @@ export default async function(req) {
       user.id,
       nowIso
     );
+    if (after === null) {
+      return Response.json({ error: 'This bounty is no longer open.' }, { status: 409 });
+    }
     return Response.json({ ok: true, action, balance: after });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

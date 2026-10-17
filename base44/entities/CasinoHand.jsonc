@@ -1,0 +1,61 @@
+{
+  "name": "CasinoHand",
+  "type": "object",
+  "description": "In-flight blackjack hand while the player decides hit/stand. Created and settled only by the casinoPlay backend function; the bet is charged server-side when the hand is dealt.",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Base44 user id that owns this hand"
+    },
+    "bet": {
+      "type": "number",
+      "description": "Haven Tokens (HT) already charged when the hand was dealt"
+    },
+    "player": {
+      "type": "string",
+      "description": "Player's cards as a JSON array of {label, value, ace}"
+    },
+    "dealer": {
+      "type": "string",
+      "description": "Dealer's cards as a JSON array of {label, value, ace}"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "settled"
+      ],
+      "default": "active",
+      "description": "active while the player decides; settled once the hand finished"
+    }
+  },
+  "required": [
+    "user_id",
+    "bet",
+    "player",
+    "dealer",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

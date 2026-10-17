@@ -1,8 +1,9 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { getWalletForUser } from '../../shared/economy.ts';
 
-// Player activity transactions: spends and awards of Haven Tokens (HT) for
-// portal activities (casino games, dino shop, packs, trading market, bounties).
+// Player activity spending of Haven Tokens (HT) for portal activities
+// (dino shop, packs, trading market). Casino payouts are settled server-side
+// by the casinoPlay function — no client-supplied amount is ever credited.
 // Server-side only: the balance change is an atomic conditional write anchored
 // on the exact current balance, and every change lands in the ledger.
 export default async function(req) {
@@ -18,8 +19,9 @@ export default async function(req) {
       ? body.reason.trim().slice(0, 140)
       : 'Portal activity';
 
-    if (action !== 'spend' && action !== 'award') {
-      return Response.json({ error: 'action must be "spend" or "award"' }, { status: 400 });
+    // Wins are never client-awardable: the only accepted action is a spend.
+    if (action !== 'spend') {
+      return Response.json({ error: 'action must be "spend"' }, { status: 400 });
     }
     if (!Number.isFinite(amount) || amount < 1 || amount > 1000000) {
       return Response.json({ error: 'amount must be a whole number between 1 and 1,000,000' }, { status: 400 });
@@ -37,7 +39,7 @@ export default async function(req) {
       );
     }
 
-    const nextBalance = action === 'spend' ? oldBalance - amount : oldBalance + amount;
+    const nextBalance = oldBalance - amount;
 
     // Atomic guard anchored on the exact current balance: only one concurrent
     // request's write can match the pre-transaction balance.
@@ -57,7 +59,7 @@ export default async function(req) {
     const tx = await service.entities.CoinTransaction.create({
       user_id: user.id,
       type: 'game',
-      amount: action === 'spend' ? -amount : amount,
+      amount: -amount,
       reason,
       balance_after: nextBalance,
     });

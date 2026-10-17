@@ -4,24 +4,38 @@
 import { getWalletForUser } from './economy.ts';
 
 export async function payBounty(service, bounty, killer, userId, nowIso) {
+  // Claim atomically: flip the bounty's status first with a conditional write
+  // anchored on 'open', and verify this request won the stamp. Two concurrent
+  // claims can never both pass, so the payout can never happen twice.
+  await service.entities.Bounty.updateMany(
+    { id: bounty.id, status: 'open' },
+    {
+      $set: {
+        status: 'collected',
+        killer_steam_id: killer.steam_id,
+        killer_name: killer.player_name || 'Unknown',
+        collected_by_user_id: userId,
+        collected_date: nowIso,
+      },
+    }
+  );
+  const verify = await service.entities.Bounty.get(bounty.id);
+  if (!verify || verify.collected_date !== nowIso) return null;
+
+  // Only the winning request reaches here: pay with an atomic increment.
+  await service.entities.Wallet.updateMany(
+    { user_id: userId },
+    { $inc: { balance: bounty.amount } }
+  );
   const wallet = await getWalletForUser(service, userId);
-  const after = (wallet.balance || 0) + bounty.amount;
-  await service.entities.Wallet.update(wallet.id, { balance: after });
   await service.entities.CoinTransaction.create({
     user_id: userId,
     type: 'game',
     amount: bounty.amount,
     reason: `Bounty collected on ${bounty.target_name}`,
-    balance_after: after,
+    balance_after: wallet.balance,
   });
-  await service.entities.Bounty.update(bounty.id, {
-    status: 'collected',
-    killer_steam_id: killer.steam_id,
-    killer_name: killer.player_name || 'Unknown',
-    collected_by_user_id: userId,
-    collected_date: nowIso,
-  });
-  return after;
+  return wallet.balance;
 }
 
 // Settle open bounties against fresh kill events from the feed. Bounties are
@@ -52,14 +66,14 @@ export async function collectBounties(service, killEvents, nowIso) {
       );
       const link = (linkPage.items || [])[0];
       if (!link) continue;
-      await payBounty(
+      const paid = await payBounty(
         service,
         bounty,
         { steam_id: e.killer_steam_id, player_name: e.killer_name },
         link.user_id,
         nowIso
       );
-      settled += 1;
+      if (paid !== null) settled += 1;
     }
   }
   return { settled };

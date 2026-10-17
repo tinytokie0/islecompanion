@@ -3,14 +3,12 @@ import { Dices, Flame, Spade } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
 import useHt from "@/hooks/useHt";
 import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
+import { base44 } from "@/api/base44Client";
 
 const SYMBOLS = ["🦖", "💎", "🦴", "🔥", "⭐"];
 
-const randCard = () => {
-  const r = Math.floor(Math.random() * 13) + 1; // 1..13
-  const label = r === 1 ? "A" : r === 11 ? "J" : r === 12 ? "Q" : r === 13 ? "K" : String(r);
-  return { label, value: Math.min(r, 10), ace: r === 1 };
-};
+const flashWin = (amount) =>
+  window.dispatchEvent(new CustomEvent("ht-claimed", { detail: { amount } }));
 
 const handValue = (hand) => {
   let total = hand.reduce((s, c) => s + c.value, 0);
@@ -20,7 +18,7 @@ const handValue = (hand) => {
 };
 
 export default function Casino() {
-  const { balance, spend, award } = useHt();
+  const { balance, refresh } = useHt();
   const [bet, setBet] = useState(100);
 
   // Slots
@@ -39,16 +37,24 @@ export default function Casino() {
 
   const validBet = Math.max(10, Math.min(bet || 0, balance));
 
-  const takeBet = async (game) => {
-    await spend(validBet, `Casino: ${game} bet`);
+  // All three games run server-side: the backend charges the bet, plays the
+  // outcome and settles the balance atomically. The client never sends a win.
+  const play = async (payload) => {
+    const res = await base44.functions.invoke("casinoPlay", payload);
+    await refresh();
+    return res.data;
   };
 
   const spin = async () => {
     if (spinning || validBet < 10) return;
     setSpinning(true);
     setSlotsMsg(null);
+    let final = null;
+    let win = 0;
     try {
-      await takeBet("slots");
+      const res = await play({ action: "deal", game: "slots", bet: validBet });
+      final = res.reels;
+      win = res.win || 0;
     } catch {
       setSpinning(false);
       setSlotsMsg("BET REJECTED — CHECK YOUR BALANCE");
@@ -60,13 +66,9 @@ export default function Casino() {
       ticks++;
       if (ticks > 12) {
         clearInterval(iv);
-        const final = [0, 1, 2].map(() => SYMBOLS[Math.floor(Math.random() * 5)]);
         setReels(final);
-        let win = 0;
-        if (final[0] === final[1] && final[1] === final[2]) win = validBet * 10;
-        else if (final[0] === final[1] || final[1] === final[2] || final[0] === final[2]) win = validBet * 2;
         if (win) {
-          award(win, "Casino: slots win").catch(() => {});
+          flashWin(win);
           setSlotsMsg(`WIN +${win.toLocaleString()} HT`);
         } else {
           setSlotsMsg("NO MATCH — TRY AGAIN");
@@ -78,67 +80,72 @@ export default function Casino() {
 
   const allOrNothing = async () => {
     if (validBet < 10) return;
+    setAonMsg(null);
     try {
-      await takeBet("all-or-nothing");
+      const res = await play({ action: "deal", game: "all_or_nothing", bet: validBet });
+      const win = res.win || 0;
+      if (win > 0) {
+        flashWin(win);
+        setAonMsg(`DOUBLED! +${win.toLocaleString()} HT`);
+      } else {
+        setAonMsg("GONE. THE VOID KEEPS YOUR TOKENS.");
+      }
     } catch {
       setAonMsg("BET REJECTED — CHECK YOUR BALANCE");
-      return;
-    }
-    if (Math.random() < 0.5) {
-      award(validBet * 2, "Casino: all-or-nothing win").catch(() => {});
-      setAonMsg(`DOUBLED! +${(validBet * 2).toLocaleString()} HT`);
-    } else {
-      setAonMsg("GONE. THE VOID KEEPS YOUR TOKENS.");
     }
   };
 
   const deal = async () => {
     if (validBet < 10) return;
+    setBjMsg(null);
     try {
-      await takeBet("blackjack");
+      const res = await play({ action: "deal", game: "blackjack", bet: validBet });
+      setPlayer(res.player);
+      setDealer(res.dealer);
+      if (res.settled) {
+        setPhase("done");
+        flashWin(res.win);
+        setBjMsg(`BLACKJACK! +${res.win.toLocaleString()} HT`);
+      } else {
+        setPhase("play");
+      }
     } catch {
       setBjMsg("BET REJECTED — CHECK YOUR BALANCE");
-      return;
-    }
-    const p = [randCard(), randCard()];
-    const d = [randCard(), randCard()];
-    setPlayer(p);
-    setDealer(d);
-    setPhase("play");
-    setBjMsg(null);
-    if (handValue(p) === 21) {
-      setPhase("done");
-      const win = Math.floor(validBet * 2.5);
-      award(win, "Casino: blackjack").catch(() => {});
-      setBjMsg(`BLACKJACK! +${win.toLocaleString()} HT`);
     }
   };
 
-  const hit = () => {
-    const p = [...player, randCard()];
-    setPlayer(p);
-    if (handValue(p) > 21) {
+  const hit = async () => {
+    try {
+      const res = await play({ action: "hit" });
+      setPlayer(res.player);
+      if (res.settled) {
+        setPhase("done");
+        setBjMsg("BUST — DEALER TAKES THE POT");
+      }
+    } catch {
       setPhase("done");
-      setBjMsg("BUST — DEALER TAKES THE POT");
+      setBjMsg("HAND EXPIRED — DEAL AGAIN");
     }
   };
 
   const stand = async () => {
-    let d = [...dealer];
-    while (handValue(d) < 17) d = [...d, randCard()];
-    setDealer(d);
-    setPhase("done");
-    const dv = handValue(d);
-    const pv = handValue(player);
-    if (dv > 21 || pv > dv) {
-      const win = validBet * 2;
-      award(win, "Casino: blackjack win").catch(() => {});
-      setBjMsg(`YOU WIN +${win.toLocaleString()} HT`);
-    } else if (pv === dv) {
-      award(validBet, "Casino: blackjack push").catch(() => {});
-      setBjMsg("PUSH — BET RETURNED");
-    } else {
-      setBjMsg("DEALER WINS");
+    try {
+      const res = await play({ action: "stand" });
+      setDealer(res.dealer);
+      setPhase("done");
+      const { result, win } = res;
+      if (result === "win") {
+        flashWin(win);
+        setBjMsg(`YOU WIN +${win.toLocaleString()} HT`);
+      } else if (result === "push") {
+        flashWin(win);
+        setBjMsg("PUSH — BET RETURNED");
+      } else {
+        setBjMsg("DEALER WINS");
+      }
+    } catch {
+      setPhase("done");
+      setBjMsg("HAND EXPIRED — DEAL AGAIN");
     }
   };
 
