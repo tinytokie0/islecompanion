@@ -133,7 +133,12 @@ export default function Quests() {
                   <ListChecks size={16} />
                 </span>
                 <div className="flex-1 min-w-0">
-                  <div className="font-mono text-xs text-foreground tracking-wide mb-2">{q.title}</div>
+                  <div className="font-mono text-xs text-foreground tracking-wide mb-2 flex items-center gap-2">
+                    {q.tier === 'elite' && (
+                      <span className="text-[8px] tracking-[0.2em] px-1.5 py-0.5 rounded-sm border border-[#e6b84c]/50 text-[#e6b84c]">ELITE</span>
+                    )}
+                    {q.title}
+                  </div>
                   <div className="h-1.5 bg-secondary overflow-hidden rounded-sm max-w-md">
                     <div
                       className="h-full transition-all duration-500"

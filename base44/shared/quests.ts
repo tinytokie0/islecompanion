@@ -14,6 +14,17 @@ export const QUEST_CATALOG = [
   { id: 'm1', cadence: 'monthly', title: 'Play 600 minutes this month', metric: 'minutes', target: 600, tokens: 800, xp: 1500 },
   { id: 'm2', cadence: 'monthly', title: 'Reach 80% growth on any dino', metric: 'peak_growth', target: 80, tokens: 1000, xp: 2500 },
   { id: 'm3', cadence: 'monthly', title: 'Play on 10 different days', metric: 'days', target: 10, tokens: 1200, xp: 2000 },
+  // Elite: hard, long-term contracts for dedicated players. Same live-feed
+  // metrics, far higher targets and payouts.
+  { id: 'd4', cadence: 'daily', tier: 'elite', title: 'Survive 3 hours on the island in a single day', metric: 'minutes', target: 180, tokens: 200, xp: 500 },
+  { id: 'd5', cadence: 'daily', tier: 'elite', title: 'Gain 10% growth in a single day', metric: 'growth', target: 10, tokens: 250, xp: 600 },
+  { id: 'w4', cadence: 'weekly', tier: 'elite', title: 'Play 480 minutes (8 hours) this week', metric: 'minutes', target: 480, tokens: 500, xp: 1200 },
+  { id: 'w5', cadence: 'weekly', tier: 'elite', title: 'Gain 25% growth this week', metric: 'growth', target: 25, tokens: 600, xp: 1500 },
+  { id: 'w6', cadence: 'weekly', tier: 'elite', title: 'Play on 6 different days this week', metric: 'days', target: 6, tokens: 450, xp: 1000 },
+  { id: 'm4', cadence: 'monthly', tier: 'elite', title: 'Play 1800 minutes (30 hours) this month', metric: 'minutes', target: 1800, tokens: 2000, xp: 5000 },
+  { id: 'm5', cadence: 'monthly', tier: 'elite', title: 'Gain 50% growth this month', metric: 'growth', target: 50, tokens: 2500, xp: 6000 },
+  { id: 'm6', cadence: 'monthly', tier: 'elite', title: 'Play on 20 different days this month', metric: 'days', target: 20, tokens: 2200, xp: 5000 },
+  { id: 'm7', cadence: 'monthly', tier: 'elite', title: 'Reach 100% growth on any dino this month', metric: 'peak_growth', target: 100, tokens: 3000, xp: 8000 },
 ];
 
 function utcDateStr(d) {
