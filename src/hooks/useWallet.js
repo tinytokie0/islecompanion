@@ -1,55 +1,82 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 
 // The signed-in player's Haven Tokens wallet, the economy rules, live earning
-// progress and daily claim status, resolved server-side. Returns
-// { loading, wallet, config, earn, daily_claim, error, refresh }.
-export default function useWallet(refreshMs = 60000) {
-  const [state, setState] = useState({
-    loading: true,
-    wallet: null,
-    config: null,
-    earn: null,
-    daily_claim: null,
-    error: null,
-  });
-  const loadRef = useRef(() => {});
+// progress and daily claim status, resolved server-side.
+//
+// One shared store for the whole app: every component (top-right chip, casino,
+// shop, claim cards) subscribes to the same wallet, so any refresh — a casino
+// bet, a quest claim, a daily claim — updates the top-right balance instantly.
+// A single polling interval and a single 'ht-claimed' listener serve everyone.
+const EMPTY = {
+  loading: true,
+  wallet: null,
+  config: null,
+  earn: null,
+  daily_claim: null,
+  error: null,
+};
+
+let state = EMPTY;
+const listeners = new Set();
+let timer = null;
+let inFlight = null;
+
+const notify = () => {
+  for (const listener of listeners) listener(state);
+};
+
+// Fetch the wallet once; concurrent callers share the same request.
+const load = () => {
+  if (inFlight) return inFlight;
+  inFlight = (async () => {
+    try {
+      const res = await base44.functions.invoke("economyGetWallet", {});
+      state = {
+        loading: false,
+        wallet: res.data.wallet,
+        config: res.data.config,
+        earn: res.data.earn,
+        daily_claim: res.data.daily_claim || null,
+        error: null,
+      };
+    } catch (e) {
+      state = { ...state, loading: false, error: e.message };
+    }
+    inFlight = null;
+    notify();
+  })();
+  return inFlight;
+};
+
+const startPolling = () => {
+  if (timer) return;
+  timer = setInterval(load, 30000);
+  window.addEventListener("ht-claimed", load);
+};
+
+// No subscribers left: stop the poll and reset, so a sign-in by a different
+// user never sees the previous wallet.
+const stopPolling = () => {
+  if (listeners.size > 0) return;
+  clearInterval(timer);
+  timer = null;
+  window.removeEventListener("ht-claimed", load);
+  state = EMPTY;
+};
+
+export default function useWallet() {
+  const [snap, setSnap] = useState(state);
 
   useEffect(() => {
-    let alive = true;
-    const load = async () => {
-      try {
-        const res = await base44.functions.invoke("economyGetWallet", {});
-        if (alive) {
-          setState({
-            loading: false,
-            wallet: res.data.wallet,
-            config: res.data.config,
-            earn: res.data.earn,
-            daily_claim: res.data.daily_claim || null,
-            error: null,
-          });
-        }
-      } catch (e) {
-        if (alive) setState((s) => ({ ...s, loading: false, error: e.message }));
-      }
-    };
-    loadRef.current = load;
+    listeners.add(setSnap);
     load();
-    const timer = setInterval(load, refreshMs);
+    startPolling();
     return () => {
-      alive = false;
-      clearInterval(timer);
+      listeners.delete(setSnap);
+      stopPolling();
     };
-  }, [refreshMs]);
-
-  // Any claim (quests, daily reward, ...) announces itself with an
-  // 'ht-claimed' window event: refresh so the top-right chip is instant.
-  useEffect(() => {
-    const handler = () => loadRef.current();
-    window.addEventListener("ht-claimed", handler);
-    return () => window.removeEventListener("ht-claimed", handler);
   }, []);
 
-  return { ...state, refresh: () => loadRef.current() };
+  return { ...snap, refresh: load };
 }

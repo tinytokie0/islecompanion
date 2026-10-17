@@ -11,6 +11,10 @@ export default function useHt(refreshMs = 30000) {
   const tx = async (action, amount, reason) => {
     const res = await base44.functions.invoke("economyGameTx", { action, amount, reason });
     await refresh();
+    if (action === "award" && amount > 0) {
+      // Flash the "+X HT" chip in the top-right portal header
+      window.dispatchEvent(new CustomEvent("ht-claimed", { detail: { amount } }));
+    }
     return res.data;
   };
 
