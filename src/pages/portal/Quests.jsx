@@ -45,6 +45,8 @@ export default function Quests() {
         wallet: res.data.wallet,
         quests: prev.quests.map((x) => (x.id === q.id ? { ...x, claimed: true, progress: res.data.quest.progress } : x)),
       }));
+      // Announce the claimed HT so it lands in the top-right balance chip.
+      window.dispatchEvent(new CustomEvent("ht-claimed", { detail: { amount: q.tokens } }));
     } catch (e) {
       setClaimError(e.message);
     }

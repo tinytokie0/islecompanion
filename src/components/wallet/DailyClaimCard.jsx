@@ -40,6 +40,8 @@ export default function DailyClaimCard({ dailyClaim, onClaimed }) {
         next_available_at: data.next_available_at,
       });
       setFeedback({ ok: true, text: `+${data.amount ?? amount} HT CLAIMED — NEXT CLAIM IN 24 HOURS` });
+      // Announce the claimed HT so it lands in the top-right balance chip.
+      window.dispatchEvent(new CustomEvent("ht-claimed", { detail: { amount: data.amount ?? amount } }));
       if (onClaimed) onClaimed();
     } catch (e) {
       const err = e?.response?.data || {};

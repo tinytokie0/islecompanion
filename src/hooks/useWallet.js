@@ -43,5 +43,13 @@ export default function useWallet(refreshMs = 60000) {
     };
   }, [refreshMs]);
 
+  // Any claim (quests, daily reward, ...) announces itself with an
+  // 'ht-claimed' window event: refresh so the top-right chip is instant.
+  useEffect(() => {
+    const handler = () => loadRef.current();
+    window.addEventListener("ht-claimed", handler);
+    return () => window.removeEventListener("ht-claimed", handler);
+  }, []);
+
   return { ...state, refresh: () => loadRef.current() };
 }
