@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import gatewayMap from "@/assets/gateway-map.webp";
 import useLiveDinos from "@/hooks/useLiveDinos";
+import ServerStatusCard from "@/components/ServerStatusCard";
 
 // Real Gateway (Evrima branch) landmarks, positioned as % of the map image
 const ZONES = [
@@ -202,6 +203,11 @@ export default function LiveMap() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Live server status */}
+        <div className="mt-8 max-w-[900px] mx-auto">
+          <ServerStatusCard />
         </div>
       </div>
     </section>
