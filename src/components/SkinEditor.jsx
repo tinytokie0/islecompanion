@@ -127,15 +127,15 @@ export default function SkinEditor() {
           fittingType="fill"
           className="w-full h-full animate-ken-burns"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/45 to-background" />
-        <div className="absolute inset-0 grid-bg opacity-20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/25 to-background" />
+        <div className="absolute inset-0 grid-bg opacity-15" />
       </div>
 
       <div className="relative px-6 md:px-10 py-14 md:py-20">
         <div className="max-w-[1500px] mx-auto">
-          {/* ============ Hero card, like the reference ============ */}
-          <div className="flex justify-center mb-14">
-            <div className="glass-panel rounded-2xl px-10 md:px-20 py-12 text-center max-w-xl w-full">
+          {/* ============ Hero card floating over the art, like the reference ============ */}
+          <div className="flex justify-center items-center min-h-[70vh] mb-16">
+            <div className="glass-panel rounded-2xl px-10 md:px-20 py-14 text-center max-w-xl w-full">
               <span className="inline-flex w-14 h-14 rounded-xl bg-primary/15 text-primary items-center justify-center mb-5">
                 <Palette size={24} />
               </span>
