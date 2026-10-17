@@ -2,9 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Warehouse, Brush, Loader2, Dna } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
-import CoinBadge from "@/components/wallet/CoinBadge";
+
 import useMyDino from "@/hooks/useMyDino";
-import useWallet from "@/hooks/useWallet";
 import { stageFor } from "@/lib/growthStages";
 import DinoPortrait from "@/components/DinoPortrait";
 
@@ -21,7 +20,6 @@ const SILHOUETTE =
 
 export default function YourDino() {
   const { loading, linked, dino } = useMyDino();
-  const walletState = useWallet(30000);
 
   const fresh =
     dino &&
@@ -35,11 +33,6 @@ export default function YourDino() {
       kicker="YOUR ROSTER"
       title="YOUR DINO"
       sub="Your current dinosaur, tracked live from the server."
-      right={
-        <Link to="/wallet" className="inline-flex" aria-label="Open wallet">
-          <CoinBadge balance={walletState.wallet?.balance} loading={walletState.loading} />
-        </Link>
-      }
     >
       {loading ? (
         <div className="glass-panel rounded-lg p-10 flex items-center justify-center gap-3 font-mono text-xs text-muted-foreground">

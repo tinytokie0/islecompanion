@@ -3,7 +3,6 @@ import { Coins, Loader2, CheckCircle2, XCircle, Sparkles, History } from "lucide
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import PageShell from "@/components/portal/PageShell";
-import CoinBadge from "@/components/wallet/CoinBadge";
 import { Image } from "@/components/ui/image";
 
 const CATEGORY_LABELS = { cosmetic: "COSMETIC", title: "TITLE", badge: "BADGE", reward: "REWARD" };
@@ -82,7 +81,6 @@ export default function TokenShop() {
       kicker="SPEND HT"
       title="TOKEN SHOP"
       sub="Website rewards bought with Haven Tokens. Purchases are checked and deducted securely on the backend. These rewards are website-only — nothing changes your dinosaur in-game."
-      right={<CoinBadge balance={balance} loading={balance === null} />}
     >
       {shopClosed && (
         <div className="glass-panel rounded-lg p-5 mb-5 font-mono text-xs text-amber-400">

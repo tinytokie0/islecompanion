@@ -5,15 +5,12 @@ import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 import WaygateCard from "@/components/teleports/WaygateCard";
 import WaygateHistory from "@/components/teleports/WaygateHistory";
 import TeleportBar from "@/components/teleports/TeleportBar";
-import CoinBadge from "@/components/wallet/CoinBadge";
-import useWallet from "@/hooks/useWallet";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 
 export default function Teleports() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
-  const { wallet } = useWallet();
   const [gates, setGates] = useState(null);
   const [requests, setRequests] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -42,11 +39,6 @@ export default function Teleports() {
     <div>
       <TeleportHero
         sub="Pick a destination, teleport instantly, and staff deliver you in-game. Every gate shares one 10-minute cooldown."
-        right={
-          <div className="flex items-center justify-center">
-            <CoinBadge balance={wallet?.balance} />
-          </div>
-        }
       />
 
       <section className="px-4 md:px-8 py-8 md:py-10">

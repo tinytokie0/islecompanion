@@ -63,15 +63,9 @@ export default function Quests() {
       title="QUESTS"
       sub="Progress comes from your live feed sightings on the island: time survived, growth gained and days played. Claim rewards in Haven Tokens and XP."
       right={
-        <div className="flex gap-2">
-          <div className="glass-panel-light px-4 py-2 w-fit">
-            <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">BALANCE </span>
-            <span className="font-mono text-xs text-primary">{(wallet?.balance ?? 0).toLocaleString()} HT</span>
-          </div>
-          <div className="glass-panel-light px-4 py-2 w-fit">
-            <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">TOTAL XP </span>
-            <span className="font-mono text-xs text-accent">{totalXp.toLocaleString()}</span>
-          </div>
+        <div className="glass-panel-light px-4 py-2 w-fit">
+          <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">TOTAL XP </span>
+          <span className="font-mono text-xs text-accent">{totalXp.toLocaleString()}</span>
         </div>
       }
     >
