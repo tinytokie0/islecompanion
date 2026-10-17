@@ -1,3 +1,5 @@
+import { collectBounties } from './bounties.ts';
+
 // Shared live-feed helpers used by every data ingestion path: parse Arkanis
 // player fields, keep one LiveDino snapshot per Steam ID, and accumulate the
 // daily FeedDay rollups (which power quests and playtime rewards) so every
@@ -139,6 +141,7 @@ export async function applyFeedRecords(service, records, nowIso) {
   await service.entities.LiveDino.upsert(enriched, { key: 'steam_id' });
   if (killEvents.length > 0) {
     await service.entities.KillEvent.bulkCreate(killEvents);
+    await collectBounties(service, killEvents, nowIso);
   }
 
   const day = nowIso.slice(0, 10);
