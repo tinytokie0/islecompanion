@@ -18,16 +18,41 @@ const PATTERNS = [
   { id: "crystal", name: "Crystalline", desc: "Prismatic shards" },
 ];
 
-const SWATCHES = [
-  "#6b4423", "#8b5e3c", "#3d5a3d", "#2c4a2c", "#7a6a4a",
-  "#c4956a", "#1a2b1a", "#5c3d2e", "#94815a", "#4a5d4a",
-];
+// One labeled color zone: native picker + free hex text
+function ColorZone({ label, value, hexText, onChange }) {
+  return (
+    <div className="flex items-center gap-3">
+      <input
+        type="color"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-12 h-12 bg-transparent border border-border cursor-pointer p-1 shrink-0"
+      />
+      <div className="flex-1">
+        <div className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground mb-1">{label}</div>
+        <input
+          type="text"
+          value={hexText}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="#6b4423"
+          className="w-full bg-secondary border border-border font-mono text-xs text-foreground px-3 py-2 outline-none focus:border-primary/60"
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function SkinEditor() {
   const [species, setSpecies] = useState(DINOS[0].name);
   const [pattern, setPattern] = useState("default");
-  const [color, setColor] = useState(SWATCHES[0]);
-  const [hexText, setHexText] = useState(SWATCHES[0]);
+
+  // Per-zone colors, each with its own free-text hex buffer
+  const [bodyColor, setBodyColor] = useState("#6b4423");
+  const [bodyHex, setBodyHex] = useState("#6b4423");
+  const [bellyColor, setBellyColor] = useState("#c4956a");
+  const [bellyHex, setBellyHex] = useState("#c4956a");
+  const [hornColor, setHornColor] = useState("#e6b84c");
+  const [hornHex, setHornHex] = useState("#e6b84c");
 
   const [savedSkins, setSavedSkins] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -49,19 +74,16 @@ export default function SkinEditor() {
     return () => { alive = false; };
   }, []);
 
-  // Accepts any 6-digit hex (with or without #)
-  const applyHex = (value) => {
+  // Zone setter: validates the 6-digit hex (with or without #) before applying
+  const setZone = (apply, setHexText) => (value) => {
     setHexText(value);
     const v = value.trim().replace("#", "");
-    if (/^[0-9a-fA-F]{6}$/.test(v)) setColor("#" + v.toLowerCase());
+    if (/^[0-9a-fA-F]{6}$/.test(v)) apply("#" + v.toLowerCase());
   };
 
-  // The picked color always drives the render — patterns shape markings, not pigment
-  const getRenderColor = () => color;
-
-  // Derive a contrast stripe accent from the chosen base color
+  // Derive a contrast stripe accent from the body color
   const getAccentColor = () => {
-    const num = parseInt(color.replace("#", ""), 16);
+    const num = parseInt(bodyColor.replace("#", ""), 16);
     const r = (num >> 16) & 255, g = (num >> 8) & 255, b = num & 255;
     const lum = 0.299 * r + 0.587 * g + 0.114 * b;
     const amt = lum > 128 ? -60 : 60;
@@ -77,8 +99,12 @@ export default function SkinEditor() {
   const loadSkin = (skin) => {
     setSpecies(skin.species);
     setPattern(skin.pattern || "default");
-    setColor(skin.color);
-    setHexText(skin.color);
+    setBodyColor(skin.color);
+    setBodyHex(skin.color);
+    setBellyColor(skin.belly_color || skin.color);
+    setBellyHex(skin.belly_color || skin.color);
+    setHornColor(skin.horn_color || skin.color);
+    setHornHex(skin.horn_color || skin.color);
     setSavedMsg(`Loaded "${skin.species}" skin`);
     setTimeout(() => setSavedMsg(""), 2500);
   };
@@ -88,14 +114,20 @@ export default function SkinEditor() {
     setSaving(true);
     setSavedMsg("");
     try {
+      const data = {
+        pattern,
+        color: bodyColor,
+        belly_color: bellyColor,
+        horn_color: hornColor,
+      };
       const existing = (savedSkins || []).find((s) => s.species === species);
       if (existing) {
-        await base44.entities.DinoSkin.update(existing.id, { pattern, color });
+        await base44.entities.DinoSkin.update(existing.id, data);
         setSavedSkins((skins) =>
-          skins.map((s) => (s.id === existing.id ? { ...s, pattern, color } : s))
+          skins.map((s) => (s.id === existing.id ? { ...s, ...data } : s))
         );
       } else {
-        const created = await base44.entities.DinoSkin.create({ species, pattern, color });
+        const created = await base44.entities.DinoSkin.create({ species, ...data });
         setSavedSkins((skins) => [...(skins || []), created]);
       }
       setSavedMsg(`Skin saved for ${species}`);
@@ -133,7 +165,7 @@ export default function SkinEditor() {
 
       <div className="relative px-6 md:px-10 py-14 md:py-20">
         <div className="max-w-[1500px] mx-auto">
-          {/* ============ Hero card floating over the art, like the reference ============ */}
+          {/* ============ Hero card floating over the art ============ */}
           <div className="flex justify-center items-center min-h-[70vh] mb-16">
             <div className="glass-panel rounded-2xl px-10 md:px-20 py-14 text-center max-w-xl w-full">
               <span className="inline-flex w-14 h-14 rounded-xl bg-primary/15 text-primary items-center justify-center mb-5">
@@ -143,7 +175,7 @@ export default function SkinEditor() {
                 SKIN EDITOR
               </h1>
               <p className="font-mono text-xs md:text-sm text-muted-foreground leading-relaxed tracking-wide">
-                Design your dino's genetic pattern and chromatic base, save it, and it carries into the game.
+                Paint every zone of your dino — flank, belly, horns and claws — in any colors, then save it.
               </p>
             </div>
           </div>
@@ -154,22 +186,40 @@ export default function SkinEditor() {
               <div className="absolute inset-0 grid-bg opacity-30" />
               <div
                 className="absolute w-2/3 h-2/3 rounded-full blur-3xl opacity-25 transition-colors duration-700"
-                style={{ backgroundColor: getRenderColor() }}
+                style={{ backgroundColor: bodyColor }}
               />
-              {/* Dino silhouette */}
+              {/* Dino silhouette: body, belly, horns and claws each take their zone color */}
               <svg viewBox="0 0 200 200" className="relative w-4/5 h-4/5">
                 <defs>
                   <pattern id="brindlePattern" patternUnits="userSpaceOnUse" width="8" height="8">
-                    <rect width="8" height="8" fill={getRenderColor()} />
+                    <rect width="8" height="8" fill={bodyColor} />
                     <rect width="3" height="8" fill={getAccentColor()} opacity="0.5" />
                   </pattern>
                 </defs>
+
+                {/* Horns on the head */}
+                <polygon points="147,70 151,52 157,70" fill={hornColor} />
+                <polygon points="162,74 169,58 173,76" fill={hornColor} className="animate-crystal" />
+
+                {/* Body + flank (torso, neck, head) */}
                 <path
                   d="M 30 120 Q 40 100 60 95 L 80 85 Q 100 75 120 80 L 140 70 Q 160 65 170 75 L 165 90 Q 155 95 145 100 L 135 110 Q 130 125 120 130 L 110 135 Q 95 140 80 138 L 65 145 Q 45 150 35 140 Z"
-                  fill={pattern === "brindle" ? "url(#brindlePattern)" : getRenderColor()}
+                  fill={pattern === "brindle" ? "url(#brindlePattern)" : bodyColor}
                   className="animate-breathe transition-all duration-500"
                 />
+
+                {/* Belly / underside panel */}
+                <path
+                  d="M 48 132 Q 70 142 100 139 L 118 134 Q 112 146 90 148 Q 65 148 48 132 Z"
+                  fill={bellyColor}
+                  opacity="0.9"
+                  className="transition-all duration-500"
+                />
+
+                {/* Eye */}
                 <circle cx="155" cy="80" r="3" fill="#0A0F0D" />
+
+                {/* Back stripes take the pattern accent */}
                 {[...Array(5)].map((_, i) => (
                   <path
                     key={i}
@@ -178,21 +228,12 @@ export default function SkinEditor() {
                     opacity="0.7"
                   />
                 ))}
-                {/* Belly stripe */}
-                <path
-                  d="M 50 135 Q 80 145 120 138 L 115 142 Q 80 148 55 142 Z"
-                  fill={getAccentColor()}
-                  opacity="0.3"
-                />
-                {/* Crystal shards */}
-                {pattern === "crystal" && (
-                  <g>
-                    <polygon points="100,55 108,72 92,72" fill="#e6b84c" className="animate-crystal" />
-                    <polygon points="68,95 76,112 60,112" fill="#c98a5e" className="animate-crystal" style={{ animationDelay: "1s" }} />
-                    <polygon points="132,100 140,117 124,117" fill="#c4b5fd" className="animate-crystal" style={{ animationDelay: "2s" }} />
-                    <polygon points="40,110 47,126 33,126" fill="#f0d49a" className="animate-crystal" style={{ animationDelay: "0.5s" }} />
-                  </g>
-                )}
+
+                {/* Claws on the feet */}
+                <polygon points="58,148 62,142 66,148" fill={hornColor} />
+                <polygon points="66,150 70,144 74,150" fill={hornColor} />
+                <polygon points="106,142 110,136 114,142" fill={hornColor} />
+                <polygon points="114,144 118,138 122,144" fill={hornColor} />
               </svg>
 
               {/* Scan line */}
@@ -207,11 +248,17 @@ export default function SkinEditor() {
                   PATTERN: <span className="text-primary">{PATTERNS.find((p) => p.id === pattern)?.name.toUpperCase()}</span>
                 </div>
               </div>
-              <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                <span className="w-4 h-4 border border-foreground/30" style={{ backgroundColor: color }} />
-                <span className="font-mono text-[10px] tracking-[0.15em] text-muted-foreground">
-                  {color.toUpperCase()}
-                </span>
+              <div className="absolute bottom-4 left-4 flex items-center gap-3">
+                {[
+                  ["FLANK", bodyColor],
+                  ["BELLY", bellyColor],
+                  ["HORN", hornColor],
+                ].map(([label, hex]) => (
+                  <span key={label} className="flex items-center gap-1">
+                    <span className="w-4 h-4 border border-foreground/30" style={{ backgroundColor: hex }} />
+                    <span className="font-mono text-[9px] tracking-[0.15em] text-muted-foreground">{label}</span>
+                  </span>
+                ))}
               </div>
               {savedMsg && (
                 <div className="absolute bottom-4 right-4 font-mono text-[10px] tracking-[0.15em] text-primary">
@@ -271,42 +318,30 @@ export default function SkinEditor() {
                 </div>
               </div>
 
-              {/* Color palette */}
+              {/* Per-zone colors */}
               <div className="glass-panel rounded-xl p-6">
                 <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
-                  CHROMATIC BASE
+                  CHROMATIC ZONES
                 </div>
-                <div className="grid grid-cols-5 gap-3 mb-4">
-                  {SWATCHES.map((sw) => (
-                    <button
-                      key={sw}
-                      onClick={() => { setColor(sw); setHexText(sw); }}
-                      className={`aspect-square border-2 transition-all duration-200 hover:scale-110 ${
-                        color === sw ? "border-primary scale-110" : "border-transparent"
-                      }`}
-                      style={{ backgroundColor: sw }}
-                    />
-                  ))}
-                </div>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="color"
-                    value={color}
-                    onChange={(e) => { setColor(e.target.value); setHexText(e.target.value); }}
-                    className="w-14 h-14 bg-transparent border border-border cursor-pointer p-1"
+                <div className="flex flex-col gap-4">
+                  <ColorZone
+                    label="BODY / FLANK"
+                    value={bodyColor}
+                    hexText={bodyHex}
+                    onChange={setZone(setBodyColor, setBodyHex)}
                   />
-                  <div className="flex-1">
-                    <div className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground mb-1">
-                      ANY HEX CODE
-                    </div>
-                    <input
-                      type="text"
-                      value={hexText}
-                      onChange={(e) => applyHex(e.target.value)}
-                      placeholder="#6b4423"
-                      className="w-full bg-secondary border border-border font-mono text-xs text-foreground px-3 py-2 outline-none focus:border-primary/60"
-                    />
-                  </div>
+                  <ColorZone
+                    label="BELLY / UNDERSIDE"
+                    value={bellyColor}
+                    hexText={bellyHex}
+                    onChange={setZone(setBellyColor, setBellyHex)}
+                  />
+                  <ColorZone
+                    label="HORNS / CLAWS"
+                    value={hornColor}
+                    hexText={hornHex}
+                    onChange={setZone(setHornColor, setHornHex)}
+                  />
                 </div>
               </div>
 
@@ -343,10 +378,11 @@ export default function SkinEditor() {
                         key={skin.id}
                         className="flex items-center gap-3 border border-border px-3 py-2"
                       >
-                        <span
-                          className="w-6 h-6 border border-foreground/30 shrink-0"
-                          style={{ backgroundColor: skin.color }}
-                        />
+                        <span className="flex shrink-0">
+                          <span className="w-6 h-6 border border-foreground/30" style={{ backgroundColor: skin.color }} />
+                          <span className="w-6 h-6 border border-foreground/30 -ml-1" style={{ backgroundColor: skin.belly_color || skin.color }} />
+                          <span className="w-6 h-6 border border-foreground/30 -ml-1" style={{ backgroundColor: skin.horn_color || skin.color }} />
+                        </span>
                         <button
                           onClick={() => loadSkin(skin)}
                           className="flex-1 text-left font-mono text-[11px] text-foreground hover:text-primary transition-colors"

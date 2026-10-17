@@ -1,7 +1,7 @@
 {
   "name": "DinoSkin",
   "type": "object",
-  "description": "A skin design a player saved in the Skin Editor for one species: genetic pattern plus base hex color. Owned by the creating app user.",
+  "description": "A skin design a player saved in the Skin Editor for one species: genetic pattern plus per-zone hex colors (body/flank, belly, horns and claws). Owned by the creating app user.",
   "properties": {
     "species": {
       "type": "string",
@@ -13,7 +13,15 @@
     },
     "color": {
       "type": "string",
-      "description": "Base hex color, e.g. #6b4423"
+      "description": "Base hex color of the body and flank, e.g. #6b4423"
+    },
+    "belly_color": {
+      "type": "string",
+      "description": "Hex color of the belly and underside, e.g. #c4956a"
+    },
+    "horn_color": {
+      "type": "string",
+      "description": "Hex color of the horns and claws, e.g. #e6b84c"
     }
   },
   "required": [
