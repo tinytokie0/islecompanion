@@ -79,6 +79,21 @@ export default async function(req) {
       (r) => r.nonce === nonce && r.used === false && r.expires_at > new Date().toISOString()
     );
     if (!linkRequest) return back('error', 'expired');
+
+    // Session binding: the browser completing Steam sign-in must be the same
+    // signed-in user who started the flow. Without this, a nonce link sent to
+    // a victim could attach the victim's Steam account to the attacker's
+    // profile. An anonymous or different session is rejected.
+    let session = null;
+    try {
+      session = await base44.auth.me();
+    } catch {
+      session = null;
+    }
+    if (!session || session.id !== linkRequest.user_id) {
+      return back('error', 'session');
+    }
+
     await service.entities.SteamLinkRequest.update(linkRequest.id, { used: true });
 
     // 5. One Steam ID maps to at most one Base44 user

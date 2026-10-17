@@ -39,35 +39,39 @@ export default async function(req) {
         user_id: user.id, quest_id: quest.id, period, progress, claimed: false,
       });
     }
-    if (rec.claimed === true) {
-      return Response.json({ error: 'Already claimed for this period.' }, { status: 409 });
-    }
     if (progress < quest.target) {
       return Response.json({ error: 'Quest not complete yet.' }, { status: 400 });
     }
 
+    // Atomically claim first: only one concurrent request can flip the flag,
+    // so a race can never pay the reward twice. Verified by the claim stamp.
+    const claimedDate = now.toISOString();
+    await service.entities.QuestProgress.updateMany(
+      { id: rec.id, claimed: false },
+      { $set: { claimed: true, progress, claimed_date: claimedDate } }
+    );
+    const verify = await service.entities.QuestProgress.get(rec.id);
+    if (!verify || verify.claimed_date !== claimedDate) {
+      return Response.json({ error: 'Already claimed for this period.' }, { status: 409 });
+    }
+
+    // Reward: atomic increments so concurrent spends keep their balance.
+    await service.entities.Wallet.updateMany(
+      { user_id: user.id },
+      { $inc: { balance: quest.tokens, xp: quest.xp } }
+    );
     const wallet = await getWalletForUser(service, user.id, link.steam_id);
-    const after = (wallet.balance || 0) + quest.tokens;
-    const updated = await service.entities.Wallet.update(wallet.id, {
-      balance: after,
-      xp: (wallet.xp || 0) + quest.xp,
-    });
     await service.entities.CoinTransaction.create({
       user_id: user.id,
       type: 'quest',
       amount: quest.tokens,
       reason: `Quest reward: ${quest.title}`,
-      balance_after: after,
-    });
-    await service.entities.QuestProgress.update(rec.id, {
-      claimed: true,
-      progress,
-      claimed_date: now.toISOString(),
+      balance_after: wallet.balance,
     });
 
     return Response.json({
       ok: true,
-      wallet: publicWallet(updated || { ...wallet, balance: after }),
+      wallet: publicWallet(wallet),
       quest: { ...quest, progress, claimed: true },
     });
   } catch (error) {
