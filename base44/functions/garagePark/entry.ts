@@ -18,7 +18,7 @@ export default async function (req) {
     // One active garage slot: reject if something is already parked or being restored
     const activeRecords = await base44.asServiceRole.entities.ParkedDino.filter({
       user_id: user.id,
-      status: { $in: ['parked', 'restore_pending'] },
+      status: 'parked',
     });
     if (activeRecords.items.length > 0) {
       return Response.json({ error: 'You already have a dino in garage storage' }, { status: 400 });
@@ -49,6 +49,7 @@ export default async function (req) {
       server_name: dino.server_name || null,
       status: 'parked',
       parked_date: new Date().toISOString(),
+      server_status: 'queued',
     });
 
     return Response.json({ record });

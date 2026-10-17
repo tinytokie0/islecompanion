@@ -1,9 +1,16 @@
 // ============================================================
-// HavenBridge — forwards The Isle server snapshots to the Haven app.
+// HavenBridge — two-way link between The Isle server and the
+// Haven app.
 //
-// Tails the NDJSON file the HavenPosition UE4SS mod writes
-// (Mods/HavenPosition/Saved/events.ndjson) and POSTs the latest
-// snapshot per player to the app's feed endpoint every 5 seconds.
+// OUTBOUND: tails the NDJSON file the HavenPosition UE4SS mod
+// writes (Mods/HavenPosition/Saved/events.ndjson) and POSTs the
+// latest snapshot per player to the app's feed endpoint every
+// 5 seconds.
+//
+// INBOUND: polls the app's garage command endpoint every 5
+// seconds for park/restore commands, writes each into
+// Mods/HavenPosition/Saved/commands.ndjson (the mod's inbox),
+// tails the mod's acks.ndjson and reports the results back.
 //
 // Run it on any machine that can read the game server's files
 // (the server host itself is simplest). Node.js 18+ required.
@@ -21,8 +28,16 @@ import fs from "node:fs";
 const ENDPOINT = process.env.ENDPOINT || "https://REPLACE-WITH-YOUR-APP-URL/functions/dinoFeedIngest";
 const SECRET = process.env.SECRET || "REPLACE-WITH-YOUR-FEED-SECRET";
 const EVENTS_FILE = process.env.EVENTS_FILE || "Mods/HavenPosition/Saved/events.ndjson";
+const CMDS_FILE = process.env.CMDS_FILE || "Mods/HavenPosition/Saved/commands.ndjson";
+const ACKS_FILE = process.env.ACKS_FILE || "Mods/HavenPosition/Saved/acks.ndjson";
 const SERVER_NAME = process.env.SERVER_NAME || "The Haven";
 const POST_EVERY_MS = 5000;
+
+// The garage command endpoint sits next to the feed endpoint
+function garageEndpointFrom(endpoint) {
+  return endpoint.replace(/\/functions\/.*$/, "/functions/garageCommandSync");
+}
+const GARAGE_ENDPOINT = garageEndpointFrom(ENDPOINT);
 
 // Species class path ("/Game/.../BP_Tyrannosaurus.BP_Tyrannosaurus_C")
 // to a readable name ("Tyrannosaurus"), matching the app's feed parser.
@@ -112,6 +127,93 @@ async function post() {
   }
 }
 
+// ============================================================
+// Garage commands (park / restore): app -> bridge -> mod
+// ============================================================
+
+let acksOffset = 0;
+const reportedAcks = new Set();
+
+function appendCommandFile(row) {
+  fs.mkdirSync(CMDS_FILE.replace(/[/\\][^/\\]+$/, ""), { recursive: true });
+  fs.appendFileSync(CMDS_FILE, JSON.stringify(row) + "\n");
+}
+
+async function pollGarageCommands() {
+  try {
+    const res = await fetch(GARAGE_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-feed-secret": SECRET },
+      body: JSON.stringify({ action: "poll" }),
+    });
+    const body = await res.json().catch(() => ({}));
+    for (const cmd of body.commands || []) {
+      // The mod reads a flat, known-shape line; id/action/steam only.
+      appendCommandFile({
+        cmd: String(cmd.id),
+        action: cmd.command === "restore" ? "restore" : "park",
+        steam: String(cmd.steam_id),
+      });
+      console.log(`[HavenBridge] delivered ${cmd.command} command to the mod (${cmd.steam_id})`);
+    }
+  } catch (err) {
+    console.error(`[HavenBridge] garage poll failed: ${err.message}`);
+  }
+}
+
+async function reportResult(row) {
+  try {
+    await fetch(GARAGE_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-feed-secret": SECRET },
+      body: JSON.stringify({
+        action: "result",
+        id: String(row.cmd),
+        ok: row.ok === true,
+        error: row.error || null,
+      }),
+    });
+  } catch (err) {
+    console.error(`[HavenBridge] result report failed: ${err.message}`);
+  }
+}
+
+function readNewAcks() {
+  let stat;
+  try {
+    stat = fs.statSync(ACKS_FILE);
+  } catch {
+    return;
+  }
+  if (stat.size < acksOffset) acksOffset = 0;
+  if (stat.size <= acksOffset) return;
+
+  const fh = fs.openSync(ACKS_FILE, "r");
+  try {
+    const len = stat.size - acksOffset;
+    const buf = Buffer.alloc(len);
+    fs.readSync(fh, buf, 0, len, acksOffset);
+    acksOffset = stat.size;
+    for (const line of buf.toString("utf8").split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      let row;
+      try {
+        row = JSON.parse(trimmed);
+      } catch {
+        continue;
+      }
+      if (row && row.cmd && !reportedAcks.has(String(row.cmd))) {
+        reportedAcks.add(String(row.cmd));
+        console.log(`[HavenBridge] mod ack: ${row.cmd} ok=${row.ok}`);
+        reportResult(row);
+      }
+    }
+  } finally {
+    fs.closeSync(fh);
+  }
+}
+
 console.log(`[HavenBridge] tailing ${EVENTS_FILE}`);
 readNewLines();
 setInterval(() => {
@@ -122,3 +224,14 @@ setInterval(() => {
   }
 }, 1000);
 setInterval(post, POST_EVERY_MS);
+
+// Garage command loop
+readNewAcks();
+setInterval(() => {
+  try {
+    readNewAcks();
+  } catch (err) {
+    console.error(`[HavenBridge] ack read failed: ${err.message}`);
+  }
+}, 1000);
+setInterval(pollGarageCommands, POST_EVERY_MS);

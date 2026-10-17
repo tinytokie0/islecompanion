@@ -23,6 +23,7 @@ export default async function (req) {
     const updated = await base44.asServiceRole.entities.ParkedDino.update(id, {
       status: 'restored',
       restored_date: new Date().toISOString(),
+      server_status: 'queued',
     });
 
     return Response.json({ record: updated });

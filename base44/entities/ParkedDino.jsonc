@@ -1,7 +1,7 @@
 {
   "name": "ParkedDino",
   "type": "object",
-  "description": "A player dinosaur parked in the garage: taken out of active play on the island and stored with its stats at park time. The owner restores it themselves at any time.",
+  "description": "A player dinosaur parked in the garage: taken out of active play on the island and stored with its stats at park time. The owner restores it themselves; the game server applies both actions through the HavenPosition bridge.",
   "properties": {
     "user_id": {
       "type": "string",
@@ -65,6 +65,21 @@
       "type": "string",
       "format": "date-time",
       "description": "When the owner restored the dino"
+    },
+    "server_status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "sent",
+        "applied",
+        "failed"
+      ],
+      "default": "queued",
+      "description": "Game-server sync state: queued/sent until the bridge applies the command, then applied or failed with server_error"
+    },
+    "server_error": {
+      "type": "string",
+      "description": "Error reported by the game server when a command could not be applied"
     }
   },
   "required": [

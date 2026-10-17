@@ -82,6 +82,8 @@ export default function Garage() {
 
   useEffect(() => {
     loadGarage();
+    const t = setInterval(loadGarage, 15000);
+    return () => clearInterval(t);
   }, []);
 
   const park = async () => {
@@ -359,9 +361,25 @@ export default function Garage() {
                     <div className="font-mono text-xs text-foreground tracking-wide truncate mb-1">
                       {p.species || "Unknown"}
                     </div>
-                    <div className="font-mono text-[9px] text-muted-foreground tracking-wide mb-3">
+                    <div className="font-mono text-[9px] text-muted-foreground tracking-wide mb-1">
                       PARKED {p.parked_date ? ageOf(p.parked_date).toUpperCase() : ""}
                     </div>
+                    <div
+                      className={`font-mono text-[9px] tracking-wide mb-3 ${
+                        p.server_status === "failed" ? "text-destructive" : "text-accent"
+                      }`}
+                    >
+                      {p.server_status === "applied"
+                        ? "SYNCED TO SERVER"
+                        : p.server_status === "failed"
+                        ? "SERVER ERROR"
+                        : "SYNCING TO SERVER..."}
+                    </div>
+                    {p.server_status === "failed" && p.server_error && (
+                      <div className="font-mono text-[9px] text-destructive mb-3 truncate">
+                        {p.server_error}
+                      </div>
+                    )}
                     {p.status === "parked" ? (
                       <button
                         onClick={() => restore(p.id)}

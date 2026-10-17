@@ -11,6 +11,16 @@
 -- file and forwards the snapshots to the Haven web app feed
 -- endpoint, which powers the live map, quests and rewards.
 --
+-- GARAGE (park / restore): the bridge writes one flat JSON
+-- command per line into Mods/HavenPosition/Saved/commands.ndjson
+--   {"cmd":"<id>","action":"park","steam":"<steamid>"}
+--   {"cmd":"<id>","action":"restore","steam":"<steamid>"}
+-- The mod executes each command once (park saves the dino's
+-- stats into garage.ndjson and removes it from the world;
+-- restore respawns the stored dino for that player), then
+-- appends an ack line to Mods/HavenPosition/Saved/acks.ndjson,
+-- which the bridge reports back to the app.
+--
 -- Safety rules followed (per the EVRIMA community modding
 -- reference): no FindAllOf on players/pawns, no UObject
 -- cached across ticks, every engine read pcall-wrapped,
@@ -20,6 +30,9 @@
 local MOD_NAME = "HavenPosition"
 local INTERVAL_MS = 5000
 local EVENTS_FILE = "Mods/HavenPosition/Saved/events.ndjson"
+local CMDS_FILE = "Mods/HavenPosition/Saved/commands.ndjson"
+local ACKS_FILE = "Mods/HavenPosition/Saved/acks.ndjson"
+local GARAGE_FILE = "Mods/HavenPosition/Saved/garage.ndjson"
 
 -- ---- logging --------------------------------------------------
 
@@ -96,7 +109,7 @@ local function stripClassPrefix(s)
     return string.match(s, "^%S+%s+(.+)$") or s
 end
 
--- ---- JSON write helpers (no require, no external library) ------
+-- ---- JSON write helpers (no require, no external library)------
 
 local function jsonEscape(s)
     if s == nil then return "" end
@@ -114,7 +127,7 @@ local function jsonNum(v)
     return string.format("%.3f", v)
 end
 
--- ---- presence registry (production-safe player enumeration) ----
+-- ---- presence registry (production-safe player enumeration)----
 -- Players are enumerated ONLY through this registry, resolved by
 -- steam id via GetControllerBySteamId. FindAllOf("TIPlayerController")
 -- and AllPlayerCharacters retain stale entries that crash on access.
@@ -287,15 +300,211 @@ local function snapshotOnce()
     appendLines(EVENTS_FILE, lines)
 end
 
+-- ============================================================
+-- GARAGE COMMANDS (park / restore)
+-- ============================================================
+
+-- Flat JSON field extractor for the known-shape command and
+-- garage lines (no JSON library available in the mod).
+local function flatGet(line, key)
+    if line == nil then return nil end
+    local v = line:match('"' .. key .. '"%s*:%s*"([^"]*)"')
+    if v ~= nil then return v end
+    return line:match('"' .. key .. '"%s*:%s*(-?[%d%.]+)')
+end
+
+local function flatNum(line, key)
+    local v = flatGet(line, key)
+    if v == nil then return nil end
+    return tonumber(v)
+end
+
+-- Read pending commands and clear the inbox so each runs once.
+local function readAndClearCommands()
+    local f = io.open(CMDS_FILE, "rb")
+    if f == nil then return {} end
+    local content = f:read("*a")
+    f:close()
+    local c = io.open(CMDS_FILE, "wb")
+    if c ~= nil then c:close() end
+    local cmds = {}
+    for line in string.gmatch(content or "", "[^\r\n]+") do
+        local cmd = flatGet(line, "cmd")
+        local action = flatGet(line, "action")
+        local steam = flatGet(line, "steam")
+        if cmd ~= nil and cmd ~= "" and action ~= nil and steam ~= nil and steam ~= "" then
+            cmds[#cmds + 1] = { cmd = cmd, action = action, steam = steam }
+        end
+    end
+    return cmds
+end
+
+local function ack(cmdId, ok, err)
+    appendLines(ACKS_FILE, { string.format(
+        '{"cmd":"%s","ok":%s,"error":"%s"}',
+        jsonEscape(cmdId), ok and "true" or "false", jsonEscape(err or "")
+    ) })
+end
+
+-- Controller + live pawn for a steam id, via the game mode.
+local function findPlayer(steam)
+    local gm = findGameMode()
+    if gm == nil then return nil, nil, "game mode not found" end
+    local ctrl
+    pcall(function() ctrl = gm:GetControllerBySteamId(steam) end)
+    if ctrl == nil then return nil, nil, "player not online" end
+    local pawn = livePawnFromCtrl(ctrl)
+    return ctrl, pawn, nil
+end
+
+-- PARK: save the dino's stats, then remove it from the world
+-- (the player returns to the spawn menu).
+local function executePark(cmd)
+    local ctrl, pawn, err = findPlayer(cmd.steam)
+    if pawn == nil then
+        ack(cmd.cmd, false, err or "player has no live dino")
+        return
+    end
+
+    local species = ""
+    pcall(function() species = stripClassPrefix(pawn:GetClass():GetFullName()) end)
+    local growth
+    pcall(function() growth = pawn:GetGrowth() end)
+    local loc
+    pcall(function() loc = pawn:K2_GetActorLocation() end)
+    local hp, hunger, thirst, stamina
+    pcall(function() hp = pawn:GetHealth() end)
+    pcall(function() hunger = pawn:GetHunger() end)
+    pcall(function() thirst = pawn:GetThirst() end)
+    pcall(function() stamina = pawn:GetStamina() end)
+
+    -- stored growth is a percentage (GetGrowth is a 0..1 fraction)
+    appendLines(GARAGE_FILE, { string.format(
+        '{"ts":%d,"steam":"%s","species":"%s","growth":%s,' ..
+        '"pos":{"x":%s,"y":%s,"z":%s},' ..
+        '"hp":%s,"hunger":%s,"thirst":%s,"stamina":%s}',
+        os.time(),
+        jsonEscape(cmd.steam),
+        jsonEscape(species),
+        jsonNum(growth ~= nil and growth * 100 or nil),
+        jsonNum(loc ~= nil and loc.X or nil),
+        jsonNum(loc ~= nil and loc.Y or nil),
+        jsonNum(loc ~= nil and loc.Z or nil),
+        jsonNum(hp), jsonNum(hunger), jsonNum(thirst), jsonNum(stamina)
+    ) })
+
+    local destroyed = false
+    pcall(function() pawn:K2_DestroyActor() destroyed = true end)
+    if not destroyed then
+        pcall(function() pawn:DestroyActor() destroyed = true end)
+    end
+    if destroyed then
+        log("Parked dino for steam " .. cmd.steam)
+        ack(cmd.cmd, true, "")
+    else
+        ack(cmd.cmd, false, "could not remove the dino from the world")
+    end
+end
+
+-- RESTORE: respawn the player's most recently parked dino.
+local function executeRestore(cmd)
+    local ctrl, pawn = findPlayer(cmd.steam)
+    if ctrl == nil then
+        ack(cmd.cmd, false, "player not online")
+        return
+    end
+    if pawn ~= nil then
+        ack(cmd.cmd, false, "player already has a live dino")
+        return
+    end
+
+    -- most recent stored dino for this steam id
+    local row = nil
+    local f = io.open(GARAGE_FILE, "rb")
+    if f ~= nil then
+        local content = f:read("*a")
+        f:close()
+        for line in string.gmatch(content or "", "[^\r\n]+") do
+            if flatGet(line, "steam") == cmd.steam then row = line end
+        end
+    end
+    if row == nil then
+        ack(cmd.cmd, false, "no stored dino for this player")
+        return
+    end
+
+    local species = flatGet(row, "species") or ""
+    local growth = flatNum(row, "growth")
+    local posX = tonumber(row:match('"pos"%s*:%s*{%s*"x"%s*:%s*(-?[%d%.]+)'))
+    local posY = tonumber(row:match('"pos"%s*:%s*{.-"y"%s*:%s*(-?[%d%.]+)'))
+    local posZ = tonumber(row:match('"pos"%s*:%s*{.-"z"%s*:%s*(-?[%d%.]+)'))
+    local hp = flatNum(row, "hp")
+    local hunger = flatNum(row, "hunger")
+    local thirst = flatNum(row, "thirst")
+    local stamina = flatNum(row, "stamina")
+
+    local cls = nil
+    pcall(function() cls = LoadAsset(species) end)
+    if cls == nil then
+        ack(cmd.cmd, false, "could not load the stored dino class")
+        return
+    end
+
+    local newPawn = nil
+    pcall(function() newPawn = SpawnObject(cls, ctrl) end)
+    if newPawn == nil then
+        ack(cmd.cmd, false, "could not spawn the stored dino")
+        return
+    end
+
+    -- restore stats and place it back where it was parked
+    pcall(function() if growth ~= nil then newPawn:SetGrowth(growth / 100) end end)
+    pcall(function()
+        if posX ~= nil and posY ~= nil and posZ ~= nil then
+            newPawn:K2_SetActorLocation({ X = posX, Y = posY, Z = posZ })
+        end
+    end)
+    pcall(function() if hp ~= nil then newPawn:SetHealth(hp) end end)
+    pcall(function() if hunger ~= nil then newPawn:SetHunger(hunger) end end)
+    pcall(function() if thirst ~= nil then newPawn:SetThirst(thirst) end end)
+    pcall(function() if stamina ~= nil then newPawn:SetStamina(stamina) end end)
+    pcall(function() ctrl:Possess(newPawn) end)
+
+    log("Restored dino for steam " .. cmd.steam)
+    ack(cmd.cmd, true, "")
+end
+
+local function processCommands()
+    local cmds = readAndClearCommands()
+    for _, cmd in ipairs(cmds) do
+        if cmd.action == "park" then
+            local ok, err = pcall(executePark, cmd)
+            if not ok then ack(cmd.cmd, false, "park failed: " .. tostring(err)) end
+        elseif cmd.action == "restore" then
+            local ok, err = pcall(executeRestore, cmd)
+            if not ok then ack(cmd.cmd, false, "restore failed: " .. tostring(err)) end
+        else
+            ack(cmd.cmd, false, "unknown action")
+        end
+    end
+end
+
 -- ---- boot wiring -------------------------------------------------
 
 log("Mod loaded")
 ensureSavedDir()
+-- start acks clean so the bridge only tails fresh results
+do
+    local c = io.open(ACKS_FILE, "wb")
+    if c ~= nil then c:close() end
+end
 presenceRegisterHook()
 presenceStartRefreshTick()
 if LoopInGameThreadWithDelay ~= nil then
     LoopInGameThreadWithDelay(INTERVAL_MS, snapshotOnce)
     log("Snapshot tick started (" .. INTERVAL_MS .. "ms interval)")
+    LoopInGameThreadWithDelay(5000, processCommands)
+    log("Garage command tick started (5s interval)")
 else
     log("LoopInGameThreadWithDelay unavailable — mod cannot run")
 end
