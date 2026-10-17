@@ -3,6 +3,7 @@ import { Loader2, Save, Trash2, Palette } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { DINOS } from "@/lib/portalData";
 import { Image } from "@/components/ui/image";
+import Dino3D from "@/components/Dino3D";
 
 // Full-bleed moonlit jungle art matching the Cretaceous Gone Wild skin page
 const BACKDROP =
@@ -58,6 +59,7 @@ export default function SkinEditor() {
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState("");
   const [deleteId, setDeleteId] = useState(null);
+  const [view3d, setView3d] = useState(false);
 
   // Load the player's saved skins once
   useEffect(() => {
@@ -188,7 +190,37 @@ export default function SkinEditor() {
                 className="absolute w-2/3 h-2/3 rounded-full blur-3xl opacity-25 transition-colors duration-700"
                 style={{ backgroundColor: bodyColor }}
               />
+              {/* View toggle: 3D model or 2D blueprint */}
+              <div className="absolute top-4 right-4 z-10 flex gap-1">
+                {[
+                  ["3D MODEL", true],
+                  ["BLUEPRINT", false],
+                ].map(([label, val]) => (
+                  <button
+                    key={label}
+                    onClick={() => setView3d(val)}
+                    className={`px-3 py-1.5 font-mono text-[9px] tracking-[0.15em] border transition-colors ${
+                      view3d === val
+                        ? "border-primary/60 bg-primary/10 text-primary"
+                        : "border-border text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              {view3d && (
+                <Dino3D
+                  bodyColor={bodyColor}
+                  bellyColor={bellyColor}
+                  hornColor={hornColor}
+                  className="absolute inset-0"
+                />
+              )}
+
               {/* Dino silhouette: body, belly, horns and claws each take their zone color */}
+              {!view3d && (
               <svg viewBox="0 0 200 200" className="relative w-4/5 h-4/5">
                 <defs>
                   <pattern id="brindlePattern" patternUnits="userSpaceOnUse" width="8" height="8">
@@ -235,6 +267,7 @@ export default function SkinEditor() {
                 <polygon points="106,142 110,136 114,142" fill={hornColor} />
                 <polygon points="114,144 118,138 122,144" fill={hornColor} />
               </svg>
+              )}
 
               {/* Scan line */}
               <div className="absolute left-0 right-0 h-20 scanline animate-scan pointer-events-none" />
