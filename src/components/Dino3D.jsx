@@ -24,6 +24,7 @@ const SPECIES_MORPHS = [
   ["dryosaurus", { family: "theropod", scale: 0.7, neck: "long", headScale: 0.55, beak: true }],
   ["hypsilophodon", { family: "theropod", scale: 0.5, neck: "long", headScale: 0.5, beak: true }],
   ["tenontosaurus", { family: "theropod", scale: 1.0, neck: "long", headScale: 0.6, beak: true, tail: "heavy" }],
+  ["beipiaosaurus", { family: "theropod", scale: 0.65, neck: "long", headScale: 0.55, beak: true, tail: "heavy" }],
   ["maiasaura", { family: "quadruped", scale: 1.15, features: ["crest"] }],
   ["pachycephalosaurus", { family: "theropod", scale: 0.85, head: "dome" }],
   ["triceratops", { family: "quadruped", scale: 1.25, head: "frill", headScale: 1.1 }],
