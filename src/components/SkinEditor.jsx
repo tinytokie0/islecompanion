@@ -215,6 +215,7 @@ export default function SkinEditor() {
                   bodyColor={bodyColor}
                   bellyColor={bellyColor}
                   hornColor={hornColor}
+                  pattern={pattern}
                   className="absolute inset-0"
                 />
               )}
