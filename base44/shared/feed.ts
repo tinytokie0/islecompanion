@@ -76,8 +76,16 @@ export async function applyFeedRecords(service, records, nowIso) {
     }
     if (!lifeStarted) lifeStarted = nowIso;
 
+    // Carry forward the last known position when a feed reports none: the
+    // roster-only pull (Arkanis) must not wipe GPS coordinates delivered by
+    // the position feed until the player respawns or is seen elsewhere.
+    const carried =
+      r.pos_x == null && prev?.pos_x != null && !dead.has(r.steam_id)
+        ? { pos_x: prev.pos_x, pos_y: prev.pos_y, pos_z: prev.pos_z }
+        : {};
     return {
       ...r,
+      ...carried,
       deaths,
       life_started_at: lifeStarted,
       best_life_minutes: bestLife,

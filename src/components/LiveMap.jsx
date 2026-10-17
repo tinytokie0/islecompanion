@@ -189,10 +189,17 @@ export default function LiveMap() {
             </div>
 
             {/* Feed status */}
-            <div className="absolute bottom-6 right-6 glass-panel-light px-4 py-3">
+            <div className="absolute bottom-6 right-6 glass-panel-light px-4 py-3 text-right">
               <div className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">
-                {loading ? "READING FEED..." : `${players.length} CONTACT${players.length === 1 ? "" : "S"} · LIVE FEED`}
+                {loading
+                  ? "READING FEED..."
+                  : `${players.length} CONTACT${players.length === 1 ? "" : "S"} · LIVE FEED`}
               </div>
+              {!loading && players.length > 0 && players.every((d) => d.pos_x == null) && (
+                <div className="font-mono text-[8px] tracking-[0.15em] text-primary mt-1 max-w-[190px]">
+                  WAITING ON GPS FEED — MARKERS APPEAR ONCE THE SERVER SENDS POSITIONS
+                </div>
+              )}
             </div>
           </div>
         </div>
