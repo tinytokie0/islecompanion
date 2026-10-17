@@ -1,13 +1,20 @@
 import React from "react";
-import { Server, Users, Map as MapIcon, Clock, ShieldAlert, Loader2 } from "lucide-react";
-import useRconStatus from "@/hooks/useRconStatus";
+import { Server, Users, Map as MapIcon, ShieldAlert, Loader2 } from "lucide-react";
+import useArkaniStatus from "@/hooks/useArkaniStatus";
 
-// Live server status card for the map page: pulls the server details
-// straight from the game server over RCON (signed-in members only).
+// Live server status card for the map page, pulled from the Arkanis API
+// (signed-in members only): online state, player count and who is on.
+// Species names come from the game's BP asset path, e.g.
+// "/Game/.../Tyrannosaurus/BP_Tyrannosaurus.BP_Tyrannosaurus_C".
+function speciesFromPath(path) {
+  const m = String(path || "").match(/\/Dinosaurs\/([A-Za-z]+)\//);
+  return m ? m[1] : null;
+}
+
 export default function ServerStatusCard() {
-  const { data, loading, authed } = useRconStatus(60000);
-  const details = data && data.success ? data.serverDetails : null;
-  const error = data && !data.success ? data.error : null;
+  const { data, loading, authed } = useArkaniStatus(60000);
+  const details = data && data.configured ? data.status || {} : null;
+  const playerList = (details?.playerList || []).slice(0, 8);
 
   return (
     <div className="glass-panel rounded-xl p-6">
@@ -26,92 +33,70 @@ export default function ServerStatusCard() {
         <div className="py-6 font-mono text-xs text-muted-foreground text-center leading-relaxed">
           Sign in to see live server status.
         </div>
-      ) : error ? (
+      ) : !details ? (
         <div className="py-6 flex items-start justify-center gap-2 font-mono text-xs text-destructive text-center leading-relaxed">
-          <ShieldAlert size={14} className="shrink-0 mt-0.5" /> {error}
+          <ShieldAlert size={14} className="shrink-0 mt-0.5" /> Server status unavailable.
         </div>
-      ) : details ? (
+      ) : (
         <div>
           <div className="flex items-center justify-between mb-4">
             <div className="font-mono text-sm text-foreground truncate">
-              {details.name || "The Haven"}
+              {data.server?.name || "The Haven"}
             </div>
-            <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-widest text-emerald-400 shrink-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> ONLINE
+            <span
+              className={`flex items-center gap-1.5 font-mono text-[10px] tracking-widest shrink-0 ${
+                details.online ? "text-emerald-400" : "text-red-400"
+              }`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                  details.online ? "bg-emerald-400" : "bg-red-400"
+                }`}
+              />{" "}
+              {details.online ? "ONLINE" : "OFFLINE"}
             </span>
           </div>
 
-          {/* Player count gauge */}
+          {/* Player count */}
           <div className="mb-5">
-            <div className="flex items-center justify-between font-mono text-[11px] mb-1.5">
+            <div className="flex items-center justify-between font-mono text-[11px]">
               <span className="flex items-center gap-1.5 text-muted-foreground">
                 <Users size={12} /> PLAYERS
               </span>
-              <span className="text-foreground">
-                {details.currentPlayers ?? 0} / {details.maxPlayers ?? "?"}
-              </span>
-            </div>
-            <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-              <div
-                className="h-full rounded-full bg-primary"
-                style={{
-                  width: `${
-                    details.maxPlayers
-                      ? Math.min(100, ((details.currentPlayers || 0) / details.maxPlayers) * 100)
-                      : 0
-                  }%`,
-                }}
-              />
+              <span className="text-foreground">{details.players ?? 0} on the island</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 font-mono text-[11px]">
+          <div className="grid grid-cols-1 gap-3 font-mono text-[11px]">
             <div className="glass-panel-light rounded-md px-3 py-2">
               <div className="text-[9px] tracking-[0.2em] text-muted-foreground mb-1 flex items-center gap-1.5">
                 <MapIcon size={10} /> MAP
               </div>
-              <div className="text-foreground truncate">{details.map || "Gateway"}</div>
-            </div>
-            <div className="glass-panel-light rounded-md px-3 py-2">
-              <div className="text-[9px] tracking-[0.2em] text-muted-foreground mb-1 flex items-center gap-1.5">
-                <Clock size={10} /> DAY CYCLE
-              </div>
-              <div className="text-foreground">
-                {details.dayLengthMinutes ? `${details.dayLengthMinutes}m day` : "—"}
-                {details.nightLengthMinutes ? ` / ${details.nightLengthMinutes}m night` : ""}
-              </div>
+              <div className="text-foreground">Gateway (Evrima)</div>
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 mt-4">
-            {details.queueEnabled && (
-              <span className="font-mono text-[9px] tracking-widest px-2 py-1 rounded bg-muted text-muted-foreground">
-                QUEUE
-              </span>
-            )}
-            {details.whitelist && (
-              <span className="font-mono text-[9px] tracking-widest px-2 py-1 rounded bg-muted text-muted-foreground">
-                WHITELIST
-              </span>
-            )}
-            {details.enableMutations && (
-              <span className="font-mono text-[9px] tracking-widest px-2 py-1 rounded bg-primary/10 text-primary">
-                MUTATIONS
-              </span>
-            )}
-            {details.spawnAI && (
-              <span className="font-mono text-[9px] tracking-widest px-2 py-1 rounded bg-emerald-400/10 text-emerald-400">
-                AI DINOS
-              </span>
-            )}
-            {!details.enableGlobalChat && (
-              <span className="font-mono text-[9px] tracking-widest px-2 py-1 rounded bg-muted text-muted-foreground">
-                LOCAL CHAT
-              </span>
-            )}
-          </div>
+          {/* Who is online right now */}
+          {playerList.length > 0 && (
+            <div className="mt-4">
+              <div className="text-[9px] tracking-[0.2em] text-muted-foreground mb-2">
+                ON THE ISLAND
+              </div>
+              <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto hide-scrollbar pr-1">
+                {playerList.map((p, i) => (
+                  <div key={i} className="flex items-center justify-between gap-2">
+                    <span className="text-foreground truncate text-[11px]">{p.name}</span>
+                    <span className="text-muted-foreground text-[10px] shrink-0">
+                      {speciesFromPath(p.dinosaur) || "—"}
+                      {p.growth ? ` · ${p.growth}` : ""}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      ) : null}
+      )}
     </div>
   );
 }

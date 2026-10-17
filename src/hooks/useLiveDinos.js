@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 
 // Live dinos recorded from the island feed within the last `windowMinutes`.
-export default function useLiveDinos({ windowMinutes = 15, refreshMs = 30000, sort = "-last_seen", limit = 50 } = {}) {
+export default function useLiveDinos({ windowMinutes = 15, refreshMs = 15000, sort = "-last_seen", limit = 50 } = {}) {
   const [dinos, setDinos] = useState(null);
 
   useEffect(() => {

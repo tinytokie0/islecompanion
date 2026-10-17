@@ -45,7 +45,7 @@
       "cron_expression": null,
       "one_time_date": null,
       "timezone": "UTC",
-      "interval_value": 5,
+      "interval_value": 2,
       "interval_unit": "minutes",
       "interval_anchor": null,
       "ends_type": "never",
