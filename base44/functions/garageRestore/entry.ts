@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 
-// Restores a parked dino: flags it restore_pending so staff spawn it back
-// in-game at its stored stats. Only the owner can request the restore.
+// Restores a parked dino instantly: the owner pulls it out of garage storage
+// themselves and it returns to the island (the live feed picks it up again).
 export default async function (req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -21,7 +21,8 @@ export default async function (req) {
     }
 
     const updated = await base44.asServiceRole.entities.ParkedDino.update(id, {
-      status: 'restore_pending',
+      status: 'restored',
+      restored_date: new Date().toISOString(),
     });
 
     return Response.json({ record: updated });

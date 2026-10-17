@@ -91,7 +91,7 @@ export default function Garage() {
     try {
       await base44.functions.invoke("garagePark", {});
       await loadGarage();
-      setGarageMsg("Dino parked — staff will move it into garage storage in-game.");
+      setGarageMsg("Dino parked — it's now stored in your garage.");
     } catch (e) {
       setGarageMsg(e.message);
     }
@@ -104,7 +104,7 @@ export default function Garage() {
     try {
       await base44.functions.invoke("garageRestore", { id });
       await loadGarage();
-      setGarageMsg("Restore requested — staff will spawn your dino back in-game.");
+      setGarageMsg("Dino restored — it's back on the island.");
     } catch (e) {
       setGarageMsg(e.message);
     }
@@ -276,7 +276,7 @@ export default function Garage() {
                         </button>
                       )}
                       <span className="font-mono text-[9px] text-muted-foreground tracking-wide">
-                        Staff move it into garage storage in-game.
+                        Stored in your garage until you restore it.
                       </span>
                     </div>
                   )}

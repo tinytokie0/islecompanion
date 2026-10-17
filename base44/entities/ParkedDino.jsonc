@@ -1,7 +1,7 @@
 {
   "name": "ParkedDino",
   "type": "object",
-  "description": "A player dinosaur parked in the garage: taken out of active play on the island and stored with its stats at park time. Restoring flags it for in-game delivery by staff.",
+  "description": "A player dinosaur parked in the garage: taken out of active play on the island and stored with its stats at park time. The owner restores it themselves at any time.",
   "properties": {
     "user_id": {
       "type": "string",
@@ -51,11 +51,10 @@
       "type": "string",
       "enum": [
         "parked",
-        "restore_pending",
         "restored"
       ],
       "default": "parked",
-      "description": "parked = in storage; restore_pending = staff delivering back in-game; restored = returned to the island"
+      "description": "parked = in storage; restored = returned to the island by the owner"
     },
     "parked_date": {
       "type": "string",
@@ -65,7 +64,7 @@
     "restored_date": {
       "type": "string",
       "format": "date-time",
-      "description": "When the dino was delivered back in-game"
+      "description": "When the owner restored the dino"
     }
   },
   "required": [
