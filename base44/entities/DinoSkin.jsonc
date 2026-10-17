@@ -1,0 +1,38 @@
+{
+  "name": "DinoSkin",
+  "type": "object",
+  "description": "A skin design a player saved in the Skin Editor for one species: genetic pattern plus base hex color. Owned by the creating app user.",
+  "properties": {
+    "species": {
+      "type": "string",
+      "description": "Species this skin is designed for"
+    },
+    "pattern": {
+      "type": "string",
+      "description": "Genetic pattern id from the editor (default, brindle, melanistic, albino, leucistic, erythristic, crystal)"
+    },
+    "color": {
+      "type": "string",
+      "description": "Base hex color, e.g. #6b4423"
+    }
+  },
+  "required": [
+    "species",
+    "pattern",
+    "color"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

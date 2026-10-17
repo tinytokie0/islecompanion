@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Loader2, Save, Trash2 } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import { DINOS } from "@/lib/portalData";
 
 const PATTERNS = [
   { id: "default", name: "Wild Type", desc: "Natural camouflage" },
@@ -16,9 +19,30 @@ const SWATCHES = [
 ];
 
 export default function SkinEditor() {
+  const [species, setSpecies] = useState(DINOS[0].name);
   const [pattern, setPattern] = useState("default");
   const [color, setColor] = useState(SWATCHES[0]);
   const [hexText, setHexText] = useState(SWATCHES[0]);
+
+  const [savedSkins, setSavedSkins] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [savedMsg, setSavedMsg] = useState("");
+  const [deleteId, setDeleteId] = useState(null);
+
+  // Load the player's saved skins once
+  useEffect(() => {
+    let alive = true;
+    const load = async () => {
+      try {
+        const page = await base44.entities.DinoSkin.filter({}, { sort: "-updated_date", limit: 100 });
+        if (alive) setSavedSkins(page.items);
+      } catch {
+        if (alive) setSavedSkins([]);
+      }
+    };
+    load();
+    return () => { alive = false; };
+  }, []);
 
   // Accepts any 6-digit hex (with or without #)
   const applyHex = (value) => {
@@ -43,6 +67,49 @@ export default function SkinEditor() {
         .map((v) => v.toString(16).padStart(2, "0"))
         .join("")
     );
+  };
+
+  const loadSkin = (skin) => {
+    setSpecies(skin.species);
+    setPattern(skin.pattern || "default");
+    setColor(skin.color);
+    setHexText(skin.color);
+    setSavedMsg(`Loaded "${skin.species}" skin`);
+    setTimeout(() => setSavedMsg(""), 2500);
+  };
+
+  // Save the current design for the selected species (update if one exists)
+  const saveSkin = async () => {
+    setSaving(true);
+    setSavedMsg("");
+    try {
+      const existing = (savedSkins || []).find((s) => s.species === species);
+      if (existing) {
+        await base44.entities.DinoSkin.update(existing.id, { pattern, color });
+        setSavedSkins((skins) =>
+          skins.map((s) => (s.id === existing.id ? { ...s, pattern, color } : s))
+        );
+      } else {
+        const created = await base44.entities.DinoSkin.create({ species, pattern, color });
+        setSavedSkins((skins) => [...(skins || []), created]);
+      }
+      setSavedMsg(`Skin saved for ${species}`);
+      setTimeout(() => setSavedMsg(""), 2500);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const removeSkin = async (skin) => {
+    setDeleteId(skin.id);
+    try {
+      await base44.entities.DinoSkin.delete(skin.id);
+      setSavedSkins((skins) => skins.filter((s) => s.id !== skin.id));
+      if (skin.species === species) setSavedMsg(`Removed ${skin.species} skin`);
+      setTimeout(() => setSavedMsg(""), 2500);
+    } finally {
+      setDeleteId(null);
+    }
   };
 
   return (
@@ -117,6 +184,9 @@ export default function SkinEditor() {
             {/* Info overlay */}
             <div className="absolute top-4 left-4">
               <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
+                SPECIES: <span className="text-primary">{species.toUpperCase()}</span>
+              </div>
+              <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground mt-1">
                 PATTERN: <span className="text-primary">{PATTERNS.find((p) => p.id === pattern)?.name.toUpperCase()}</span>
               </div>
             </div>
@@ -126,10 +196,37 @@ export default function SkinEditor() {
                 {color.toUpperCase()}
               </span>
             </div>
+            {savedMsg && (
+              <div className="absolute bottom-4 right-4 font-mono text-[10px] tracking-[0.15em] text-primary">
+                {savedMsg.toUpperCase()}
+              </div>
+            )}
           </div>
 
           {/* Controls panel */}
           <div className="flex flex-col gap-6">
+            {/* Species selection */}
+            <div className="glass-panel p-6">
+              <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
+                SPECIMEN
+              </div>
+              <div className="grid grid-cols-3 md:grid-cols-4 gap-2 max-h-44 overflow-y-auto hide-scrollbar pr-1">
+                {DINOS.map((d) => (
+                  <button
+                    key={d.code}
+                    onClick={() => setSpecies(d.name)}
+                    className={`px-3 py-2 font-mono text-[10px] tracking-wide border transition-all duration-200 ${
+                      species === d.name
+                        ? "border-primary/60 bg-primary/10 text-primary"
+                        : "border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
+                    }`}
+                  >
+                    {d.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Pattern selection */}
             <div className="glass-panel p-6">
               <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
@@ -196,10 +293,69 @@ export default function SkinEditor() {
               </div>
             </div>
 
-            {/* Apply button */}
-            <button className="font-mono text-[10px] tracking-[0.25em] bg-primary text-primary-foreground px-6 py-4 hover:scale-[1.02] transition-transform">
-              APPLY SKIN TO SPECIMEN
+            {/* Save button */}
+            <button
+              onClick={saveSkin}
+              disabled={saving}
+              className="font-mono text-[10px] tracking-[0.25em] bg-primary text-primary-foreground px-6 py-4 hover:scale-[1.02] transition-transform disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-2"
+            >
+              {saving ? (
+                <><Loader2 size={13} className="animate-spin" /> SAVING...</>
+              ) : (
+                <><Save size={13} /> SAVE SKIN FOR {species.toUpperCase()}</>
+              )}
             </button>
+
+            {/* Saved skins */}
+            <div className="glass-panel p-6">
+              <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
+                MY SAVED SKINS
+              </div>
+              {savedSkins === null ? (
+                <div className="py-3 flex items-center justify-center gap-2 font-mono text-[10px] text-muted-foreground">
+                  <Loader2 size={12} className="animate-spin" /> LOADING...
+                </div>
+              ) : savedSkins.length === 0 ? (
+                <div className="py-3 font-mono text-[10px] text-muted-foreground text-center">
+                  No skins saved yet — design one above and save it.
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {savedSkins.map((skin) => (
+                    <div
+                      key={skin.id}
+                      className="flex items-center gap-3 border border-border px-3 py-2"
+                    >
+                      <span
+                        className="w-6 h-6 border border-foreground/30 shrink-0"
+                        style={{ backgroundColor: skin.color }}
+                      />
+                      <button
+                        onClick={() => loadSkin(skin)}
+                        className="flex-1 text-left font-mono text-[11px] text-foreground hover:text-primary transition-colors"
+                      >
+                        {skin.species}
+                        <span className="text-muted-foreground ml-2">
+                          {(PATTERNS.find((p) => p.id === skin.pattern)?.name || skin.pattern).toUpperCase()}
+                        </span>
+                      </button>
+                      <button
+                        onClick={() => removeSkin(skin)}
+                        disabled={deleteId === skin.id}
+                        className="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
+                        aria-label={`Delete ${skin.species} skin`}
+                      >
+                        {deleteId === skin.id ? (
+                          <Loader2 size={13} className="animate-spin" />
+                        ) : (
+                          <Trash2 size={13} />
+                        )}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
