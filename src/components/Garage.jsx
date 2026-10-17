@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Archive, RotateCcw } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { stageFor } from "@/lib/growthStages";
 import DinoPortrait from "@/components/DinoPortrait";
@@ -29,6 +29,11 @@ const ageOf = (iso) => {
 export default function Garage() {
   const [specimens, setSpecimens] = useState(null);
   const [selected, setSelected] = useState(0);
+  const [mySteamId, setMySteamId] = useState(null);
+  const [parked, setParked] = useState(null);
+  const [parking, setParking] = useState(false);
+  const [restoring, setRestoring] = useState(null);
+  const [garageMsg, setGarageMsg] = useState("");
 
   useEffect(() => {
     let alive = true;
@@ -55,8 +60,60 @@ export default function Garage() {
     };
   }, []);
 
+  // Parked dinos + the signed-in player's Steam id, for park/restore actions
+  const loadGarage = async () => {
+    try {
+      const authed = await base44.auth.isAuthenticated();
+      if (!authed) {
+        setParked([]);
+        return;
+      }
+      const links = await base44.entities.SteamLink.filter({});
+      setMySteamId(links[0]?.steam_id || null);
+      const page = await base44.entities.ParkedDino.filter(
+        { status: { $in: ["parked", "restore_pending"] } },
+        { sort: "-parked_date", limit: 50 }
+      );
+      setParked(page.items);
+    } catch {
+      setParked((p) => p || []);
+    }
+  };
+
+  useEffect(() => {
+    loadGarage();
+  }, []);
+
+  const park = async () => {
+    if (parking) return;
+    setParking(true);
+    setGarageMsg("");
+    try {
+      await base44.functions.invoke("garagePark", {});
+      await loadGarage();
+      setGarageMsg("Dino parked — staff will move it into garage storage in-game.");
+    } catch (e) {
+      setGarageMsg(e.message);
+    }
+    setParking(false);
+  };
+
+  const restore = async (id) => {
+    setRestoring(id);
+    setGarageMsg("");
+    try {
+      await base44.functions.invoke("garageRestore", { id });
+      await loadGarage();
+      setGarageMsg("Restore requested — staff will spawn your dino back in-game.");
+    } catch (e) {
+      setGarageMsg(e.message);
+    }
+    setRestoring(null);
+  };
+
   const loading = specimens === null;
   const active = specimens && specimens[selected];
+  const myActiveParked = parked && active && parked.some((p) => p.steam_id === active.steam_id);
   const lastSeen = specimens && specimens.length > 0 ? specimens[0].last_seen : null;
 
   return (
@@ -200,6 +257,29 @@ export default function Garage() {
                       />
                     </div>
                   </div>
+
+                  {/* Park action: only on the signed-in player's own dino */}
+                  {mySteamId && active.steam_id === mySteamId && (
+                    <div className="flex items-center gap-3">
+                      {myActiveParked ? (
+                        <span className="font-mono text-[10px] tracking-[0.2em] px-4 py-2 border border-accent/40 text-accent rounded-sm">
+                          IN GARAGE STORAGE — RESTORE BELOW
+                        </span>
+                      ) : (
+                        <button
+                          onClick={park}
+                          disabled={parking}
+                          className="font-mono text-[10px] tracking-[0.2em] px-4 py-2 border border-primary/40 text-primary rounded-sm hover:bg-primary/10 transition-colors flex items-center gap-2 disabled:opacity-50"
+                        >
+                          {parking ? <Loader2 size={12} className="animate-spin" /> : <Archive size={12} />}
+                          PARK THIS DINO
+                        </button>
+                      )}
+                      <span className="font-mono text-[9px] text-muted-foreground tracking-wide">
+                        Staff move it into garage storage in-game.
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -247,6 +327,64 @@ export default function Garage() {
               </div>
             </>
           )}
+
+          {/* ============ Parked specimens ============ */}
+          <div className="mt-12">
+            <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4 flex items-center gap-2">
+              <Archive size={13} className="text-primary" /> PARKED SPECIMENS — {parked ? parked.length : "…"}
+            </div>
+            {garageMsg && (
+              <div className="glass-panel-light px-4 py-3 mb-4 font-mono text-[10px] text-accent tracking-wide">
+                {garageMsg}
+              </div>
+            )}
+            {parked === null ? (
+              <div className="glass-panel p-8 flex items-center justify-center gap-3 font-mono text-xs text-muted-foreground">
+                <Loader2 size={14} className="animate-spin" /> READING GARAGE STORAGE...
+              </div>
+            ) : parked.length === 0 ? (
+              <div className="glass-panel p-8 text-center font-mono text-[11px] text-muted-foreground">
+                Nothing parked yet. Select your own dino above and park it to store it safely.
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {parked.map((p) => (
+                  <div key={p.id} className="glass-panel-light p-4">
+                    <div className="w-full aspect-video mb-3 relative overflow-hidden rounded-sm">
+                      <DinoPortrait species={p.species} className="absolute inset-0" />
+                      <div className="absolute bottom-1 right-1 font-mono text-[8px] text-muted-foreground">
+                        {p.growth ?? 0}%
+                      </div>
+                    </div>
+                    <div className="font-mono text-xs text-foreground tracking-wide truncate mb-1">
+                      {p.species || "Unknown"}
+                    </div>
+                    <div className="font-mono text-[9px] text-muted-foreground tracking-wide mb-3">
+                      PARKED {p.parked_date ? ageOf(p.parked_date).toUpperCase() : ""}
+                    </div>
+                    {p.status === "parked" ? (
+                      <button
+                        onClick={() => restore(p.id)}
+                        disabled={restoring === p.id}
+                        className="w-full font-mono text-[9px] tracking-[0.2em] px-3 py-2 border border-primary/40 text-primary rounded-sm hover:bg-primary/10 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                      >
+                        {restoring === p.id ? (
+                          <Loader2 size={11} className="animate-spin" />
+                        ) : (
+                          <RotateCcw size={11} />
+                        )}{" "}
+                        RESTORE
+                      </button>
+                    ) : (
+                      <div className="w-full font-mono text-[9px] tracking-[0.2em] px-3 py-2 border border-accent/40 text-accent rounded-sm text-center">
+                        AWAITING DELIVERY
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </section>

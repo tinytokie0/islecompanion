@@ -1,0 +1,107 @@
+{
+  "name": "ParkedDino",
+  "type": "object",
+  "description": "A player dinosaur parked in the garage: taken out of active play on the island and stored with its stats at park time. Restoring flags it for in-game delivery by staff.",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Base44 user id that owns this parked dino"
+    },
+    "steam_id": {
+      "type": "string",
+      "description": "64-bit Steam id of the parked dino's player"
+    },
+    "player_name": {
+      "type": "string",
+      "description": "In-game player name at park time"
+    },
+    "species": {
+      "type": "string",
+      "description": "Species at park time"
+    },
+    "sex": {
+      "type": "string",
+      "description": "Sex at park time"
+    },
+    "growth": {
+      "type": "number",
+      "description": "Growth percentage at park time"
+    },
+    "health": {
+      "type": "number",
+      "description": "Health at park time"
+    },
+    "stamina": {
+      "type": "number",
+      "description": "Stamina at park time"
+    },
+    "hunger": {
+      "type": "number",
+      "description": "Hunger at park time"
+    },
+    "thirst": {
+      "type": "number",
+      "description": "Thirst at park time"
+    },
+    "server_name": {
+      "type": "string",
+      "description": "Server the dino was on at park time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "parked",
+        "restore_pending",
+        "restored"
+      ],
+      "default": "parked",
+      "description": "parked = in storage; restore_pending = staff delivering back in-game; restored = returned to the island"
+    },
+    "parked_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the dino was parked"
+    },
+    "restored_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the dino was delivered back in-game"
+    }
+  },
+  "required": [
+    "user_id",
+    "steam_id",
+    "species",
+    "status",
+    "parked_date"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
