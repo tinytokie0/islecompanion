@@ -53,11 +53,18 @@ export default async function(req) {
       const players = Array.isArray(status.players) ? status.players : [];
       for (const p of players) {
         if (!p || !p.steamId) continue;
+        // Position passthrough: the Arkanis roster carries no coordinates today,
+        // but if a source ever includes them the map renders markers from them.
+        const pos = p.position && typeof p.position === 'object' ? p.position : p;
+        const n = (v) => (Number.isFinite(Number(v)) ? Number(v) : null);
         records.push({
           steam_id: String(p.steamId),
           player_name: p.name || 'Unknown',
           species: speciesFromPath(p.dinosaur),
           growth: growthNumber(p.growth),
+          pos_x: n(pos.x),
+          pos_y: n(pos.y),
+          pos_z: n(pos.z),
           server_name: server.server_name || 'The Haven',
           last_seen: now,
         });
