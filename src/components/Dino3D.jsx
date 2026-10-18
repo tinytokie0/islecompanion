@@ -191,7 +191,7 @@ export default function Dino3D({ species, bodyColor, bellyColor, hornColor, patt
     const key = new THREE.DirectionalLight(0xfff1dd, 1.1);
     key.position.set(6, 9, 5);
     scene.add(key);
-    const rimPink = new THREE.DirectionalLight(0xff2e7b, 0.7);
+    const rimPink = new THREE.DirectionalLight(0xc98a5e, 0.7);
     rimPink.position.set(-9, 3, -6);
     scene.add(rimPink);
     const rimBlue = new THREE.DirectionalLight(0x66aaff, 0.55);

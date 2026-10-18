@@ -224,7 +224,7 @@ export default function TokenShop() {
                     {p.created_date ? new Date(p.created_date).toLocaleString() : ""}
                   </div>
                 </div>
-                <div className="font-mono text-xs shrink-0 sm:text-right text-rose-400">
+                <div className="font-mono text-xs shrink-0 sm:text-right text-amber-500">
                   -{p.price} HT
                 </div>
               </div>

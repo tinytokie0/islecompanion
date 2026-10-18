@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 
 const TYPE_META = {
   playtime: { label: "PLAYTIME", cls: "text-emerald-400 border-emerald-400/40" },
-  purchase: { label: "PURCHASE", cls: "text-rose-400 border-rose-400/40" },
+  purchase: { label: "PURCHASE", cls: "text-amber-500 border-amber-500/40" },
   staff_grant: { label: "STAFF GRANT", cls: "text-sky-400 border-sky-400/40" },
   staff_deduct: { label: "STAFF DEDUCTION", cls: "text-amber-400 border-amber-400/40" },
   refund: { label: "REFUND", cls: "text-sky-400 border-sky-400/40" },
@@ -104,7 +104,7 @@ export default function TransactionTable({ refreshKey = 0, limit = 50, canRefund
                   </div>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  <div className={`font-mono text-xs sm:text-right ${positive ? "text-emerald-400" : "text-rose-400"}`}>
+                  <div className={`font-mono text-xs sm:text-right ${positive ? "text-emerald-400" : "text-amber-500"}`}>
                     {positive ? "+" : ""}
                     {tx.amount} HT
                   </div>

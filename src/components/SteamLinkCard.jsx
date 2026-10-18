@@ -172,7 +172,7 @@ export default function SteamLinkCard() {
             <button
               onClick={startLink}
               disabled={busy}
-              className="bg-primary text-primary-foreground font-mono text-[9px] font-bold tracking-[0.2em] px-4 py-2.5 rounded-md hover:shadow-[0_0_22px_rgba(255,46,123,0.55)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="bg-primary text-primary-foreground font-mono text-[9px] font-bold tracking-[0.2em] px-4 py-2.5 rounded-md hover:shadow-[0_0_22px_rgba(201,138,94,0.55)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <SteamIcon className="w-3.5 h-3.5" /> SIGN IN WITH STEAM
             </button>
