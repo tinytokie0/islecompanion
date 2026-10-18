@@ -27,7 +27,12 @@ export default async function(req) {
       { steam_id: link.steam_id, day: { $gte: start, $lte: end } },
       { limit: 500 }
     );
-    const progress = progressFor(quest.metric, rollPage.items || []);
+    // Kill-based quests re-verify against the player's own feed kill events.
+    const killPage = await service.entities.KillEvent.filter(
+      { killer_steam_id: link.steam_id, killed_date: { $gte: `${start}T00:00:00.000Z`, $lte: `${end}T23:59:59.999Z` } },
+      { limit: 1000, fields: ['victim_species', 'killed_date'] }
+    );
+    const progress = progressFor(quest.metric, rollPage.items || [], killPage.items || []);
 
     const recPage = await service.entities.QuestProgress.filter(
       { user_id: user.id, quest_id: quest.id, period },

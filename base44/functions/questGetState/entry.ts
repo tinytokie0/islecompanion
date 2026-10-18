@@ -30,7 +30,12 @@ export default async function(req) {
       { steam_id: link.steam_id, day: { $gte: start, $lte: end } },
       { limit: 500 }
     );
-    const quests = await syncQuestProgress(service, user.id, rollPage.items || [], now);
+    // This month's kills by the player power the kill-based quests.
+    const killPage = await service.entities.KillEvent.filter(
+      { killer_steam_id: link.steam_id, killed_date: { $gte: `${start}T00:00:00.000Z`, $lte: `${end}T23:59:59.999Z` } },
+      { limit: 1000, fields: ['victim_species', 'killed_date'] }
+    );
+    const quests = await syncQuestProgress(service, user.id, rollPage.items || [], now, killPage.items || []);
 
     return Response.json({ linked: true, quests, wallet: publicWallet(wallet) });
   } catch (error) {

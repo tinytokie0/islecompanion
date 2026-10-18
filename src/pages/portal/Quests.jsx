@@ -4,6 +4,12 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import PageShell from "@/components/portal/PageShell";
 
+const DIFF_BADGE = {
+  easy: "border-emerald-400/50 text-emerald-400",
+  medium: "border-primary/50 text-primary",
+  hard: "border-destructive/60 text-destructive",
+};
+
 const TABS = [
   { id: "daily", label: "DAILY" },
   { id: "weekly", label: "WEEKLY" },
@@ -17,8 +23,10 @@ export default function Quests() {
   const [error, setError] = useState(null);
   const [claiming, setClaiming] = useState(null);
   const [claimError, setClaimError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const load = async () => {
+  const load = async (refresh) => {
+    if (refresh) setRefreshing(true);
     try {
       const res = await base44.functions.invoke("questGetState", {});
       setData(res.data);
@@ -26,6 +34,7 @@ export default function Quests() {
     } catch (e) {
       setError(e.message);
     }
+    if (refresh) setRefreshing(false);
     setLoading(false);
   };
 
@@ -61,7 +70,7 @@ export default function Quests() {
     <PageShell
       kicker="HUNTING CONTRACTS"
       title="QUESTS"
-      sub="Progress comes from your live feed sightings on the island: time survived, growth gained and days played. Claim rewards in Haven Tokens and XP."
+      sub="Progress comes from your live Evrima feed: time survived, growth gained, days played and kills scored on the island. Claim rewards in Haven Tokens and XP."
       right={
         <div className="glass-panel-light px-4 py-2 w-fit">
           <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">TOTAL XP </span>
@@ -85,11 +94,11 @@ export default function Quests() {
           </button>
         ))}
         <button
-          onClick={load}
-          disabled={loading}
+          onClick={() => load(true)}
+          disabled={loading || refreshing}
           className="font-mono text-[10px] tracking-[0.2em] px-4 py-2 rounded-sm border border-border text-muted-foreground hover:text-foreground flex items-center gap-1.5 disabled:opacity-50"
         >
-          <RefreshCw size={11} className={loading ? "animate-spin" : ""} /> REFRESH
+          <RefreshCw size={11} className={loading || refreshing ? "animate-spin" : ""} /> REFRESH
         </button>
       </div>
 
@@ -129,10 +138,13 @@ export default function Quests() {
                   <ListChecks size={16} />
                 </span>
                 <div className="flex-1 min-w-0">
-                  <div className="font-mono text-xs text-foreground tracking-wide mb-2 flex items-center gap-2">
+                  <div className="font-mono text-xs text-foreground tracking-wide mb-2 flex items-center gap-2 flex-wrap">
                     {q.tier === 'elite' && (
                       <span className="text-[8px] tracking-[0.2em] px-1.5 py-0.5 rounded-sm border border-[#e6b84c]/50 text-[#e6b84c]">ELITE</span>
                     )}
+                    <span className={`text-[8px] tracking-[0.2em] uppercase px-1.5 py-0.5 rounded-sm border ${DIFF_BADGE[q.difficulty] || "border-border text-muted-foreground"}`}>
+                      {q.difficulty || "medium"}
+                    </span>
                     {q.title}
                   </div>
                   <div className="h-1.5 bg-secondary overflow-hidden rounded-sm max-w-md">
