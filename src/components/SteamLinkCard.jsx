@@ -123,13 +123,13 @@ export default function SteamLinkCard() {
         <div className="absolute inset-0 bg-gradient-to-r from-[#09090c]/95 via-[#09090c]/75 to-[#09090c]/35" />
       </div>
 
-      <div className="relative flex flex-col md:flex-row md:items-center gap-5 p-6 md:p-8">
+      <div className="relative flex flex-col md:flex-row md:items-center gap-4 p-4 md:p-5">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-2">
-            <Gamepad2 size={14} className="text-accent" />
-            <span className="font-mono text-[10px] tracking-[0.25em] text-accent">STEAM ACCOUNT</span>
+          <div className="flex items-center gap-2 mb-1.5">
+            <Gamepad2 size={12} className="text-accent" />
+            <span className="font-mono text-[9px] tracking-[0.25em] text-accent">STEAM ACCOUNT</span>
           </div>
-          <h2 className="font-heading text-xl md:text-2xl font-bold text-foreground mb-2 tracking-wide">
+          <h2 className="font-heading text-lg md:text-xl font-bold text-foreground mb-1.5 tracking-wide">
             {linked ? "Steam connected" : "Connect your Steam"}
           </h2>
 
@@ -146,7 +146,7 @@ export default function SteamLinkCard() {
               </span>
             </div>
           ) : (
-            <p className="font-mono text-[11px] text-muted-foreground leading-relaxed max-w-xl">
+            <p className="font-mono text-[10px] text-muted-foreground leading-relaxed max-w-xl">
               {authed
                 ? "Sign in with Steam to connect it to your Haven profile. You will sign in on Steam's official page and be redirected back here. Your Steam account stays linked to your profile across future sign-ins."
                 : "First time here? You'll create your free Haven account just once (email sign-in), then you'll be sent straight to Steam to finish linking. Returning players skip straight to Steam."}
@@ -198,7 +198,7 @@ export default function SteamLinkCard() {
       </div>
 
       {/* A raptor strolls along the bottom of the banner, passing under the button */}
-      <div className="absolute bottom-1 card-walker pointer-events-none" style={{ width: 62 }}>
+      <div className="absolute bottom-0.5 card-walker pointer-events-none" style={{ width: 48 }}>
         <Image
           src={RAPTOR}
           alt=""
