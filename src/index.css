@@ -234,6 +234,14 @@
 .side-raptor-7 { animation: raptor-peek-run-r 45s linear infinite; animation-delay: -67.7s; }
 .side-raptor-8 { animation: raptor-peek-run-l 45s linear infinite; animation-delay: -69.9s; }
 
+/* A dino strolling along the bottom of a card: the frame slides across the
+   card while the dino itself bobs with a walking gait */
+@keyframes card-walk {
+  0% { left: -80px; }
+  100% { left: 100%; }
+}
+.card-walker { animation: card-walk 16s linear infinite; }
+
 /* Dino living-portrait art: the frame drifts slowly even at rest; on hover
    the dino lunges forward with a pink glow and a light sweep crosses it */
 @keyframes dino-live {

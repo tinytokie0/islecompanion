@@ -5,6 +5,9 @@ import SteamIcon from "@/components/SteamIcon";
 import { Image } from "@/components/ui/image";
 import { dinoArtFor } from "@/lib/dinoArt";
 
+const RAPTOR =
+  "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/4916924f5_generated_image.png";
+
 const REASONS = {
   missing: "Linking request was incomplete.",
   invalid_signature: "Steam could not verify this response.",
@@ -126,7 +129,7 @@ export default function SteamLinkCard() {
             <Gamepad2 size={14} className="text-accent" />
             <span className="font-mono text-[10px] tracking-[0.25em] text-accent">STEAM ACCOUNT</span>
           </div>
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-2 tracking-wide">
+          <h2 className="font-heading text-xl md:text-2xl font-bold text-foreground mb-2 tracking-wide">
             {linked ? "Steam connected" : "Connect your Steam"}
           </h2>
 
@@ -181,9 +184,9 @@ export default function SteamLinkCard() {
             <button
               onClick={startLink}
               disabled={busy}
-              className="bg-primary text-primary-foreground font-mono text-[11px] font-bold tracking-[0.2em] px-7 py-3.5 rounded-md hover:shadow-[0_0_26px_rgba(255,46,123,0.55)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
+              className="bg-primary text-primary-foreground font-mono text-[9px] font-bold tracking-[0.2em] px-4 py-2.5 rounded-md hover:shadow-[0_0_22px_rgba(255,46,123,0.55)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              <SteamIcon className="w-4.5 h-4.5" /> SIGN IN WITH STEAM
+              <SteamIcon className="w-3.5 h-3.5" /> SIGN IN WITH STEAM
             </button>
           )}
           {linked && link && (
@@ -192,6 +195,17 @@ export default function SteamLinkCard() {
             </span>
           )}
         </div>
+      </div>
+
+      {/* A raptor strolls along the bottom of the banner, passing under the button */}
+      <div className="absolute bottom-1 card-walker pointer-events-none" style={{ width: 62 }}>
+        <Image
+          src={RAPTOR}
+          alt=""
+          className="w-full walk-bob"
+          fittingType="fit"
+          style={{ mixBlendMode: "screen" }}
+        />
       </div>
     </div>
   );
