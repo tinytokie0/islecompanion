@@ -3,7 +3,6 @@ import { Gamepad2, Unlink, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import SteamIcon from "@/components/SteamIcon";
 import { Image } from "@/components/ui/image";
-import { dinoArtFor } from "@/lib/dinoArt";
 
 const RAPTOR =
   "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/4916924f5_generated_image.png";
@@ -111,19 +110,8 @@ export default function SteamLinkCard() {
   const linked = !!link;
 
   return (
-    <div className="group relative rounded-xl overflow-hidden border border-border transition-all duration-300 hover:border-[rgba(230,184,76,0.65)] hover:shadow-[0_0_36px_rgba(230,184,76,0.22)]">
-      {/* Cinematic backdrop: Deinosuchus key art behind a dark wash */}
-      <div className="absolute inset-0">
-        <Image
-          src={dinoArtFor("Deinosuchus")}
-          alt=""
-          className="w-full h-full opacity-60 saturate-[0.9] transition-all duration-500 group-hover:opacity-80 group-hover:saturate-100"
-          fittingType="fill"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#09090c]/95 via-[#09090c]/75 to-[#09090c]/35" />
-      </div>
-
-      <div className="relative flex flex-col md:flex-row md:items-center gap-4 p-4 md:p-5">
+    <div className="relative">
+      <div className="flex flex-col md:flex-row md:items-center gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
             <Gamepad2 size={12} className="text-accent" />
