@@ -60,41 +60,43 @@ function Navbar() {
             The Haven
           </span>
         </Link>
-        <nav className="flex-1 flex items-center justify-center flex-wrap gap-0.5 min-w-0">
-          {NAV_LINKS.map((item) => (
-            <NavPill key={item.to} {...item} />
-          ))}
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 px-2.5 py-1.5 rounded-md font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground hover:bg-secondary data-[state=open]:text-foreground data-[state=open]:bg-secondary whitespace-nowrap">
-              <PackageOpen size={12} /> More
-              <ChevronDown size={12} className="opacity-70" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-52 border-border bg-popover">
-              {MORE_LINKS.map((item) => (
-                <DropdownMenuItem key={item.to} asChild>
-                  <Link to={item.to}>{item.label}</Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </nav>
+        <div className="flex-1 min-w-0" />
         <div className="ml-auto flex items-center gap-2 shrink-0">
           <EconomyChips />
-          <a
-            href="https://discord.gg/4EMZ62VyD"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Join our Discord"
-            className="w-8 h-8 rounded-md bg-[#5865F2] flex items-center justify-center text-white hover:opacity-90 transition-opacity"
-          >
-            <DiscordIcon className="w-3.5 h-3.5" />
-          </a>
-          <Link
-            to="/"
-            className="bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
-          >
-            {isAuthenticated ? "Enter" : "Sign in with Steam"}
-          </Link>
+          <div className="flex items-center gap-0.5 rounded-lg glass-panel px-1.5 py-1 flex-wrap">
+            {NAV_LINKS.map((item) => (
+              <NavPill key={item.to} {...item} />
+            ))}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1 px-2.5 py-1.5 rounded-md font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground hover:bg-secondary data-[state=open]:text-foreground data-[state=open]:bg-secondary whitespace-nowrap">
+                <PackageOpen size={12} /> More
+                <ChevronDown size={12} className="opacity-70" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-52 border-border bg-popover">
+                {MORE_LINKS.map((item) => (
+                  <DropdownMenuItem key={item.to} asChild>
+                    <Link to={item.to}>{item.label}</Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <span className="w-px h-5 bg-border mx-1" />
+            <a
+              href="https://discord.gg/4EMZ62VyD"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Join our Discord"
+              className="w-8 h-8 rounded-md bg-[#5865F2] flex items-center justify-center text-white hover:opacity-90 transition-opacity"
+            >
+              <DiscordIcon className="w-3.5 h-3.5" />
+            </a>
+            <Link
+              to="/"
+              className="bg-primary text-primary-foreground text-xs font-semibold px-3.5 py-1.5 rounded-md hover:opacity-90 transition-opacity whitespace-nowrap ml-1"
+            >
+              {isAuthenticated ? "Enter" : "Sign in with Steam"}
+            </Link>
+          </div>
         </div>
       </div>
     </header>
