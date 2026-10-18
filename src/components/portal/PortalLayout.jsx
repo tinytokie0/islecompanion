@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import {
   Home as HomeIcon, Skull, Trophy, Target, Dices,
-  ArrowLeftRight, Coins, ChevronDown, PackageOpen, ExternalLink,
+  ArrowLeftRight, Coins, ChevronDown, PackageOpen,
   Crown, ListChecks, Gift, Store, LifeBuoy,
 } from "lucide-react";
 import {
@@ -80,15 +80,6 @@ function Navbar() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <span className="w-px h-5 bg-border mx-1" />
-            <a
-              href="https://arkanis.gg/dashboard/405418368334561281/panels/isle"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
-            >
-              <ExternalLink size={12} /> Arkanis panel
-            </a>
             <span className="w-px h-5 bg-border mx-1" />
             <a
               href="https://discord.gg/4EMZ62VyD"
