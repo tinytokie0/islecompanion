@@ -29,6 +29,15 @@ export default async function(req) {
       cursor = page.has_more ? page.next_cursor : undefined;
     } while (cursor);
 
+    // Only wallets with a current, matching Steam link can earn: this guards
+    // against a stale Steam id left on a wallet after an unlink or a switch
+    // to a different Steam account.
+    const links = await service.entities.SteamLink.filter({});
+    const linkedByUser = new Map(links.map((l) => [l.user_id, l.steam_id]));
+    wallets = wallets.filter(
+      (w) => w.steam_id && linkedByUser.get(w.user_id) === w.steam_id
+    );
+
     // Latest feed record per Steam id, batched.
     const ids = wallets.map((w) => w.steam_id).filter(Boolean);
     const dinoPage = ids.length > 0
