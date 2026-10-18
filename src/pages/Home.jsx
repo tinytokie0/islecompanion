@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Megaphone, X, ExternalLink } from "lucide-react";
+import { Megaphone, X } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import SteamLinkCard from "@/components/SteamLinkCard";
 import FeatureGrid from "@/components/home/FeatureGrid";
@@ -45,14 +45,6 @@ export default function Home() {
           >
             {isAuthenticated ? "Enter the portal" : "Sign in"}
           </Link>
-          <a
-            href="https://arkanis.gg/dashboard/405418368334561281/panels/isle"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 border border-border text-foreground text-sm font-semibold px-5 py-3 rounded-md hover:border-primary/60 hover:text-primary transition-colors"
-          >
-            Arkanis panel <ExternalLink size={14} />
-          </a>
         </div>
       </div>
 
