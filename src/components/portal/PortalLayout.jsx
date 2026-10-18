@@ -51,17 +51,15 @@ function Navbar() {
   const { isAuthenticated } = useAuth();
   return (
     <header className="sticky top-0 inset-x-0 z-50 bg-[#0c0c0f]/95 backdrop-blur-md border-b border-border">
-      <div className="max-w-[1500px] mx-auto flex items-center gap-2 px-4 md:px-6 py-2">
-        <Link to="/" className="flex items-center gap-2.5 shrink-0">
-          <Image src={LOGO} alt="The Haven" className="w-7 h-7" fittingType="fit" />
-          <span className="font-heading font-bold text-[15px] uppercase text-foreground hidden sm:block">
+      <div className="max-w-[1500px] mx-auto grid md:grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 md:px-6 py-2">
+        <Link to="/" className="flex items-center gap-2.5 w-fit">
+          <Image src={LOGO} alt="The Haven" className="w-7 h-7 shrink-0" fittingType="fit" />
+          <span className="font-heading font-bold text-[15px] uppercase text-foreground hidden sm:block leading-none">
             The Haven
           </span>
         </Link>
-        <div className="flex-1 min-w-0" />
-        <div className="ml-auto flex items-center gap-2 shrink-0">
-          <EconomyChips />
-          <div className="flex items-center gap-0.5 rounded-lg glass-panel px-1.5 py-1 flex-wrap">
+        <div className="flex justify-center">
+          <div className="flex items-center gap-0.5 rounded-lg glass-panel px-1.5 py-1 flex-wrap justify-center">
             {NAV_LINKS.map((item) => (
               <NavPill key={item.to} {...item} />
             ))}
@@ -78,15 +76,18 @@ function Navbar() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            {!isAuthenticated && (
-              <Link
-                to="/login"
-                className="bg-primary text-primary-foreground text-xs font-semibold px-3.5 py-1.5 rounded-md hover:opacity-90 transition-opacity whitespace-nowrap ml-1"
-              >
-                Sign in
-              </Link>
-            )}
           </div>
+        </div>
+        <div className="flex items-center gap-2 md:justify-end">
+          <EconomyChips />
+          {!isAuthenticated && (
+            <Link
+              to="/login"
+              className="bg-primary text-primary-foreground text-xs font-semibold px-3.5 py-1.5 rounded-md hover:opacity-90 transition-opacity whitespace-nowrap"
+            >
+              Sign in
+            </Link>
+          )}
         </div>
       </div>
     </header>
