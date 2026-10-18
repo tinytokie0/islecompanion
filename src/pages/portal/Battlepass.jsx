@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Coins, Crown, Lock, Check } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Coins, Crown, Lock, Check, Loader2 } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 import PageShell from "@/components/portal/PageShell";
 import useWallet from "@/hooks/useWallet";
 
@@ -15,32 +16,63 @@ const TIERS = Array.from({ length: 10 }, (_, i) => {
 });
 
 export default function Battlepass() {
-  // Level and XP now come from the real wallet: XP is earned by claiming quests.
-  const { wallet } = useWallet(60000);
+  // Level and XP come from the real wallet: XP is earned by claiming quests.
+  const { wallet, refresh } = useWallet(60000);
   const totalXp = wallet?.xp || 0;
   const LEVEL = Math.floor(totalXp / XP_MAX) + 1;
   const XP = totalXp % XP_MAX;
-  const [claimedFree, setClaimedFree] = useState([1, 2]);
-  const [claimedPremium, setClaimedPremium] = useState([2]);
 
-  const claimFree = (tier) => {
-    if (LEVEL < tier || claimedFree.includes(tier)) return;
-    setClaimedFree((prev) => [...prev, tier]);
+  // Claims persist in the database and are validated server-side.
+  const [claims, setClaims] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
+
+  const loadClaims = async () => {
+    try {
+      const page = await base44.entities.BattlepassClaim.filter({});
+      setClaims(page.items);
+    } catch {
+      setClaims([]);
+    }
   };
-  const claimPremium = (tier) => {
-    if (LEVEL < tier || claimedPremium.includes(tier)) return;
-    setClaimedPremium((prev) => [...prev, tier]);
+  useEffect(() => { loadClaims(); }, []);
+
+  const claimedFree = (claims || []).filter((c) => c.track === "free").map((c) => c.tier);
+  const claimedPremium = (claims || []).filter((c) => c.track === "premium").map((c) => c.tier);
+
+  const claim = async (tier, track) => {
+    if (busy || LEVEL < tier) return;
+    const done = track === "free" ? claimedFree : claimedPremium;
+    if (done.includes(tier)) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await base44.functions.invoke("battlepassClaim", { tier, track });
+      if (res.data?.ok) {
+        await loadClaims();
+        await refresh();
+      } else {
+        setError(res.data?.error || "Claim failed.");
+      }
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
   };
+
+  const claimFree = (tier) => claim(tier, "free");
+  const claimPremium = (tier) => claim(tier, "premium");
 
   return (
     <PageShell
       kicker="SEASON 3 — EMBERFALL"
       title="BATTLEPASS"
-      sub="Level the season pass and claim free and premium rewards."
+      sub="Level the season pass with quest XP and claim free and premium rewards."
       right={
         <div className="glass-panel-light px-4 py-2 w-fit">
-          <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">SEASON ENDS IN </span>
-          <span className="font-mono text-xs text-accent">26D 11H</span>
+          <span className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">TOTAL XP </span>
+          <span className="font-mono text-xs text-accent">{totalXp.toLocaleString()}</span>
         </div>
       }
     >
@@ -58,8 +90,13 @@ export default function Battlepass() {
               </div>
             </div>
           </div>
-          <span className="font-mono text-[10px] tracking-[0.2em] text-accent">PREMIUM ACTIVE</span>
+          {busy && (
+            <span className="flex items-center gap-2 font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
+              <Loader2 size={11} className="animate-spin" /> CLAIMING...
+            </span>
+          )}
         </div>
+        {error && <div className="font-mono text-[10px] text-destructive mb-3">{error}</div>}
         <div className="h-2 bg-secondary overflow-hidden rounded-sm">
           <div className="h-full bg-primary transition-all" style={{ width: `${(XP / XP_MAX) * 100}%` }} />
         </div>
@@ -82,7 +119,7 @@ export default function Battlepass() {
               {/* Free reward */}
               <button
                 onClick={() => claimFree(tier)}
-                disabled={!reached || freeDone}
+                disabled={!reached || freeDone || busy}
                 className={`w-full text-left border rounded-sm p-3 mb-2 transition-colors ${
                   freeDone
                     ? "border-accent/60 bg-accent/5"
@@ -100,7 +137,7 @@ export default function Battlepass() {
               {/* Premium reward */}
               <button
                 onClick={() => claimPremium(tier)}
-                disabled={!reached || premDone}
+                disabled={!reached || premDone || busy}
                 className={`w-full text-left border rounded-sm p-3 transition-colors ${
                   premDone
                     ? "border-primary/60 bg-primary/5"

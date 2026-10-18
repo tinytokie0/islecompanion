@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeftRight, Loader2 } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 import { stageFor } from "@/lib/growthStages";
 import { speciesInfo } from "@/lib/speciesPricing";
 import useHt from "@/hooks/useHt";
@@ -9,37 +10,61 @@ import LiveIslandStrip from "@/components/portal/LiveIslandStrip";
 const RARITY_COLOR = { APEX: "#a78bfa", RARE: "#e6b84c", COMMON: "#94a3b8" };
 
 export default function Trading() {
-  const { balance, spend } = useHt();
+  const { balance, refresh, spend } = useHt();
   const [busy, setBusy] = useState(false);
-  const [owned, setOwned] = useState([]);
-  const [listed, setListed] = useState([]);
-  const [offers, setOffers] = useState([]);
+  const [error, setError] = useState(null);
+  const [specimens, setSpecimens] = useState(null); // owned, from the database
   const { species, loading } = useIslandSpecies();
 
-  const market = species.filter((s) => !owned.includes(s.species));
+  const loadSpecimens = async () => {
+    try {
+      const page = await base44.entities.Specimen.filter({});
+      setSpecimens(page.items);
+    } catch {
+      setSpecimens([]);
+    }
+  };
+  useEffect(() => { loadSpecimens(); }, []);
+
+  const ownedNames = new Set((specimens || []).map((s) => s.species));
+  const market = species.filter((s) => !ownedNames.has(s.species));
+  const onIsland = new Map(species.map((s) => [s.species, s.count]));
 
   const buy = async (s) => {
     const info = speciesInfo(s.species);
     if (busy || balance < info.price) return;
     setBusy(true);
+    setError(null);
     try {
-      await spend(info.price, `Trading market: ${s.species}`);
-      setOwned((o) => [...o, s.species]);
+      const res = await base44.functions.invoke("tradingBuy", { species: s.species });
+      if (res.data?.ok) {
+        await loadSpecimens();
+        await refresh();
+      } else {
+        setError(res.data?.error || "Purchase failed.");
+      }
+    } catch (e) {
+      setError(e.message);
     } finally {
       setBusy(false);
     }
   };
 
-  const toggleListed = (name) =>
-    setListed((prev) => (listed.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]));
-
-  const acceptOffer = (offer) => {
-    setOwned((o) => o.filter((n) => n !== offer.wants).concat(offer.species));
-    setListed((l) => l.filter((n) => n !== offer.wants));
-    setOffers((prev) => prev.filter((o) => o.id !== offer.id));
+  const toggleListed = async (spec) => {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await base44.entities.Specimen.update(spec.id, { listed: !spec.listed });
+      await loadSpecimens();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const ownedDinos = species.filter((s) => owned.includes(s.species));
+  const ownedDinos = specimens || [];
 
   return (
     <section className="px-4 md:px-8 py-10 md:py-14">
@@ -48,9 +73,13 @@ export default function Trading() {
         <div className="text-center mb-10">
           <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground">Trading</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Buy dinos straight from the live island feed, list your own and review incoming trade offers.
+            Buy dinos straight from the live island feed and manage your specimens.
           </p>
         </div>
+
+        {error && (
+          <div className="font-mono text-[11px] text-destructive mb-6 text-center">{error}</div>
+        )}
 
         {/* Market */}
         <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4">
@@ -99,7 +128,7 @@ export default function Trading() {
                     <span className="font-mono text-xs text-accent">{info.price.toLocaleString()}</span>
                     <button
                       onClick={() => buy(s)}
-                      disabled={!afford}
+                      disabled={!afford || busy}
                       className={`font-heading text-xs font-bold tracking-wide px-4 py-1.5 rounded-md transition-colors ${
                         afford
                           ? "bg-primary text-primary-foreground hover:opacity-90"
@@ -119,88 +148,50 @@ export default function Trading() {
           {/* Your specimens */}
           <div className="rounded-xl border border-border bg-card p-6">
             <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-5 flex items-center gap-2">
-              <ArrowLeftRight size={13} className="text-primary" /> YOUR SPECIMENS — {ownedDinos.length}
+              <ArrowLeftRight size={13} className="text-primary" /> YOUR SPECIMENS — {specimens ? ownedDinos.length : "…"}
             </div>
-            <div className="space-y-3">
-              {ownedDinos.length === 0 && (
-                <div className="font-mono text-[11px] text-muted-foreground py-6 text-center">
-                  You don't own any dinos yet. Buy one from the market above.
-                </div>
-              )}
-              {ownedDinos.map((d) => (
-                <div key={d.species} className="flex justify-between items-center border-b border-border/60 pb-3">
-                  <div>
-                    <div className="font-mono text-xs text-foreground">{d.species.toUpperCase()}</div>
-                    <div className="font-mono text-[9px] text-muted-foreground tracking-[0.15em]">
-                      {d.count} on island
+            {specimens === null ? (
+              <div className="flex items-center gap-2 font-mono text-[11px] text-muted-foreground py-6 justify-center">
+                <Loader2 size={12} className="animate-spin" /> LOADING...
+              </div>
+            ) : ownedDinos.length === 0 ? (
+              <div className="font-mono text-[11px] text-muted-foreground py-6 text-center">
+                You don't own any dinos yet. Buy one from the market above.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {ownedDinos.map((d) => (
+                  <div key={d.id} className="flex justify-between items-center border-b border-border/60 pb-3">
+                    <div>
+                      <div className="font-mono text-xs text-foreground">{d.species.toUpperCase()}</div>
+                      <div className="font-mono text-[9px] text-muted-foreground tracking-[0.15em]">
+                        {onIsland.get(d.species) || 0} on island now
+                      </div>
                     </div>
+                    <button
+                      onClick={() => toggleListed(d)}
+                      className={`font-mono text-[9px] tracking-[0.2em] px-3 py-1.5 border rounded-sm transition-colors ${
+                        d.listed
+                          ? "border-accent/60 text-accent"
+                          : "border-border text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {d.listed ? "LISTED" : "LIST"}
+                    </button>
                   </div>
-                  <button
-                    onClick={() => toggleListed(d.species)}
-                    className={`font-mono text-[9px] tracking-[0.2em] px-3 py-1.5 border rounded-sm transition-colors ${
-                      listed.includes(d.species)
-                        ? "border-accent/60 text-accent"
-                        : "border-border text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {listed.includes(d.species) ? "LISTED" : "LIST"}
-                  </button>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Offers */}
           <div className="rounded-xl border border-border bg-card p-6">
             <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-5">
-              INCOMING OFFERS — {offers.length}
+              INCOMING OFFERS
             </div>
-            {offers.length === 0 ? (
-              <div className="font-mono text-[11px] text-muted-foreground py-8 text-center">
-                No open offers right now.
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {offers.map((offer) => {
-                  const mine = species.find((s) => s.species === offer.wants);
-                  const theirs = species.find((s) => s.species === offer.species);
-                  return (
-                    <div key={offer.id} className="border border-border rounded-md p-4">
-                      <div className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground mb-3">
-                        FROM {offer.from}
-                      </div>
-                      <div className="flex items-center justify-between gap-3 mb-4">
-                        <div>
-                          <div className="font-mono text-[9px] text-muted-foreground tracking-[0.15em]">THEY GIVE</div>
-                          <div className="font-mono text-xs text-foreground">
-                            {theirs?.species.toUpperCase()}
-                          </div>
-                        </div>
-                        <div className="font-mono text-muted-foreground">⇄</div>
-                        <div className="text-right">
-                          <div className="font-mono text-[9px] text-muted-foreground tracking-[0.15em]">THEY WANT</div>
-                          <div className="font-mono text-xs text-foreground">{mine?.species.toUpperCase()}</div>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => acceptOffer(offer)}
-                          className="flex-1 font-heading text-xs font-bold tracking-wide border border-primary/40 text-primary px-3 py-2 rounded-md hover:bg-primary/10 transition-colors"
-                        >
-                          ACCEPT
-                        </button>
-                        <button
-                          onClick={() => setOffers((prev) => prev.filter((o) => o.id !== offer.id))}
-                          className="flex-1 font-heading text-xs font-bold tracking-wide border border-border text-muted-foreground px-3 py-2 rounded-md hover:text-foreground transition-colors"
-                        >
-                          DECLINE
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            <div className="font-mono text-[11px] text-muted-foreground py-8 text-center">
+              No open offers right now.
+            </div>
           </div>
         </div>
 
