@@ -7,13 +7,20 @@ import { Label } from "@/components/ui/label";
 import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
+import SteamIcon from "@/components/SteamIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
+
+// Same flag the home page card reads: a visitor who signs in here continues
+// straight into Steam authentication once they land back on the home page.
+const PENDING_FLAG = "steam_link_pending";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [steamBusy, setSteamBusy] = useState(false);
+  const [steamNotice, setSteamNotice] = useState("");
   // Post-login destination (e.g. the MCP OAuth consent page sends users here
   // with returnTo so the grant flow can resume). Same-origin paths only.
   const returnTo = safeReturnTo();
@@ -34,6 +41,27 @@ export default function Login() {
 
   const handleGoogle = () => {
     base44.auth.loginWithProvider("google", returnTo);
+  };
+
+  const handleSteam = async () => {
+    setSteamBusy(true);
+    setError("");
+    setSteamNotice("");
+    try {
+      if (await base44.auth.isAuthenticated()) {
+        const res = await base44.functions.invoke("steamLinkStart", {});
+        window.location.href = res.data.redirect_url;
+        return;
+      }
+      // Signed-out visitor: log in below first, then Steam continues
+      // automatically from the home page card.
+      sessionStorage.setItem(PENDING_FLAG, "1");
+      setSteamNotice("Log in first — Steam sign-in continues right after.");
+    } catch (err) {
+      setError(err.message || "Could not start Steam sign-in");
+    } finally {
+      setSteamBusy(false);
+    }
   };
 
   return (
@@ -62,6 +90,27 @@ export default function Login() {
           <GoogleIcon className="w-5 h-5 mr-2" />
           Continue with Google
         </Button>
+        <Button
+          variant="outline"
+          className="w-full h-12 text-sm font-medium mt-3"
+          onClick={handleSteam}
+          disabled={steamBusy}
+        >
+          {steamBusy ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Opening Steam...
+            </>
+          ) : (
+            <>
+              <SteamIcon className="w-5 h-5 mr-2" />
+              Continue with Steam
+            </>
+          )}
+        </Button>
+        {steamNotice && (
+          <p className="mt-3 text-xs text-primary text-center">{steamNotice}</p>
+        )}
       </div>
 
       <div className="relative mb-6">
