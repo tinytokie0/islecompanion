@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Megaphone, X, ExternalLink } from "lucide-react";
-import { useAuth } from "@/lib/AuthContext";
+import { Megaphone, X } from "lucide-react";
 import SteamLinkCard from "@/components/SteamLinkCard";
 import FeatureGrid from "@/components/home/FeatureGrid";
 import { Image } from "@/components/ui/image";
@@ -9,7 +7,6 @@ import { Image } from "@/components/ui/image";
 const KEY_ART = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/9f0ddaf0f_79baba85-cefc-4a35-8c70-bc181598d114.png";
 
 export default function Home() {
-  const { isAuthenticated } = useAuth();
   const [showDiscord, setShowDiscord] = useState(true);
 
   return (
@@ -24,36 +21,6 @@ export default function Home() {
       {/* Steam linking */}
       <div className="mb-5">
         <SteamLinkCard />
-      </div>
-
-      {/* Hero */}
-      <div className="rounded-xl border border-border bg-card/70 backdrop-blur-md p-8 md:p-12 mb-5">
-        <span className="font-heading text-sm font-semibold tracking-[0.2em] text-primary uppercase mb-4 block">
-          The Haven
-        </span>
-        <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-3">
-          Manage your dinos and skins
-        </h1>
-        <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-xl mb-7">
-          View your garage, design custom dino skins and apply them in-game, all
-          from one place.
-        </p>
-        <div className="flex items-center gap-3">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-6 py-3 rounded-md hover:opacity-90 transition-opacity"
-          >
-            {isAuthenticated ? "Enter the portal" : "Sign in"}
-          </Link>
-          <a
-            href="https://arkanis.gg/dashboard/405418368334561281/panels/isle"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 border border-border text-foreground text-sm font-semibold px-5 py-3 rounded-md hover:border-primary/60 hover:text-primary transition-colors"
-          >
-            Arkanis panel <ExternalLink size={14} />
-          </a>
-        </div>
       </div>
 
       {/* Discord banner */}
