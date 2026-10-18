@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import useArkaniStatus from "@/hooks/useArkaniStatus";
 import useRconStatus from "@/hooks/useRconStatus";
@@ -58,9 +57,6 @@ export default function StatusStrip() {
         <span className="hidden sm:flex items-center gap-2 text-muted-foreground">
           Map <span className="text-foreground">{map}</span>
         </span>
-        <Link to="/map" className="ml-auto text-primary hover:underline">
-          Connection info
-        </Link>
       </div>
     </div>
   );

@@ -15,33 +15,20 @@ import ResetPassword from '@/pages/ResetPassword';
 // Portal layout + home
 import PortalLayout from '@/components/portal/PortalLayout';
 import Home from '@/pages/Home';
-// Existing feature components used as pages
-import Garage from '@/components/Garage';
-import LiveMap from '@/components/LiveMap';
-import SkinEditor from '@/components/SkinEditor';
-import HealthOverview from '@/components/HealthOverview';
 // Portal pages
-import YourDino from '@/pages/portal/YourDino';
 import Trading from '@/pages/portal/Trading';
 import DinoShop from '@/pages/portal/DinoShop';
-import SkinShop from '@/pages/portal/SkinShop';
 import Battlepass from '@/pages/portal/Battlepass';
 import Quests from '@/pages/portal/Quests';
 import Casino from '@/pages/portal/Casino';
-import Teleports from '@/pages/portal/Teleports';
-import Referral from '@/pages/portal/Referral';
 import Bounties from '@/pages/portal/Bounties';
 import Killfeed from '@/pages/portal/Killfeed';
 import Leaderboard from '@/pages/portal/Leaderboard';
 import Giveaways from '@/pages/portal/Giveaways';
 import Tickets from '@/pages/portal/Tickets';
-import Apply from '@/pages/portal/Apply';
 import Wallet from '@/pages/portal/Wallet';
 import TokenShop from '@/pages/portal/TokenShop';
 import EconomyAdmin from '@/pages/portal/EconomyAdmin';
-import DinoPacks from '@/pages/portal/DinoPacks';
-import RewardPacks from '@/pages/portal/RewardPacks';
-import CarcassDrop from '@/pages/portal/CarcassDrop';
 
 // Sends signed-out visitors to the sign-in page, remembering where they
 // were headed so they land back on it (e.g. the garage) after logging in.
@@ -85,31 +72,22 @@ const AuthenticatedApp = () => {
       <Route element={<PortalLayout />}>
         {/* Public pages */}
         <Route path="/" element={<Home />} />
-        <Route path="/map" element={<LiveMap />} />
         <Route path="/killfeed" element={<Killfeed />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/giveaways" element={<Giveaways />} />
         <Route path="/tickets" element={<Tickets />} />
-        <Route path="/apply" element={<Apply />} />
-        <Route path="/growth" element={<HealthOverview />} />
+
 
         {/* Member pages */}
         <Route element={<ProtectedRoute unauthenticatedElement={<LoginRedirect />} />}>
-          <Route path="/me" element={<YourDino />} />
-          <Route path="/garage" element={<Garage />} />
-          <Route path="/skin" element={<SkinEditor />} />
           <Route path="/trading" element={<Trading />} />
           <Route path="/shop" element={<DinoShop />} />
-          <Route path="/skinshop" element={<SkinShop />} />
           <Route path="/battlepass" element={<Battlepass />} />
           <Route path="/quests" element={<Quests />} />
           <Route path="/casino" element={<Casino />} />
-          <Route path="/teleport" element={<Teleports />} />
-          <Route path="/referral" element={<Referral />} />
+
           <Route path="/bounties" element={<Bounties />} />
-          <Route path="/packs" element={<DinoPacks />} />
-          <Route path="/claim" element={<RewardPacks />} />
-          <Route path="/carcass" element={<CarcassDrop />} />
+
           <Route path="/wallet" element={<Wallet />} />
           <Route path="/store" element={<TokenShop />} />
           <Route path="/admin-economy" element={<EconomyAdmin />} />
