@@ -126,12 +126,25 @@ export default function SteamLinkCard() {
               <Loader2 size={13} className="animate-spin" /> CHECKING LINK...
             </div>
           ) : link ? (
-            <div className="flex items-center gap-2 font-mono text-xs text-foreground">
-              <CheckCircle2 size={13} className="text-emerald-400" />
-              LINKED — STEAM ID {link.steam_id}
-              <span className="font-mono text-[10px] text-muted-foreground ml-2">
-                {new Date(link.linked_date).toLocaleString()}
-              </span>
+            <div>
+              <div className="flex items-center gap-2 font-mono text-xs text-foreground flex-wrap">
+                <CheckCircle2 size={13} className="text-emerald-400" />
+                LINKED{link.steam_persona ? ` — ${link.steam_persona.toUpperCase()}` : ` — STEAM ID ${link.steam_id}`}
+                <span className="font-mono text-[10px] text-muted-foreground ml-2">
+                  {new Date(link.linked_date).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 mt-1.5">
+                <span className="font-mono text-[9px] text-muted-foreground">STEAM ID {link.steam_id}</span>
+                <a
+                  href={`https://steamcommunity.com/profiles/${link.steam_id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-mono text-[10px] tracking-[0.15em] text-primary border border-primary/40 rounded px-2 py-0.5 hover:bg-primary/10 transition-colors flex items-center gap-1.5"
+                >
+                  <SteamIcon className="w-3 h-3" /> VIEW STEAM PROFILE
+                </a>
+              </div>
             </div>
           ) : (
             <p className="font-mono text-[10px] text-muted-foreground leading-relaxed max-w-xl">
