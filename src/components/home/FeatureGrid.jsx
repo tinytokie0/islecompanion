@@ -10,6 +10,7 @@ import BannerCard from "@/components/home/BannerCard";
 const SECTIONS = [
   {
     title: "Play & Compete",
+    cols: "xl:grid-cols-4",
     items: [
       { icon: Skull, title: "Killfeed", desc: "Every kill from the last 24 hours.", to: "/killfeed", species: "Allosaurus" },
       { icon: Trophy, title: "Leaderboard", desc: "Kills, K/D and top players.", to: "/leaderboard", species: "Omniraptor" },
@@ -19,6 +20,7 @@ const SECTIONS = [
   },
   {
     title: "Grow & Earn",
+    cols: "xl:grid-cols-3",
     items: [
       { icon: ListChecks, title: "Quests", desc: "Daily, weekly and monthly quests.", to: "/quests", species: "Ceratosaurus" },
       { icon: Coins, title: "Wallet", desc: "Your Haven Tokens and full history.", to: "/wallet", species: "Deinosuchus" },
@@ -27,6 +29,7 @@ const SECTIONS = [
   },
   {
     title: "Community",
+    cols: "xl:grid-cols-2",
     items: [
       { icon: Gift, title: "Giveaways", desc: "Join draws and see past winners.", to: "/giveaways", species: "Pteranodon" },
       { icon: LifeBuoy, title: "Support", desc: "Reports, appeals and staff help.", to: "/tickets", species: "Maiasaura" },
@@ -37,7 +40,7 @@ const SECTIONS = [
 export default function FeatureGrid() {
   let banner = 0;
   return (
-    <div className="space-y-10 mb-10">
+    <div className="space-y-8 mb-6">
       {SECTIONS.map((section) => (
         <div key={section.title}>
           {/* Section header: divider with engraved label */}
@@ -48,7 +51,7 @@ export default function FeatureGrid() {
             </h2>
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#c98a5e]/50 to-transparent" />
           </div>
-          <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-5">
+          <div className={`grid sm:grid-cols-2 ${section.cols} gap-5`}>
             {section.items.map((item) => (
               <BannerCard key={item.to} {...item} swayDelay={-(banner++) * 1.1} />
             ))}
