@@ -1,4 +1,5 @@
 import React from "react";
+import HeroBanner from "@/components/home/HeroBanner";
 import CommunityBox from "@/components/home/CommunityBox";
 import FeatureGrid from "@/components/home/FeatureGrid";
 import { Image } from "@/components/ui/image";
@@ -14,6 +15,9 @@ export default function Home() {
         <div className="absolute inset-0 bg-background/50" />
         <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-transparent to-background" />
       </div>
+
+      {/* Hero plaque */}
+      <HeroBanner />
 
       {/* Connect box: Steam, Discord and Arkanis */}
       <div className="mb-8">

@@ -272,3 +272,10 @@
 @keyframes dino-sheen-sweep {
   to { transform: translateX(110%); }
 }
+
+/* Heraldic banners sway gently from their rods, each on its own delay */
+@keyframes banner-sway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(0.7deg); }
+}
+.banner-sway { animation: banner-sway 6s ease-in-out infinite; }

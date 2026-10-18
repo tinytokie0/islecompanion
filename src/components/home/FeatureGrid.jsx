@@ -3,10 +3,10 @@ import {
   Skull, Trophy, Target, Dices, ListChecks,
   Coins, Store, Gift, LifeBuoy,
 } from "lucide-react";
-import DinoFeatureCard from "@/components/home/DinoFeatureCard";
+import BannerCard from "@/components/home/BannerCard";
 
-// Portal features grouped into sections; each card carries a different
-// dinosaur artwork from the Haven key art set.
+// Portal features grouped into sections, each hung as a heraldic banner
+// carrying its own dinosaur artwork.
 const SECTIONS = [
   {
     title: "Play & Compete",
@@ -35,19 +35,22 @@ const SECTIONS = [
 ];
 
 export default function FeatureGrid() {
+  let banner = 0;
   return (
     <div className="space-y-10 mb-10">
       {SECTIONS.map((section) => (
         <div key={section.title}>
-          <div className="flex items-center gap-4 mb-4">
-            <h2 className="font-heading text-lg font-bold text-foreground uppercase tracking-[0.18em] whitespace-nowrap">
+          {/* Section header: divider with engraved label */}
+          <div className="flex items-center gap-4 mb-5">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#c98a5e]/50 to-transparent" />
+            <h2 className="font-heading text-base font-bold text-foreground uppercase tracking-[0.3em] whitespace-nowrap">
               {section.title}
             </h2>
-            <div className="flex-1 h-px bg-gradient-to-r from-primary/40 to-transparent" />
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#c98a5e]/50 to-transparent" />
           </div>
           <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-5">
             {section.items.map((item) => (
-              <DinoFeatureCard key={item.to} {...item} />
+              <BannerCard key={item.to} {...item} swayDelay={-(banner++) * 1.1} />
             ))}
           </div>
         </div>
