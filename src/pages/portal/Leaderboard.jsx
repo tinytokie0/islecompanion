@@ -45,6 +45,7 @@ export default function Leaderboard() {
     windowMinutes: 24 * 60,
     refreshMs: 60000,
     sort: TABS[tab].sort || "-growth",
+    limit: 500,
   });
 
   const [species, setSpecies] = useState("All");
