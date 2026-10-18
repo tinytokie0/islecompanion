@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Skull, Trophy, Target, Crown, ListChecks, Gift,
-  ShoppingBag, ArrowLeftRight, Dices, LifeBuoy, Coins, Store,
+  ArrowLeftRight, Dices, LifeBuoy, Coins, Store,
   Megaphone, X, ArrowRight,
 } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
@@ -15,7 +15,6 @@ const FEATURES = [
   { icon: Crown, title: "Battlepass", desc: "Level the season pass and claim free and premium rewards.", to: "/battlepass" },
   { icon: ListChecks, title: "Quests", desc: "Complete daily, weekly and monthly quests for XP and rewards.", to: "/quests" },
   { icon: Dices, title: "Casino", desc: "Slots, all-or-nothing and blackjack with your currency.", to: "/casino" },
-  { icon: ShoppingBag, title: "Dino shop", desc: "Buy dinos with your currency.", to: "/shop" },
   { icon: Target, title: "Bounties", desc: "Put a price on a player's head. Kill the target to collect.", to: "/bounties" },
   { icon: ArrowLeftRight, title: "Trading", desc: "Swap dinos and skins with other players.", to: "/trading" },
   { icon: Gift, title: "Giveaways", desc: "Join draws and see past winners.", to: "/giveaways" },

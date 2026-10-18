@@ -4,7 +4,6 @@ import {
   Home as HomeIcon, Skull, Trophy, Target, Dices,
   ArrowLeftRight, Coins, ChevronDown, PackageOpen,
   Crown, ListChecks, Gift, Store, LifeBuoy,
-  ShoppingBag as ShoppingBagIcon,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
@@ -26,7 +25,6 @@ const NAV_LINKS = [
   { label: "Battlepass", to: "/battlepass", icon: Crown },
   { label: "Quests", to: "/quests", icon: ListChecks },
   { label: "Casino", to: "/casino", icon: Dices },
-  { label: "Dino Shop", to: "/shop", icon: ShoppingBagIcon },
   { label: "Trading", to: "/trading", icon: ArrowLeftRight },
   { label: "Wallet", to: "/wallet", icon: Coins },
 ];

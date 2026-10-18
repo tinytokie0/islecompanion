@@ -17,7 +17,6 @@ import PortalLayout from '@/components/portal/PortalLayout';
 import Home from '@/pages/Home';
 // Portal pages
 import Trading from '@/pages/portal/Trading';
-import DinoShop from '@/pages/portal/DinoShop';
 import Battlepass from '@/pages/portal/Battlepass';
 import Quests from '@/pages/portal/Quests';
 import Casino from '@/pages/portal/Casino';
@@ -81,7 +80,6 @@ const AuthenticatedApp = () => {
         {/* Member pages */}
         <Route element={<ProtectedRoute unauthenticatedElement={<LoginRedirect />} />}>
           <Route path="/trading" element={<Trading />} />
-          <Route path="/shop" element={<DinoShop />} />
           <Route path="/battlepass" element={<Battlepass />} />
           <Route path="/quests" element={<Quests />} />
           <Route path="/casino" element={<Casino />} />
