@@ -13,7 +13,6 @@ import { useAuth } from "@/lib/AuthContext";
 import StatusStrip from "@/components/portal/StatusStrip";
 import MedievalFrame from "@/components/portal/MedievalFrame";
 import EconomyChips from "@/components/portal/EconomyChips";
-import DiscordIcon from "@/components/DiscordIcon";
 
 const LOGO = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/d4ae5dc23_TheHaven_CrystalDinosaurCrest.png";
 const JUNGLE_BG = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/d8aef576a_generated_image.png";
@@ -79,22 +78,14 @@ function Navbar() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <span className="w-px h-5 bg-border mx-1" />
-            <a
-              href="https://discord.gg/4EMZ62VyD"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Join our Discord"
-              className="w-8 h-8 rounded-md bg-[#5865F2] flex items-center justify-center text-white hover:opacity-90 transition-opacity"
-            >
-              <DiscordIcon className="w-3.5 h-3.5" />
-            </a>
-            <Link
-              to="/"
-              className="bg-primary text-primary-foreground text-xs font-semibold px-3.5 py-1.5 rounded-md hover:opacity-90 transition-opacity whitespace-nowrap ml-1"
-            >
-              {isAuthenticated ? "Enter" : "Sign in with Steam"}
-            </Link>
+            {!isAuthenticated && (
+              <Link
+                to="/login"
+                className="bg-primary text-primary-foreground text-xs font-semibold px-3.5 py-1.5 rounded-md hover:opacity-90 transition-opacity whitespace-nowrap ml-1"
+              >
+                Sign in
+              </Link>
+            )}
           </div>
         </div>
       </div>
