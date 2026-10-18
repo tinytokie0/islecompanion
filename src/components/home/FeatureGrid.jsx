@@ -1,7 +1,7 @@
 import React from "react";
 import {
-  Skull, Trophy, Target, Dices, Crown, ListChecks,
-  Coins, Store, ArrowLeftRight, Gift, LifeBuoy,
+  Skull, Trophy, Target, Dices, ListChecks,
+  Coins, Store, Gift, LifeBuoy,
 } from "lucide-react";
 import DinoFeatureCard from "@/components/home/DinoFeatureCard";
 
@@ -20,7 +20,6 @@ const SECTIONS = [
   {
     title: "Grow & Earn",
     items: [
-      { icon: Crown, title: "Battlepass", desc: "Level the season pass for rewards.", to: "/battlepass", species: "Tyrannosaurus" },
       { icon: ListChecks, title: "Quests", desc: "Daily, weekly and monthly quests.", to: "/quests", species: "Ceratosaurus" },
       { icon: Coins, title: "Wallet", desc: "Your Haven Tokens and full history.", to: "/wallet", species: "Deinosuchus" },
       { icon: Store, title: "Token shop", desc: "Titles, badges and rewards.", to: "/store", species: "Stegosaurus" },
@@ -29,7 +28,6 @@ const SECTIONS = [
   {
     title: "Community",
     items: [
-      { icon: ArrowLeftRight, title: "Trading", desc: "Swap dinos and skins with players.", to: "/trading", species: "Gallimimus" },
       { icon: Gift, title: "Giveaways", desc: "Join draws and see past winners.", to: "/giveaways", species: "Pteranodon" },
       { icon: LifeBuoy, title: "Support", desc: "Reports, appeals and staff help.", to: "/tickets", species: "Maiasaura" },
     ],

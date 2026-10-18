@@ -2,8 +2,8 @@ import React from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import {
   Home as HomeIcon, Skull, Trophy, Target, Dices,
-  ArrowLeftRight, Coins, ChevronDown, PackageOpen,
-  Crown, ListChecks, Gift, Store, LifeBuoy
+  Coins, ChevronDown, PackageOpen,
+  ListChecks, Gift, Store, LifeBuoy
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
@@ -23,10 +23,8 @@ const NAV_LINKS = [
   { label: "Killfeed", to: "/killfeed", icon: Skull },
   { label: "Leaderboard", to: "/leaderboard", icon: Trophy },
   { label: "Bounties", to: "/bounties", icon: Target },
-  { label: "Battlepass", to: "/battlepass", icon: Crown },
   { label: "Quests", to: "/quests", icon: ListChecks },
   { label: "Casino", to: "/casino", icon: Dices },
-  { label: "Trading", to: "/trading", icon: ArrowLeftRight },
   { label: "Wallet", to: "/wallet", icon: Coins },
 ];
 const MORE_LINKS = [
