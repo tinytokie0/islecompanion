@@ -21,6 +21,11 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-transparent to-background" />
       </div>
 
+      {/* Steam linking */}
+      <div className="mb-5">
+        <SteamLinkCard />
+      </div>
+
       {/* Hero */}
       <div className="rounded-xl border border-border bg-card/70 backdrop-blur-md p-8 md:p-12 mb-5">
         <span className="font-heading text-sm font-semibold tracking-[0.2em] text-primary uppercase mb-4 block">
@@ -74,11 +79,6 @@ export default function Home() {
 
       {/* Feature grid */}
       <FeatureGrid />
-
-      {/* Steam linking */}
-      <div className="mb-6">
-        <SteamLinkCard />
-      </div>
     </div>
   );
 }

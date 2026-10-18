@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Gamepad2, Unlink, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import SteamIcon from "@/components/SteamIcon";
+import { Image } from "@/components/ui/image";
+import { dinoArtFor } from "@/lib/dinoArt";
 
 const REASONS = {
   missing: "Linking request was incomplete.",
@@ -103,69 +105,94 @@ export default function SteamLinkCard() {
     setBusy(false);
   };
 
+  const linked = !!link;
+
   return (
-    <div className="glass-panel rounded-lg p-6 mt-6">
-      <div className="flex items-center gap-2 mb-4">
-        <Gamepad2 size={14} className="text-accent" />
-        <span className="font-mono text-[10px] tracking-[0.25em] text-accent">STEAM ACCOUNT</span>
+    <div className="group relative rounded-xl overflow-hidden border border-border transition-all duration-300 hover:border-[rgba(230,184,76,0.65)] hover:shadow-[0_0_36px_rgba(230,184,76,0.22)]">
+      {/* Cinematic backdrop: Deinosuchus key art behind a dark wash */}
+      <div className="absolute inset-0">
+        <Image
+          src={dinoArtFor("Deinosuchus")}
+          alt=""
+          className="w-full h-full opacity-60 saturate-[0.9] transition-all duration-500 group-hover:opacity-80 group-hover:saturate-100"
+          fittingType="fill"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#09090c]/95 via-[#09090c]/75 to-[#09090c]/35" />
       </div>
 
-      {loading ? (
-        <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
-          <Loader2 size={13} className="animate-spin" /> CHECKING LINK...
-        </div>
-      ) : link ? (
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="flex-1">
+      <div className="relative flex flex-col md:flex-row md:items-center gap-5 p-6 md:p-8">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-2">
+            <Gamepad2 size={14} className="text-accent" />
+            <span className="font-mono text-[10px] tracking-[0.25em] text-accent">STEAM ACCOUNT</span>
+          </div>
+          <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-2 tracking-wide">
+            {linked ? "Steam connected" : "Connect your Steam"}
+          </h2>
+
+          {loading ? (
+            <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
+              <Loader2 size={13} className="animate-spin" /> CHECKING LINK...
+            </div>
+          ) : link ? (
             <div className="flex items-center gap-2 font-mono text-xs text-foreground">
               <CheckCircle2 size={13} className="text-emerald-400" />
               LINKED — STEAM ID {link.steam_id}
+              <span className="font-mono text-[10px] text-muted-foreground ml-2">
+                {new Date(link.linked_date).toLocaleString()}
+              </span>
             </div>
-            <div className="font-mono text-[10px] text-muted-foreground mt-1">
+          ) : (
+            <p className="font-mono text-[11px] text-muted-foreground leading-relaxed max-w-xl">
+              {authed
+                ? "Sign in with Steam to connect it to your Haven profile. You will sign in on Steam's official page and be redirected back here. Your Steam account stays linked to your profile across future sign-ins."
+                : "First time here? You'll create your free Haven account just once (email sign-in), then you'll be sent straight to Steam to finish linking. Returning players skip straight to Steam."}
+            </p>
+          )}
+
+          {busy && !loading && (
+            <div className="flex items-center gap-2 mt-3 font-mono text-[10px] text-muted-foreground">
+              <Loader2 size={11} className="animate-spin" /> WORKING...
+            </div>
+          )}
+
+          {status && (
+            <div
+              className={`flex items-center gap-2 mt-3 font-mono text-[10px] tracking-[0.1em] ${
+                status.type === "ok" ? "text-emerald-400" : "text-destructive"
+              }`}
+            >
+              {status.type === "ok" ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
+              {status.text.toUpperCase()}
+            </div>
+          )}
+        </div>
+
+        <div className="shrink-0 flex flex-col items-stretch gap-2">
+          {linked ? (
+            <button
+              onClick={unlink}
+              disabled={busy}
+              className="font-mono text-[11px] tracking-[0.2em] border border-destructive/50 text-destructive px-6 py-3 rounded-md hover:bg-destructive/10 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <Unlink size={14} /> UNLINK STEAM
+            </button>
+          ) : (
+            <button
+              onClick={startLink}
+              disabled={busy}
+              className="bg-primary text-primary-foreground font-mono text-[11px] font-bold tracking-[0.2em] px-7 py-3.5 rounded-md hover:shadow-[0_0_26px_rgba(255,46,123,0.55)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
+            >
+              <SteamIcon className="w-4.5 h-4.5" /> SIGN IN WITH STEAM
+            </button>
+          )}
+          {linked && link && (
+            <span className="font-mono text-[10px] text-muted-foreground text-center">
               Linked {new Date(link.linked_date).toLocaleString()}
-            </div>
-          </div>
-          <button
-            onClick={unlink}
-            disabled={busy}
-            className="font-mono text-[10px] tracking-[0.2em] border border-destructive/50 text-destructive px-4 py-2 rounded-sm hover:bg-destructive/10 transition-colors flex items-center gap-2 disabled:opacity-50"
-          >
-            <Unlink size={12} /> UNLINK
-          </button>
+            </span>
+          )}
         </div>
-      ) : (
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <p className="flex-1 font-mono text-[11px] text-muted-foreground leading-relaxed">
-            {authed
-              ? "Sign in with Steam to connect it to your Haven profile. You will sign in on Steam's official page and be redirected back here. Your Steam account stays linked to your profile across future sign-ins."
-              : "First time here? You'll create your free Haven account just once (email sign-in), then you'll be sent straight to Steam to finish linking. Returning players skip straight to Steam."}
-          </p>
-          <button
-            onClick={startLink}
-            disabled={busy}
-            className="shrink-0 font-mono text-[10px] tracking-[0.2em] border border-primary/40 text-primary px-4 py-2 rounded-sm hover:bg-primary/10 transition-colors flex items-center gap-2 disabled:opacity-50"
-          >
-            <SteamIcon className="w-3.5 h-3.5" /> SIGN IN WITH STEAM
-          </button>
-        </div>
-      )}
-
-      {busy && !loading && (
-        <div className="flex items-center gap-2 mt-3 font-mono text-[10px] text-muted-foreground">
-          <Loader2 size={11} className="animate-spin" /> WORKING...
-        </div>
-      )}
-
-      {status && (
-        <div
-          className={`flex items-center gap-2 mt-4 font-mono text-[10px] tracking-[0.1em] ${
-            status.type === "ok" ? "text-emerald-400" : "text-destructive"
-          }`}
-        >
-          {status.type === "ok" ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-          {status.text.toUpperCase()}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
