@@ -15,6 +15,7 @@ const REASONS = {
   taken: "That Steam account is already linked to another user.",
   server: "Something went wrong verifying the link.",
   bad_return_to: "Steam's response did not come back to this site correctly.",
+  session: "Your Haven session changed during linking. Sign in and try again.",
 };
 
 // Set before sending a signed-out visitor to account creation, so they are

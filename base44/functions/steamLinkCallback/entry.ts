@@ -5,7 +5,7 @@ import { getWalletForUser } from '../../shared/economy.ts';
 export default async function(req) {
   const origin = req.headers.get('X-Base44-App-Url') || new URL(req.url).origin;
   const back = (status, reason) => {
-    const target = new URL(`${origin}/me`);
+    const target = new URL(`${origin}/`);
     target.searchParams.set('steam', status);
     if (reason) target.searchParams.set('reason', reason);
     return Response.redirect(target.toString(), 302);
