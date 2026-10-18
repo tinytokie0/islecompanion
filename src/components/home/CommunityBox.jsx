@@ -20,44 +20,52 @@ export default function CommunityBox() {
         <div className="absolute inset-0 bg-gradient-to-r from-[#09090c]/95 via-[#09090c]/75 to-[#09090c]/35" />
       </div>
 
-      <div className="relative flex flex-col lg:flex-row lg:items-center gap-4 p-4 md:p-5">
+      <div className="relative flex flex-col lg:flex-row lg:items-center gap-5 p-4 md:p-5">
         {/* Steam linking */}
         <div className="flex-1 min-w-0">
           <SteamLinkCard />
         </div>
 
+        {/* Divider */}
         <div className="hidden lg:block w-px self-stretch bg-white/10" />
+        <div className="lg:hidden h-px bg-white/10" />
 
-        <div className="shrink-0 flex flex-col sm:flex-row lg:flex-col gap-4 lg:w-60">
-          {/* Discord */}
-          <div className="flex items-start gap-3 flex-1">
-            <span className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <Megaphone size={18} />
-            </span>
-            <div className="min-w-0">
-              <h3 className="font-heading text-sm font-bold text-foreground mb-0.5">Join our Discord</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed mb-1">
-                Events, giveaways, updates and support.
-              </p>
-              <a
-                href="https://discord.gg/4EMZ62VyD"
-                target="_blank"
-                rel="noreferrer"
-                className="text-xs text-primary hover:underline"
-              >
-                discord.gg/4EMZ62VyD
-              </a>
-            </div>
+        {/* Discord */}
+        <div className="lg:w-56 shrink-0">
+          <div className="flex items-center gap-2 mb-1.5">
+            <Megaphone size={12} className="text-accent" />
+            <span className="font-mono text-[9px] tracking-[0.25em] text-accent">COMMUNITY</span>
           </div>
+          <h3 className="font-heading text-base font-bold text-foreground mb-1 tracking-wide">
+            Join our Discord
+          </h3>
+          <a
+            href="https://discord.gg/4EMZ62VyD"
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs text-primary hover:underline"
+          >
+            discord.gg/4EMZ62VyD
+          </a>
+        </div>
 
-          {/* Arkanis */}
+        {/* Divider */}
+        <div className="hidden lg:block w-px self-stretch bg-white/10" />
+        <div className="lg:hidden h-px bg-white/10" />
+
+        {/* Arkanis */}
+        <div className="lg:w-48 shrink-0">
+          <div className="flex items-center gap-2 mb-1.5">
+            <ExternalLink size={12} className="text-accent" />
+            <span className="font-mono text-[9px] tracking-[0.25em] text-accent">SERVER PANEL</span>
+          </div>
           <a
             href="https://arkanis.gg/dashboard/405418368334561281/panels/isle"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 border border-border text-foreground text-xs font-semibold px-4 py-2.5 rounded-md hover:border-primary/60 hover:text-primary transition-colors whitespace-nowrap"
+            className="inline-flex w-full items-center justify-center gap-2 border border-white/15 bg-white/5 text-foreground text-xs font-semibold px-4 py-2.5 rounded-md hover:border-primary/60 hover:text-primary transition-colors whitespace-nowrap"
           >
-            Arkanis panel <ExternalLink size={12} />
+            Arkanis panel
           </a>
         </div>
       </div>
