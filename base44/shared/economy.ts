@@ -43,7 +43,7 @@ export async function getWalletForUser(service, userId, steamId = null) {
   const items = page.items || [];
   if (items.length > 0) {
     const wallet = items[0];
-    if (!wallet.steam_id && steamId) {
+    if (steamId && wallet.steam_id !== steamId) {
       try {
         const updated = await service.entities.Wallet.update(wallet.id, { steam_id: steamId });
         return updated || { ...wallet, steam_id: steamId };

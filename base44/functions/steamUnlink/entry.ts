@@ -14,6 +14,14 @@ export default async function(req) {
       return Response.json({ error: 'No linked Steam account.' }, { status: 404 });
     }
     await service.entities.SteamLink.delete(links[0].id);
+
+    // Clear the wallet's Steam id so a later re-link (possibly a different
+    // account) binds cleanly to the right player.
+    const wallets = await service.entities.Wallet.filter({ user_id: user.id }, { limit: 1 });
+    if (wallets.items.length > 0) {
+      await service.entities.Wallet.update(wallets.items[0].id, { steam_id: '' });
+    }
+
     return Response.json({ ok: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
