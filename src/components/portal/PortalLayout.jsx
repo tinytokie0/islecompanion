@@ -11,6 +11,7 @@ import {
 import { Image } from "@/components/ui/image";
 import { useAuth } from "@/lib/AuthContext";
 import StatusStrip from "@/components/portal/StatusStrip";
+import MedievalFrame from "@/components/portal/MedievalFrame";
 import EconomyChips from "@/components/portal/EconomyChips";
 import DiscordIcon from "@/components/DiscordIcon";
 
@@ -175,6 +176,7 @@ export default function PortalLayout() {
         <Outlet />
       </main>
       <Footer />
+      <MedievalFrame />
     </div>
   );
 }
