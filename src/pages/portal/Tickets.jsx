@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { LifeBuoy, Send } from "lucide-react";
+import { LifeBuoy, Send, ExternalLink } from "lucide-react";
 import PageShell from "@/components/portal/PageShell";
 
 const CATEGORIES = ["Bug report", "Payment issue", "Ban appeal", "Lost dino", "Other"];
@@ -36,6 +36,29 @@ export default function Tickets() {
       title="SUPPORT"
       sub="Open a ticket with the staff team. Average first response: under 12 hours."
     >
+      {/* Arkanis support */}
+      <a
+        href="https://arkanis.gg/dashboard/405418368334561281/panels/isle"
+        target="_blank"
+        rel="noreferrer"
+        className="group flex flex-col sm:flex-row sm:items-center gap-4 glass-panel rounded-lg p-5 mb-8 hover:border-[rgba(230,184,76,0.65)] hover:shadow-[0_0_30px_rgba(230,184,76,0.2)] transition-all"
+      >
+        <span className="w-10 h-10 rounded-lg bg-primary/15 text-primary flex items-center justify-center border border-primary/25 shrink-0">
+          <ExternalLink size={18} />
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="font-heading text-base font-bold text-foreground tracking-wide mb-0.5">
+            Arkanis support
+          </div>
+          <div className="font-mono text-[11px] text-muted-foreground leading-relaxed">
+            In-game tickets and lost dinos are handled on the Arkanis server panel — open it to reach staff there.
+          </div>
+        </div>
+        <span className="font-mono text-[10px] font-semibold tracking-[0.25em] text-primary uppercase whitespace-nowrap flex items-center gap-2">
+          Open panel <ExternalLink size={13} className="transition-transform group-hover:translate-x-0.5" />
+        </span>
+      </a>
+
       {/* New ticket */}
       <form onSubmit={submit} className="glass-panel rounded-lg p-6 mb-8">
         <div className="font-mono text-[10px] tracking-[0.25em] text-muted-foreground mb-4 flex items-center gap-2">
