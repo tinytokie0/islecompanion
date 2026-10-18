@@ -1,29 +1,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Skull, Trophy, Target, Crown, ListChecks, Gift,
-  ArrowLeftRight, Dices, LifeBuoy, Coins, Store,
-  Megaphone, X, ArrowRight,
-} from "lucide-react";
+import { Megaphone, X } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import SteamLinkCard from "@/components/SteamLinkCard";
+import FeatureGrid from "@/components/home/FeatureGrid";
 import { Image } from "@/components/ui/image";
 
 const KEY_ART = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/9f0ddaf0f_79baba85-cefc-4a35-8c70-bc181598d114.png";
-
-const FEATURES = [
-  { icon: Crown, title: "Battlepass", desc: "Level the season pass and claim free and premium rewards.", to: "/battlepass" },
-  { icon: ListChecks, title: "Quests", desc: "Complete daily, weekly and monthly quests for XP and rewards.", to: "/quests" },
-  { icon: Dices, title: "Casino", desc: "Slots, all-or-nothing and blackjack with your currency.", to: "/casino" },
-  { icon: Target, title: "Bounties", desc: "Put a price on a player's head. Kill the target to collect.", to: "/bounties" },
-  { icon: ArrowLeftRight, title: "Trading", desc: "Swap dinos and skins with other players.", to: "/trading" },
-  { icon: Gift, title: "Giveaways", desc: "Join draws and see past winners.", to: "/giveaways" },
-  { icon: Coins, title: "Wallet", desc: "Your Haven Tokens and full transaction history.", to: "/wallet" },
-  { icon: Store, title: "Token shop", desc: "Spend Haven Tokens on titles, badges and rewards.", to: "/store" },
-  { icon: Skull, title: "Killfeed", desc: "Every kill from the last 24 hours.", to: "/killfeed" },
-  { icon: Trophy, title: "Leaderboard", desc: "Kills, K/D and top players.", to: "/leaderboard" },
-  { icon: LifeBuoy, title: "Support", desc: "Reports, appeals and help from staff.", to: "/tickets" },
-];
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
@@ -90,24 +73,7 @@ export default function Home() {
       )}
 
       {/* Feature grid */}
-      <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5 mb-10">
-        {FEATURES.map(({ icon: Icon, title, desc, to }) => (
-          <Link
-            key={to}
-            to={to}
-            className="group rounded-xl border border-border bg-card/70 backdrop-blur-md p-7 flex flex-col hover:border-primary/50 transition-colors"
-          >
-            <span className="w-11 h-11 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-6 shrink-0">
-              <Icon size={19} />
-            </span>
-            <h3 className="font-heading text-lg font-bold text-foreground mb-1.5">{title}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-5">{desc}</p>
-            <span className="mt-auto inline-flex items-center gap-1.5 text-primary text-sm font-semibold">
-              Open <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
-            </span>
-          </Link>
-        ))}
-      </div>
+      <FeatureGrid />
 
       {/* Steam linking */}
       <div className="mb-6">
