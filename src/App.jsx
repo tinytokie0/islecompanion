@@ -28,7 +28,6 @@ import Tickets from '@/pages/portal/Tickets';
 import Wallet from '@/pages/portal/Wallet';
 import TokenShop from '@/pages/portal/TokenShop';
 import EconomyAdmin from '@/pages/portal/EconomyAdmin';
-import Inventory from '@/pages/portal/Inventory';
 
 // Sends signed-out visitors to the sign-in page, remembering where they
 // were headed so they land back on it (e.g. the garage) after logging in.
@@ -88,7 +87,6 @@ const AuthenticatedApp = () => {
           <Route path="/bounties" element={<Bounties />} />
 
           <Route path="/wallet" element={<Wallet />} />
-          <Route path="/inventory" element={<Inventory />} />
           <Route path="/store" element={<TokenShop />} />
           <Route path="/admin-economy" element={<EconomyAdmin />} />
         </Route>

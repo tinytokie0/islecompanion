@@ -3,7 +3,7 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import {
   Home as HomeIcon, Skull, Trophy, Target, Dices,
   ArrowLeftRight, Coins, ChevronDown, PackageOpen,
-  Crown, ListChecks, Gift, Store, LifeBuoy, Backpack,
+  Crown, ListChecks, Gift, Store, LifeBuoy
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
@@ -26,7 +26,6 @@ const NAV_LINKS = [
   { label: "Quests", to: "/quests", icon: ListChecks },
   { label: "Casino", to: "/casino", icon: Dices },
   { label: "Trading", to: "/trading", icon: ArrowLeftRight },
-  { label: "Inventory", to: "/inventory", icon: Backpack },
   { label: "Wallet", to: "/wallet", icon: Coins },
 ];
 const MORE_LINKS = [
