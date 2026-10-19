@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Gamepad2, Unlink, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import SteamIcon from "@/components/SteamIcon";
+import goSteam from "@/lib/steamRedirect";
 import { Image } from "@/components/ui/image";
 
 const RAPTOR =
@@ -78,7 +79,7 @@ export default function SteamLinkCard() {
 
   const beginSteamLink = async () => {
     const res = await base44.functions.invoke("steamLinkStart", {});
-    window.location.href = res.data.redirect_url;
+    goSteam(res.data.redirect_url);
   };
 
   // A visitor who was sent to create their Haven account returns here and

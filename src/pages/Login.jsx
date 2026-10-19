@@ -9,6 +9,7 @@ import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import SteamIcon from "@/components/SteamIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
+import goSteam from "@/lib/steamRedirect";
 
 // Same flag the home page card reads: a visitor who signs in here continues
 // straight into Steam authentication once they land back on the home page.
@@ -50,7 +51,7 @@ export default function Login() {
     try {
       if (await base44.auth.isAuthenticated()) {
         const res = await base44.functions.invoke("steamLinkStart", {});
-        window.location.href = res.data.redirect_url;
+        goSteam(res.data.redirect_url);
         return;
       }
       // Signed-out visitor: log in below first, then Steam continues
