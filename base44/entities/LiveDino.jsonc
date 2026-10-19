@@ -1,0 +1,121 @@
+{
+  "name": "LiveDino",
+  "type": "object",
+  "description": "Latest live state of a player dinosaur, upserted per Steam ID by the server data feed.",
+  "properties": {
+    "steam_id": {
+      "type": "string",
+      "description": "64-bit Steam ID of the player (unique per dino record, upsert key)"
+    },
+    "player_name": {
+      "type": "string",
+      "description": "In-game player name at last update"
+    },
+    "species": {
+      "type": "string",
+      "description": "Dinosaur species currently played"
+    },
+    "sex": {
+      "type": "string",
+      "description": "Sex of the dinosaur (e.g. male/female)"
+    },
+    "growth": {
+      "type": "number",
+      "description": "Growth percentage 0-100"
+    },
+    "health": {
+      "type": "number",
+      "description": "Current health"
+    },
+    "stamina": {
+      "type": "number",
+      "description": "Current stamina"
+    },
+    "hunger": {
+      "type": "number",
+      "description": "Current hunger"
+    },
+    "thirst": {
+      "type": "number",
+      "description": "Current thirst"
+    },
+    "pos_x": {
+      "type": "number",
+      "description": "World X coordinate"
+    },
+    "pos_y": {
+      "type": "number",
+      "description": "World Y coordinate"
+    },
+    "pos_z": {
+      "type": "number",
+      "description": "World Z coordinate"
+    },
+    "server_name": {
+      "type": "string",
+      "description": "Name of the server this dino is connected to"
+    },
+    "deaths": {
+      "type": "number",
+      "default": 0,
+      "description": "Respawns tracked by the feed: how many times this player's growth reset (i.e. died) since tracking began"
+    },
+    "kills": {
+      "type": "number",
+      "default": 0,
+      "description": "Proximity-estimated kills: times this player was the nearest other player recorded near a detected death"
+    },
+    "kills_carnivore": {
+      "type": "number",
+      "default": 0,
+      "description": "Proximity-estimated kills of carnivore prey"
+    },
+    "kills_herbivore": {
+      "type": "number",
+      "default": 0,
+      "description": "Proximity-estimated kills of herbivore prey"
+    },
+    "kills_omnivore": {
+      "type": "number",
+      "default": 0,
+      "description": "Proximity-estimated kills of omnivore prey"
+    },
+    "life_started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the current life began (last time growth reset or tracking started)"
+    },
+    "best_life_minutes": {
+      "type": "number",
+      "default": 0,
+      "description": "Longest completed life tracked for this player, in minutes"
+    },
+    "last_seen": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this snapshot was last posted"
+    }
+  },
+  "required": [
+    "steam_id",
+    "last_seen"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

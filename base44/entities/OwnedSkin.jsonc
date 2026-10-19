@@ -1,0 +1,101 @@
+{
+  "name": "OwnedSkin",
+  "type": "object",
+  "description": "A shop skin a player bought with Haven Tokens. Purchase and equip are validated by the skinShop backend function; equipping queues a skin command the HavenPosition bridge delivers to the game server so the dino's look actually changes in-game.",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Base44 user id that owns this skin"
+    },
+    "steam_id": {
+      "type": "string",
+      "description": "Verified 64-bit Steam id the in-game skin command is delivered to"
+    },
+    "skin_id": {
+      "type": "string",
+      "description": "Shop skin id from the catalog"
+    },
+    "name": {
+      "type": "string",
+      "description": "Skin name at purchase time"
+    },
+    "pattern": {
+      "type": "string",
+      "description": "Genetic pattern applied in-game (e.g. brindle, melanistic)"
+    },
+    "color": {
+      "type": "string",
+      "description": "Base hex color applied in-game, e.g. #c98a5e"
+    },
+    "price": {
+      "type": "number",
+      "description": "Haven Tokens (HT) paid at purchase time"
+    },
+    "equipped": {
+      "type": "boolean",
+      "default": false,
+      "description": "True while this is the player's equipped skin"
+    },
+    "server_status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "sent",
+        "applied",
+        "failed"
+      ],
+      "default": "queued",
+      "description": "Game-server sync state: queued/sent until the bridge applies the skin command, then applied or failed with server_error"
+    },
+    "server_error": {
+      "type": "string",
+      "description": "Error reported by the game server when the skin could not be applied"
+    },
+    "purchased_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the skin was purchased"
+    },
+    "applied_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the game server confirmed the skin was applied"
+    }
+  },
+  "required": [
+    "user_id",
+    "steam_id",
+    "skin_id",
+    "pattern",
+    "color"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

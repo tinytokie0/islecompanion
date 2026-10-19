@@ -1,0 +1,66 @@
+{
+  "name": "KillEvent",
+  "type": "object",
+  "description": "One recorded death on the island: the victim's species and growth at death, plus the proximity-estimated killer when a player was recorded nearby. Written only by the live feed; powers the killfeed page.",
+  "properties": {
+    "victim_steam_id": {
+      "type": "string",
+      "description": "64-bit Steam ID of the player that died"
+    },
+    "victim_name": {
+      "type": "string",
+      "description": "In-game name of the victim at death time"
+    },
+    "victim_species": {
+      "type": "string",
+      "description": "Species the victim was playing"
+    },
+    "victim_growth": {
+      "type": "number",
+      "description": "Victim's growth percentage at the moment of death"
+    },
+    "killer_steam_id": {
+      "type": "string",
+      "description": "64-bit Steam ID of the proximity-estimated killer; empty when no player was nearby (environmental death)"
+    },
+    "killer_name": {
+      "type": "string",
+      "description": "In-game name of the killer, empty for environmental deaths"
+    },
+    "killer_species": {
+      "type": "string",
+      "description": "Species the killer was playing, empty for environmental deaths"
+    },
+    "killer_growth": {
+      "type": "number",
+      "description": "Killer's growth at death time, null for environmental deaths"
+    },
+    "killed_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the death was detected"
+    }
+  },
+  "required": [
+    "victim_steam_id",
+    "killed_date"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

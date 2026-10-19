@@ -1,0 +1,74 @@
+{
+  "name": "Purchase",
+  "type": "object",
+  "description": "Persistent record of one shop reward purchase: proves ownership, enforces one-time rewards atomically, feeds purchase history and tracks refunds. Created only by the purchase backend function.",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Base44 user id that owns this purchase"
+    },
+    "item_id": {
+      "type": "string",
+      "description": "ShopItem id that was purchased"
+    },
+    "item_name": {
+      "type": "string",
+      "description": "ShopItem name at purchase time"
+    },
+    "category": {
+      "type": "string",
+      "description": "ShopItem category at purchase time (cosmetic, title, badge, reward)"
+    },
+    "price": {
+      "type": "number",
+      "description": "Price paid in Haven Tokens (HT)"
+    },
+    "refunded": {
+      "type": "boolean",
+      "default": false,
+      "description": "Set when an administrator refunds this purchase; a refunded one-time reward may be purchased again"
+    },
+    "refunded_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the purchase was refunded"
+    },
+    "refund_amount": {
+      "type": "number",
+      "description": "HT returned to the wallet on refund"
+    }
+  },
+  "required": [
+    "user_id",
+    "item_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

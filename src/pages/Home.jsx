@@ -1,13 +1,30 @@
 import React from "react";
-import PluginHero from "@/components/plugin/PluginHero";
-import FeatureGrid from "@/components/plugin/FeatureGrid";
-import PanelLink from "@/components/plugin/PanelLink";
+import HeroBanner from "@/components/home/HeroBanner";
+import CommunityBox from "@/components/home/CommunityBox";
+import FeatureGrid from "@/components/home/FeatureGrid";
+import { Image } from "@/components/ui/image";
+
+const KEY_ART = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/9f0ddaf0f_79baba85-cefc-4a35-8c70-bc181598d114.png";
 
 export default function Home() {
   return (
-    <div className="max-w-[1100px] mx-auto px-4 md:px-8 pb-16">
-      <PluginHero />
-      <PanelLink />
+    <div className="px-4 md:px-8 py-6 md:py-8 max-w-[1500px] mx-auto">
+      {/* Home backdrop: The Haven key art */}
+      <div className="fixed inset-0 -z-10">
+        <Image src={KEY_ART} alt="" className="w-full h-full" fittingType="fill" />
+        <div className="absolute inset-0 bg-background/50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-transparent to-background" />
+      </div>
+
+      {/* Hero plaque */}
+      <HeroBanner />
+
+      {/* Connect box: Steam, Discord and Arkanis */}
+      <div className="mb-8">
+        <CommunityBox />
+      </div>
+
+      {/* Feature grid */}
       <FeatureGrid />
     </div>
   );

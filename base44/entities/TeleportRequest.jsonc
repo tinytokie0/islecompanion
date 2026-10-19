@@ -1,0 +1,86 @@
+{
+  "name": "TeleportRequest",
+  "type": "object",
+  "description": "One paid waygate use by a player: the HT charge was taken server-side and staff deliver the teleport in-game. Players see their own requests and their delivery status.",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Base44 user id that paid for the teleport"
+    },
+    "steam_id": {
+      "type": "string",
+      "description": "Verified 64-bit Steam id the teleport is delivered to"
+    },
+    "player_name": {
+      "type": "string",
+      "description": "In-game player name at request time"
+    },
+    "species": {
+      "type": "string",
+      "description": "Species at request time"
+    },
+    "waygate_id": {
+      "type": "string",
+      "description": "Waygate id that was used"
+    },
+    "waygate_name": {
+      "type": "string",
+      "description": "Waygate name at request time"
+    },
+    "price": {
+      "type": "number",
+      "description": "HT paid for this teleport"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "delivered",
+        "cancelled"
+      ],
+      "default": "pending",
+      "description": "Delivery status, updated by admins"
+    },
+    "delivered_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the teleport was delivered in-game"
+    }
+  },
+  "required": [
+    "user_id",
+    "steam_id",
+    "waygate_id",
+    "waygate_name",
+    "price"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

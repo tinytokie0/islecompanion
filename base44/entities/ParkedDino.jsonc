@@ -1,0 +1,121 @@
+{
+  "name": "ParkedDino",
+  "type": "object",
+  "description": "A player dinosaur parked in the garage: taken out of active play on the island and stored with its stats at park time. The owner restores it themselves; the game server applies both actions through the HavenPosition bridge.",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Base44 user id that owns this parked dino"
+    },
+    "steam_id": {
+      "type": "string",
+      "description": "64-bit Steam id of the parked dino's player"
+    },
+    "player_name": {
+      "type": "string",
+      "description": "In-game player name at park time"
+    },
+    "species": {
+      "type": "string",
+      "description": "Species at park time"
+    },
+    "sex": {
+      "type": "string",
+      "description": "Sex at park time"
+    },
+    "growth": {
+      "type": "number",
+      "description": "Growth percentage at park time"
+    },
+    "health": {
+      "type": "number",
+      "description": "Health at park time"
+    },
+    "stamina": {
+      "type": "number",
+      "description": "Stamina at park time"
+    },
+    "hunger": {
+      "type": "number",
+      "description": "Hunger at park time"
+    },
+    "thirst": {
+      "type": "number",
+      "description": "Thirst at park time"
+    },
+    "server_name": {
+      "type": "string",
+      "description": "Server the dino was on at park time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "parked",
+        "restored"
+      ],
+      "default": "parked",
+      "description": "parked = in storage; restored = returned to the island by the owner"
+    },
+    "parked_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the dino was parked"
+    },
+    "restored_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the owner restored the dino"
+    },
+    "server_status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "sent",
+        "applied",
+        "failed"
+      ],
+      "default": "queued",
+      "description": "Game-server sync state: queued/sent until the bridge applies the command, then applied or failed with server_error"
+    },
+    "server_error": {
+      "type": "string",
+      "description": "Error reported by the game server when a command could not be applied"
+    }
+  },
+  "required": [
+    "user_id",
+    "steam_id",
+    "species",
+    "status",
+    "parked_date"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
