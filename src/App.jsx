@@ -15,20 +15,9 @@ import ResetPassword from '@/pages/ResetPassword';
 // Portal layout + home
 import PortalLayout from '@/components/portal/PortalLayout';
 import Home from '@/pages/Home';
-// Portal pages
-import Quests from '@/pages/portal/Quests';
-import Casino from '@/pages/portal/Casino';
-import Bounties from '@/pages/portal/Bounties';
-import Killfeed from '@/pages/portal/Killfeed';
-import Leaderboard from '@/pages/portal/Leaderboard';
-import Giveaways from '@/pages/portal/Giveaways';
-import Tickets from '@/pages/portal/Tickets';
-import Wallet from '@/pages/portal/Wallet';
-import TokenShop from '@/pages/portal/TokenShop';
-import EconomyAdmin from '@/pages/portal/EconomyAdmin';
 
 // Sends signed-out visitors to the sign-in page, remembering where they
-// were headed so they land back on it (e.g. the garage) after logging in.
+// were headed so they land back on it after logging in.
 const LoginRedirect = () => {
   const { pathname } = useLocation();
   return <Navigate to={`/login?returnTo=${encodeURIComponent(pathname)}`} replace />;
@@ -67,24 +56,10 @@ const AuthenticatedApp = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
 
       <Route element={<PortalLayout />}>
-        {/* Public pages */}
         <Route path="/" element={<Home />} />
-        <Route path="/killfeed" element={<Killfeed />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/giveaways" element={<Giveaways />} />
-        <Route path="/tickets" element={<Tickets />} />
 
-
-        {/* Member pages */}
         <Route element={<ProtectedRoute unauthenticatedElement={<LoginRedirect />} />}>
-          <Route path="/quests" element={<Quests />} />
-          <Route path="/casino" element={<Casino />} />
-
-          <Route path="/bounties" element={<Bounties />} />
-
-          <Route path="/wallet" element={<Wallet />} />
-          <Route path="/store" element={<TokenShop />} />
-          <Route path="/admin-economy" element={<EconomyAdmin />} />
+          {/* Member pages are added here as they are rebuilt */}
         </Route>
 
         <Route path="*" element={<PageNotFound />} />
