@@ -17,19 +17,31 @@ import EconomyChips from "@/components/portal/EconomyChips";
 const LOGO = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/d4ae5dc23_TheHaven_CrystalDinosaurCrest.png";
 const JUNGLE_BG = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/d8aef576a_generated_image.png";
 
-const NAV_LINKS = [
-  { label: "Home", to: "/", icon: HomeIcon },
-  { label: "Killfeed", to: "/killfeed", icon: Skull },
-  { label: "Leaderboard", to: "/leaderboard", icon: Trophy },
-  { label: "Bounties", to: "/bounties", icon: Target },
-  { label: "Quests", to: "/quests", icon: ListChecks },
-  { label: "Casino", to: "/casino", icon: Dices },
-  { label: "Wallet", to: "/wallet", icon: Coins },
-];
-const MORE_LINKS = [
-  { label: "Giveaways", to: "/giveaways", icon: Gift },
-  { label: "Token shop", to: "/store", icon: Store },
-  { label: "Support", to: "/tickets", icon: LifeBuoy },
+const NAV_GROUPS = [
+  {
+    label: "Play",
+    links: [
+      { label: "Killfeed", to: "/killfeed", icon: Skull },
+      { label: "Leaderboard", to: "/leaderboard", icon: Trophy },
+      { label: "Bounties", to: "/bounties", icon: Target },
+    ],
+  },
+  {
+    label: "Rewards",
+    links: [
+      { label: "Quests", to: "/quests", icon: ListChecks },
+      { label: "Casino", to: "/casino", icon: Dices },
+      { label: "Wallet", to: "/wallet", icon: Coins },
+      { label: "Token shop", to: "/store", icon: Store },
+    ],
+  },
+  {
+    label: "Community",
+    links: [
+      { label: "Giveaways", to: "/giveaways", icon: Gift },
+      { label: "Support tickets", to: "/tickets", icon: LifeBuoy },
+    ],
+  },
 ];
 
 function NavPill({ to, icon: Icon, label }) {
@@ -49,6 +61,7 @@ function NavPill({ to, icon: Icon, label }) {
 
 function Navbar() {
   const { isAuthenticated } = useAuth();
+  const { pathname } = useLocation();
   return (
     <header className="sticky top-0 inset-x-0 z-50 bg-[#0c0c0f]/95 backdrop-blur-md border-b border-border">
       <div className="max-w-[1500px] mx-auto grid md:grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 md:px-6 py-2">
@@ -60,22 +73,33 @@ function Navbar() {
         </Link>
         <div className="flex justify-center">
           <div className="flex items-center gap-0.5 rounded-lg glass-panel px-1.5 py-1 flex-wrap justify-center">
-            {NAV_LINKS.map((item) => (
-              <NavPill key={item.to} {...item} />
-            ))}
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 px-2.5 py-1.5 rounded-md font-heading text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground hover:bg-secondary data-[state=open]:text-foreground data-[state=open]:bg-secondary whitespace-nowrap">
-                <PackageOpen size={12} /> More
-                <ChevronDown size={12} className="opacity-70" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-52 border-border bg-popover">
-                {MORE_LINKS.map((item) => (
-                  <DropdownMenuItem key={item.to} asChild>
-                    <Link to={item.to}>{item.label}</Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <NavPill to="/" icon={HomeIcon} label="Home" />
+            {NAV_GROUPS.map((group) => {
+              const active = group.links.some((l) => pathname.startsWith(l.to));
+              return (
+                <DropdownMenu key={group.label}>
+                  <DropdownMenuTrigger
+                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md font-heading text-xs font-semibold uppercase tracking-wide whitespace-nowrap transition-colors ${
+                      active
+                        ? "bg-secondary text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                    } data-[state=open]:text-foreground data-[state=open]:bg-secondary`}
+                  >
+                    {group.label}
+                    <ChevronDown size={12} className="opacity-70" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-52 border-border bg-popover">
+                    {group.links.map(({ icon: Icon, label, to }) => (
+                      <DropdownMenuItem key={to} asChild>
+                        <Link to={to} className="flex items-center gap-2">
+                          <Icon size={13} className="text-muted-foreground" /> {label}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              );
+            })}
           </div>
         </div>
         <div className="flex items-center gap-2 md:justify-end">

@@ -1,7 +1,10 @@
 import React from "react";
-import HeroBanner from "@/components/home/HeroBanner";
-import CommunityBox from "@/components/home/CommunityBox";
+import HomeHero from "@/components/home/HomeHero";
+import DiscordBanner from "@/components/home/DiscordBanner";
+import HowToJoin from "@/components/home/HowToJoin";
+import HomeDailyClaim from "@/components/home/HomeDailyClaim";
 import FeatureGrid from "@/components/home/FeatureGrid";
+import SteamLinkCard from "@/components/SteamLinkCard";
 import { Image } from "@/components/ui/image";
 
 const KEY_ART = "https://media.base44.com/images/public/6ad1348a6847d99c1f0d362b/9f0ddaf0f_79baba85-cefc-4a35-8c70-bc181598d114.png";
@@ -16,15 +19,24 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-transparent to-background" />
       </div>
 
-      {/* Hero plaque */}
-      <HeroBanner />
+      {/* Hero card + live server card */}
+      <HomeHero />
 
-      {/* Connect box: Steam, Discord and Arkanis */}
-      <div className="mb-8">
-        <CommunityBox />
+      {/* Discord community banner */}
+      <DiscordBanner />
+
+      {/* How to join + daily claim */}
+      <div className="grid lg:grid-cols-2 gap-5 mb-5">
+        <HowToJoin />
+        <HomeDailyClaim />
       </div>
 
-      {/* Feature grid */}
+      {/* Steam linking */}
+      <div className="glass-panel rounded-xl p-4 md:p-5 mb-8">
+        <SteamLinkCard />
+      </div>
+
+      {/* Grouped feature links */}
       <FeatureGrid />
     </div>
   );
